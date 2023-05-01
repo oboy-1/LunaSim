@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<body>
+  <script src="https://unpkg.com/gojs@2.3.3/release/go.js"></script>
+  <script src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
+  <div id="allSampleContent" class="p-4 w-full">
+    <script src="https://unpkg.com/gojs@2.3.3/extensions/Figures.js"></script>
+    <script src="https://unpkg.com/gojs@2.3.3/extensions/NodeLabelDraggingTool.js"></script>
+    <script id="code" type="module" src="editor.js"></script>
+    <script id="code2" type="module" src="translator.js"></script>
+    <script id="code3" type="module" src="engine.js">
+      </script>
+      <div id="sample">
+        <div id="myDiagram" style="height: 500px; border: 1px solid black; position: relative;"><canvas tabindex="0"
+            style="position: absolute; top: 0px; left: 0px; z-index: 2; user-select: none; touch-action: none; width: 598px; height: 498px;"
+            width="598" height="498">This text is displayed if your browser does not support the Canvas HTML
+            element.</canvas>
+          <div style="position: absolute; overflow: auto; width: 598px; height: 498px; z-index: 1;">
+            <div style="position: absolute; width: 1px; height: 1px;"></div>
+          </div>
+        </div>
+        <button id="pointer_button" class="pointer_selected">Pointer</button>
+        <button id="stock_button" class="node_normal" style="margin-left:20px;">Stock</button>
+        <button id="cloud_button" class="node_normal">Cloud</button>
+        <button id="variable_button" class="node_normal">Variable</button>
+        <button id="flow_button" class="link_normal" style="margin-left:20px;">Flow</button>
+        <button id="influence_button" class="link_normal">Influence</button>
+        <div style="border: 1px solid black;">
+          <div id="eqEditor"></div>
+          <table id="eqTable" class="eqTable">
+            <tr>
+              <th>Type</th>
+              <th>Variable</th>
+              <th>Equation</th>
+              <th>Nonnegative/Uniflow?</th>
+            </tr>
+            <tbody id="eqTableBody">
+            </tbody>
+          </table>
+        </div>
+        <div style="border: 1px solid black;">
+          <div id="modelConfig"></div>
+          <table id="modelConfigTable" class="modelConfigTable">
+            <tr>
+              <th>Start Time</th>
+              <th><input id="startTime" style="width:100%; height:20px"></input></th>
+            </tr>
+            <tr>
+              <th>End Time</th>
+              <th><input id="endTime" style="width:100%; height:20px"></input></th>
+            </tr>
+            <tr>
+              <th>dt</th> 
+              <th><input id="dt" style="width:100%; height:20px"></input></th>
+            </tr>
+            <!--add a choice of rk4 or euler-->
+            <tr>
+              <th>Integration Method</th>
+              <th><select id="integrationMethod" style="width:100%; height:20px">
+                  <option value="rk4">Runge-Kutta 4</option>
+                  <option value="euler">Euler</option>
+                </select></th>
+            </tr>
+          </table>
+        </div>
+        <div>
+          <button id="saveButton">Save</button>
+          <button id="loadButton">Load</button>
+          <button id="runButton">Run</button>
+        </div>
+        <textarea id="mySavedModel" style="width:100%; height:400px">{ "class": "go.GraphLinksModel",
+  "linkLabelKeysProperty": "labelKeys",
+  "nodeDataArray": [
+{"key":"grass", "category":"stock", "label":"Grass", "loc":"30 220", "label_offset":"0.5 0.5 0 30"},
+{"key":"cloud1", "category":"cloud", "loc":"200 220"},
+{"key":"sheep", "category":"stock", "label":"Sheep", "loc":"30 20","label_offset":"0.5 0.5 0 -30"},
+{"key":"cloud2", "category":"cloud", "loc":"200 20"},
+{"key":"cloud3", "category":"cloud", "loc":"-150 220"},
+{"key":"grass_loss", "category":"valve", "label":"grass_loss","label_offset":"0.5 0.5 0 20" },
+{"key":"grazing", "category":"valve", "label":"grazing","label_offset":"0.5 0.5 45 0" },
+{"key":"growth", "category":"valve", "label":"growth","label_offset":"0.5 0.5 0 20" },
+{"key":"sheep_loss", "category":"valve",  "label":"sheep_loss","label_offset":"0.5 0.5 0 20" },
+{"key":"k1", "category":"variable",  "label":"good weather", "loc": "-80 100"},
+{"key":"k2", "category":"variable",  "label":"bad weather", "loc": "100 150"},
+{"key":"k3", "category":"variable",  "label":"wolves", "loc": "150 -40"}
+  ],
+  "linkDataArray": [
+{"from":"grass", "to":"cloud1", "category":"flow", "labelKeys":[ "grass_loss" ]},
+{"from":"sheep", "to":"cloud2", "category":"flow", "labelKeys":[ "sheep_loss" ]},
+{"from":"grass", "to":"sheep", "category":"flow", "labelKeys":[ "grazing" ]},
+{"from":"cloud3", "to":"grass", "category":"flow", "labelKeys":[ "growth" ]},
+{"from":"grass", "to":"grass_loss", "category":"influence"},
+{"from":"sheep", "to":"sheep_loss", "category":"influence"},
+{"from":"grass", "to":"growth", "category":"influence"},
+{"from":"grass", "to":"grazing", "category":"influence"},
+{"from":"sheep", "to":"grazing", "category":"influence"},
+{"from":"k1", "to":"growth", "category":"influence"},
+{"from":"k1", "to":"grazing", "category":"influence"},
+{"from":"k2", "to":"grass_loss", "category":"influence"},
+{"from":"k3", "to":"sheep_loss", "category":"influence"}
+  ]
+}
+      </textarea>
+      </div>
+      <p class="text-xs">GoJS version 2.3.3. Copyright 1998-2023 by Northwoods Software.</p>
+  </div>
+  <p><a href="https://github.com/NorthwoodsSoftware/GoJS/blob/master/samples/systemDynamics.html" target="_blank">View
+      this sample page's source on GitHub</a></p>
+  </div>
+
+</body>
+
+</html>
