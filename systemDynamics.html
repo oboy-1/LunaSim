@@ -21,11 +21,15 @@
     cursor: pointer;
     transition: 0.3s;
   }
-  .tab button:hover {
+  .tools button:hover {
     background-color: #ddd;
   }
-  .tab button.active {
+  .tools button.active {
     background-color: #ccc;
+  }
+  .tabcontent{
+    border: none;
+    background-color: #35829fff;
   }
   
   </style>
@@ -39,9 +43,8 @@
     <script id="code2" type="module" src="translator.js"></script>
     <script id="code3" type="module" src="engine.js">
       </script>
-    <div id="physicalview">
-      <div id="sample">
-        <div id="myDiagram" style="height: 500px; border: 1px solid black; position: relative;"><canvas tabindex="0"
+    <div id="physicalview" class="tabcontent">
+        <div id="myDiagram" style="height: 500px; border: 1px solid black; position: relative; float: right;"><canvas tabindex="0"
             style="position: absolute; top: 0px; left: 0px; z-index: 2; user-select: none; touch-action: none; width: 598px; height: 498px;"
             width="598" height="498">This text is displayed if your browser does not support the Canvas HTML
             element.</canvas>
