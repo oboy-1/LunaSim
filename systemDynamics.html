@@ -7,6 +7,7 @@
     background-color: white;
     height: 500px;
     width: 15%;
+    left-padding: 20px;
   }
   .tools button{
     display: block;
@@ -38,6 +39,7 @@
     <script id="code2" type="module" src="translator.js"></script>
     <script id="code3" type="module" src="engine.js">
       </script>
+    <div id="physicalview">
       <div id="sample">
         <div id="myDiagram" style="height: 500px; border: 1px solid black; position: relative;"><canvas tabindex="0"
             style="position: absolute; top: 0px; left: 0px; z-index: 2; user-select: none; touch-action: none; width: 598px; height: 498px;"
@@ -55,6 +57,7 @@
         <button id="flow_button" class="link_normal">Flow</button>
         <button id="influence_button" class="link_normal">Influence</button>
         </div>
+    </div>
         <div style="border: 1px solid black;">
           <div id="eqEditor"></div>
           <table id="eqTable" class="eqTable">
