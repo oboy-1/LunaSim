@@ -5,7 +5,7 @@
     float: left;
     border: 1px solid #595959;
     background-color: white;
-    height: 500px;
+    height: 100%;
     width: 15%;
     left-padding: 20px;
   }
@@ -24,12 +24,20 @@
   .tools button:hover {
     background-color: #ddd;
   }
-  .tools button.active {
+  .tools button:active {
     background-color: #ccc;
   }
   .tabcontent{
     border: none;
     background-color: #35829fff;
+  }
+  .action button{
+    float: top;
+    padding: 10 px;
+    height: 80 px;
+  }
+  #eqEditor{
+    float: bottom;
   }
   
   </style>
@@ -43,6 +51,15 @@
     <script id="code2" type="module" src="translator.js"></script>
     <script id="code3" type="module" src="engine.js">
       </script>
+    <div >
+    <div class="action">
+      <button id="saveButton">Save</button>
+      <button id="runButton">Run</button>
+      <button id="loadButton">Load</button>
+      <button id="loadButton">Export</button>
+      <button id="loadButton">Help</button>
+    </div>
+    </div>
     <div id="physicalview" class="tabcontent">
         <div id="myDiagram" style="height: 500px; border: 1px solid black; position: relative; float: right;"><canvas tabindex="0"
             style="position: absolute; top: 0px; left: 0px; z-index: 2; user-select: none; touch-action: none; width: 598px; height: 498px;"
@@ -61,8 +78,8 @@
         <button id="influence_button" class="link_normal">Influence</button>
         </div>
     </div>
+    <div id="eqEditor">
         <div style="border: 1px solid black;">
-          <div id="eqEditor"></div>
           <table id="eqTable" class="eqTable">
             <tr>
               <th>Type</th>
@@ -74,8 +91,7 @@
             </tbody>
           </table>
         </div>
-        <div style="border: 1px solid black;">
-          <div id="modelConfig"></div>
+        <div style="border: 1px solid black; display: none;" id="modelConfig">
           <table id="modelConfigTable" class="modelConfigTable">
             <tr>
               <th>Start Time</th>
@@ -98,11 +114,6 @@
                 </select></th>
             </tr>
           </table>
-        </div>
-        <div class="action">
-          <button id="saveButton">Save</button>
-          <button id="loadButton">Load</button>
-          <button id="runButton">Run</button>
         </div>
         <textarea id="mySavedModel" style="width:100%; height:400px">{ "class": "go.GraphLinksModel",
   "linkLabelKeysProperty": "labelKeys",
