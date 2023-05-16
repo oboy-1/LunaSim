@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>LunaSim</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<style>
+  .tabs button {
+    background-color: #35829fff;
+    font-size: 15px;
+    font-weight: bold;
+    color: white;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 10px;
+    width: 25%;
+  }
+
+  .tabs button:hover {
+    font-weight: normal;
+  }
+
+  .tabs button.active {
+    background-color: #176481ff;
+  }
+
+  .action {
+    float: right;
+    padding: 10px;
+  }
+
+  .action button {
+    background-color: white;
+  }
+
+  .action button:hover {
+    background-color: #ddd;
+  }
+
+  .tools {
+    float: left;
+    position: sticky;
+    border: 1px solid #595959;
+    background-color: white;
+    height: 70px;
+    width: 14%;
+  }
+
+  .tools button {
+    display: block;
+    float: left;
+    background-color: white;
+    color: black;
+    border: none;
+    width: 100%;
+    height: 100%;
+    outline: 1px solid #595959;
+    text-align: center;
+    overflow-wrap: anywhere;
+  }
+
+  .tools button:hover {
+    background-color: #ddd;
+  }
+
+  .tools button.active {
+    background-color: #ccc;
+  }
+
+  .tabContent {
+    background-color: #35829fff;
+    padding: 20px;
+  }
+</style>
+
+<body>
+  <script src="https://unpkg.com/gojs@2.3.3/release/go.js"></script>
+  <script src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
+  <div id="allSampleContent" class="p-4 w-full">
+    <script src="https://unpkg.com/gojs@2.3.3/extensions/Figures.js"></script>
+    <script src="https://unpkg.com/gojs@2.3.3/extensions/NodeLabelDraggingTool.js"></script>
+    <script id="code" type="module" src="editor.js"></script>
+    <script id="code2" type="module" src="translator.js"></script>
+    <script id="code3" type="module" src="engine.js">
+    </script>
+    <div class="header" style="height: 50px; width: 100%; position: relative; display: inline;">
+      <div class="tabs">
+        <button id="currentTab">Physical View</button>
+        <button id="otherTab">Charts/Tables</button>
+      </div>
+      <div class="action">
+        <button id="saveButton">Save</button>
+        <button id="loadButton">Load</button>
+        <button id="runButton">Run</button>
+        <button id="exportButton">Export</button>
+        <button id="helpButton">Help</button>
+      </div>
+    </div>
+    <div id="physicalView" class="tabContent" style="width: 100%; min-height: 440px;">
+      <div class="tools">
+        <button id="pointer_button" class="pointer_selected">Pointer</button>
+        <button id="stock_button" class="node_normal">Stock</button>
+        <button id="cloud_button" class="node_normal">Cloud</button>
+        <button id="variable_button" class="node_normal">Variable</button>
+        <button id="flow_button" class="link_normal">Flow</button>
+        <button id="influence_button" class="link_normal">Influence</button>
+      </div>
+      <div id="myDiagram"
+        style="position: relative; float: right; width: 85%; height: 420px; border: 1px solid black;  background-color:white;">
+
+      </div>
+    </div>
+    <div>
+      <div id="eqEditor"></div>
+      <table id="eqTable" class="eqTable">
+        <tr>
+          <th>Type</th>
+          <th>Variable</th>
+          <th>Equation</th>
+          <th>Nonnegative/Uniflow?</th>
+        </tr>
+        <tbody id="eqTableBody">
+        </tbody>
+      </table>
+    </div>
+    <div style="display: none;">
+      <div id="modelConfig"></div>
+      <table id="modelConfigTable" class="modelConfigTable">
+        <tr>
+          <th>Start Time</th>
+          <th><input id="startTime" style="width:100%; height:20px"></input></th>
+        </tr>
+        <tr>
+          <th>End Time</th>
+          <th><input id="endTime" style="width:100%; height:20px"></input></th>
+        </tr>
+        <tr>
+          <th>dt</th>
+          <th><input id="dt" style="width:100%; height:20px"></input></th>
+        </tr>
+        <!--add a choice of rk4 or euler-->
+        <tr>
+          <th>Integration Method</th>
+          <th><select id="integrationMethod" style="width:100%; height:20px">
+              <option value="rk4">Runge-Kutta 4</option>
+              <option value="euler">Euler</option>
+            </select></th>
+        </tr>
+      </table>
+    </div>
+    <p class="text-xs">GoJS version 2.3.3. Copyright 1998-2023 by Northwoods Software.</p>
+    <textarea id="mySavedModel" style="visibility:hidden; width:100%; height:400px">{ "class": "go.GraphLinksModel",
+  "linkLabelKeysProperty": "labelKeys",
+  "nodeDataArray": [
+{"key":"grass", "category":"stock", "label":"Grass", "loc":"30 220", "label_offset":"0.5 0.5 0 30"},
+{"key":"cloud1", "category":"cloud", "loc":"200 220"},
+{"key":"sheep", "category":"stock", "label":"Sheep", "loc":"30 20","label_offset":"0.5 0.5 0 -30"},
+{"key":"cloud2", "category":"cloud", "loc":"200 20"},
+{"key":"cloud3", "category":"cloud", "loc":"-150 220"},
+{"key":"grass_loss", "category":"valve", "label":"grass_loss","label_offset":"0.5 0.5 0 20" },
+{"key":"grazing", "category":"valve", "label":"grazing","label_offset":"0.5 0.5 45 0" },
+{"key":"growth", "category":"valve", "label":"growth","label_offset":"0.5 0.5 0 20" },
+{"key":"sheep_loss", "category":"valve",  "label":"sheep_loss","label_offset":"0.5 0.5 0 20" },
+{"key":"k1", "category":"variable",  "label":"good weather", "loc": "-80 100"},
+{"key":"k2", "category":"variable",  "label":"bad weather", "loc": "100 150"},
+{"key":"k3", "category":"variable",  "label":"wolves", "loc": "150 -40"}
+  ],
+  "linkDataArray": [
+{"from":"grass", "to":"cloud1", "category":"flow", "labelKeys":[ "grass_loss" ]},
+{"from":"sheep", "to":"cloud2", "category":"flow", "labelKeys":[ "sheep_loss" ]},
+{"from":"grass", "to":"sheep", "category":"flow", "labelKeys":[ "grazing" ]},
+{"from":"cloud3", "to":"grass", "category":"flow", "labelKeys":[ "growth" ]},
+{"from":"grass", "to":"grass_loss", "category":"influence"},
+{"from":"sheep", "to":"sheep_loss", "category":"influence"},
+{"from":"grass", "to":"growth", "category":"influence"},
+{"from":"grass", "to":"grazing", "category":"influence"},
+{"from":"sheep", "to":"grazing", "category":"influence"},
+{"from":"k1", "to":"growth", "category":"influence"},
+{"from":"k1", "to":"grazing", "category":"influence"},
+{"from":"k2", "to":"grass_loss", "category":"influence"},
+{"from":"k3", "to":"sheep_loss", "category":"influence"}
+  ]
+}
+      </textarea>
+  </div>
+
+  </div>
+
+  </div>
+
+</body>
+
+</html>

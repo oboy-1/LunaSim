@@ -1,46 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<style>
-  .tools{
-    float: left;
-    border: 1px solid #595959;
-    background-color: white;
-    height: 100%;
-    width: 15%;
-    left-padding: 20px;
-  }
-  .tools button{
-    display: block;
-    background-color: inherit;
-    color: black;
-    padding: 22px 16px;
-    width: 100%;
-    border: none;
-    outline: 1px solid #595959;
-    text-align: center;
-    cursor: pointer;
-    transition: 0.3s;
-  }
-  .tools button:hover {
-    background-color: #ddd;
-  }
-  .tools button:active {
-    background-color: #ccc;
-  }
-  .tabcontent{
-    border: none;
-    background-color: #35829fff;
-  }
-  .action button{
-    float: top;
-    padding: 10 px;
-    height: 80 px;
-  }
-  #eqEditor{
-    float: bottom;
-  }
-  
-  </style>
+
 <body>
   <script src="https://unpkg.com/gojs@2.3.3/release/go.js"></script>
   <script src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
@@ -51,17 +11,8 @@
     <script id="code2" type="module" src="translator.js"></script>
     <script id="code3" type="module" src="engine.js">
       </script>
-    <div >
-    <div class="action">
-      <button id="saveButton">Save</button>
-      <button id="runButton">Run</button>
-      <button id="loadButton">Load</button>
-      <button id="loadButton">Export</button>
-      <button id="loadButton">Help</button>
-    </div>
-    </div>
-    <div id="physicalview" class="tabcontent">
-        <div id="myDiagram" style="height: 500px; border: 1px solid black; position: relative; float: right;"><canvas tabindex="0"
+      <div id="sample">
+        <div id="myDiagram" style="height: 500px; border: 1px solid black; position: relative;"><canvas tabindex="0"
             style="position: absolute; top: 0px; left: 0px; z-index: 2; user-select: none; touch-action: none; width: 598px; height: 498px;"
             width="598" height="498">This text is displayed if your browser does not support the Canvas HTML
             element.</canvas>
@@ -69,17 +20,14 @@
             <div style="position: absolute; width: 1px; height: 1px;"></div>
           </div>
         </div>
-        <div class="tools">
         <button id="pointer_button" class="pointer_selected">Pointer</button>
-        <button id="stock_button" class="node_normal">Stock</button>
+        <button id="stock_button" class="node_normal" style="margin-left:20px;">Stock</button>
         <button id="cloud_button" class="node_normal">Cloud</button>
         <button id="variable_button" class="node_normal">Variable</button>
-        <button id="flow_button" class="link_normal">Flow</button>
+        <button id="flow_button" class="link_normal" style="margin-left:20px;">Flow</button>
         <button id="influence_button" class="link_normal">Influence</button>
-        </div>
-    </div>
-    <div id="eqEditor">
         <div style="border: 1px solid black;">
+          <div id="eqEditor"></div>
           <table id="eqTable" class="eqTable">
             <tr>
               <th>Type</th>
@@ -91,7 +39,8 @@
             </tbody>
           </table>
         </div>
-        <div style="border: 1px solid black; display: none;" id="modelConfig">
+        <div style="border: 1px solid black;">
+          <div id="modelConfig"></div>
           <table id="modelConfigTable" class="modelConfigTable">
             <tr>
               <th>Start Time</th>
@@ -114,6 +63,11 @@
                 </select></th>
             </tr>
           </table>
+        </div>
+        <div>
+          <button id="saveButton">Save</button>
+          <button id="loadButton">Load</button>
+          <button id="runButton">Run</button>
         </div>
         <textarea id="mySavedModel" style="width:100%; height:400px">{ "class": "go.GraphLinksModel",
   "linkLabelKeysProperty": "labelKeys",
