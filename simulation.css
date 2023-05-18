@@ -13,6 +13,7 @@
     font-weight: bold;
     color: white;
     font-size: min(20px, 2.8vw);
+    margin: 0px;
   }
 
   .tabs button:hover {
@@ -64,7 +65,7 @@
   .action {
     position: absolute;
     right: 10px;
-    top: 15px;
+    top: 90px;
   }
 
   .action button {

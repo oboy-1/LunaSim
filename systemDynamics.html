@@ -12,9 +12,104 @@
       }
     }
   </script>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="simulation.css">
 </head>
 
+<!-- Until stylesheet link is fixed -->
+<style>
+  .tabs {
+    display: inline-block;
+    border: none;
+    height: 42px;
+    background-color: #35829fff;
+  }
+
+  .tabs button {
+    background-color: #176481ff;
+    height: 100%;
+    border: none;
+    padding: 10px 14px;
+    font-weight: bold;
+    color: white;
+    font-size: min(20px, 2.8vw);
+    margin: 0px;
+  }
+
+  .tabs button:hover {
+    font-weight: normal;
+  }
+
+  .tabs button.active {
+    background-color: #35829fff;
+  }
+
+  .tabContent {
+    background-color: #35829fff;
+    width: 100%;
+    height: 400px;
+    position: relative;
+    top: 26px;
+    padding-bottom: 20px;
+  }
+
+  .tools {
+    display: block;
+    width: 12%;
+    height: 385px;
+    position: relative;
+    left: 20px;
+    top: 15px;
+    border: none;
+  }
+
+  .tools button {
+    background-color: white;
+    border: 1px solid black;
+    width: 100%;
+    height: 55px;
+    overflow-wrap: anywhere;
+    overflow-y: hidden;
+    font-size: min(16px, 2.2vw);
+  }
+
+  .tools button:hover {
+    background-color: #ddd;
+    transition: background-color 0.6s;
+  }
+
+  .tools button.active {
+    background-color: #ccc;
+  }
+
+  .action {
+    position: absolute;
+    right: 10px;
+    top: 90px;
+  }
+
+  .action button {
+    padding: 5px;
+    background-color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    font-size: min(16px, 2.2vw);
+    transition: background-color 0.6s;
+  }
+
+  .action button:hover {
+    background-color: #ddd;
+  }
+
+  .cells {
+    background-color: white;
+    border: 1px solid black;
+    width: 43vw;
+    height: 385px;
+    position: absolute;
+    top: 15px;
+  }
+</style>
+  
 <body>
   <script src="https://unpkg.com/gojs@2.3.3/release/go.js"></script>
   <script src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
@@ -26,9 +121,12 @@
     <script id="code3" type="module" src="engine.js">
     </script>
     <div id="sample">
-      <div id="header" style="width: 100%; height: 15px;">
+      <div id="header" style="height: 30px; width: 100%; border: none; background-color: inherit; margin: 10px;">
+        <p style="font-size: min(50px, 20vw); font-weight: bold; text-align: center; position: relative; bottom: 40px;"><img src="img/lunaLogo.png" alt="Logo" style="margin: 0px 2vw; height: 10vh;">LunaSim</p>
+      </div>
+      <div id="nav" style="width: 100%; height: 15px;">
         <div class="tabs">
-          <button class="tablinks" id="defaultOpen">modal View</button>
+          <button class="tablinks" id="defaultOpen">Modal View</button>
           <button class="tablinks" id="secondaryOpen">Charts/Tables</button>
         </div>
         <div class="action">
@@ -50,7 +148,7 @@
           <button id="ghost_button" class="ghost_selected tool">Ghost</button>
         </div>
         <div id="myDiagram"
-          style="width: 82%; height: 90%; border: 1px solid black; background-color: white; position: absolute; right: 20px; top: 16px;">
+          style="width: 82%; height: 91.2%; border: 1px solid black; background-color: white; position: absolute; right: 20px; top: 15px;">
           <canvas tabindex="0"
             style="position: absolute; top: 0px; left: 0px; z-index: 2; user-select: none; touch-action: none; width: 598px; height: 498px;"
             width="598" height="498">This text is displayed if your browser does not support the Canvas HTML
@@ -64,7 +162,7 @@
         <div class="cells" id="cell_2" style="right: 20px;"></div>
       </div>
       <div
-        style="border: 1px solid black; width: 100%; height: 200; overflow: scroll; position: relative; top: 40px; font-size: min(18px, 2.8vw);">
+        style="border: 1px solid black; width: 100%; height: 200px; overflow: scroll; position: relative; top: 40px; font-size: min(18px, 2.8vw);">
         <div id="eqEditor"></div>
         <table id="eqTable" class="eqTable">
           <tr>
@@ -139,4 +237,5 @@
       </textarea>
     </div>
 </body>
+
 </html>
