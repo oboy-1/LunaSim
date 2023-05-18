@@ -64,7 +64,7 @@
         <div class="cells" id="cell_2" style="right: 20px;"></div>
       </div>
       <div
-        style="border: 1px solid black; width: 100%; height: 200; overflow: scroll; position: relative; top: 40px; font-size: min(18px, 2.8vw);">
+        style="border: 1px solid black; width: 100%; overflow: scroll; position: relative; top: 40px; font-size: min(18px, 2.8vw);">
         <div id="eqEditor"></div>
         <table id="eqTable" class="eqTable">
           <tr>
@@ -76,8 +76,7 @@
           <tbody id="eqTableBody">
           </tbody>
         </table>
-      </div>
-      <div style="border: 1px solid black; display: none;">
+      <div style="border: 1px solid black;">
         <div id="modelConfig"></div>
         <table id="modelConfigTable" class="modelConfigTable">
           <tr>
@@ -92,7 +91,6 @@
             <th>dt</th>
             <th><input id="dt" style="width:100%; height:20px"></input></th>
           </tr>
-          <!--add a choice of rk4 or euler-->
           <tr>
             <th>Integration Method</th>
             <th><select id="integrationMethod" style="width:100%; height:20px">
