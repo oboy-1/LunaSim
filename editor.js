@@ -484,18 +484,51 @@ function run() {
     sim.reset();
 }
 
+// function to change color of the tool button when selected (does through changing the class)
+function toolSelect(evt) {
+    var i, tabcontent, tablinks;
+    tablinks = document.getElementsByClassName("tool");
+    for (i = 0; i < tablinks.length; i++) {
+      tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }
+    evt.currentTarget.className += " active";
+}
+
+// function to change tab view (does through changing the display)
+function opentab(evt, tabName) {
+    var i, tabcontent, tablinks;
+    tabcontent = document.getElementsByClassName("tabContent");
+    for (i = 0; i < tabcontent.length; i++) {
+      tabcontent[i].style.display = "none";
+    }
+    tablinks = document.getElementsByClassName("tablinks");
+    for (i = 0; i < tablinks.length; i++) {
+      tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }
+    document.getElementById(tabName).style.display = "block";
+    evt.currentTarget.className += " active";
+}
+
+init();
+
 // add button event listeners
 // mode buttons
-document.getElementById("pointer_button").addEventListener("click", function () { setMode("pointer", "pointer"); });
-document.getElementById("stock_button").addEventListener("click", function () { setMode("node", "stock"); });
-document.getElementById("cloud_button").addEventListener("click", function () { setMode("node", "cloud"); });
-document.getElementById("variable_button").addEventListener("click", function () { setMode("node", "variable"); });
-document.getElementById("flow_button").addEventListener("click", function () { setMode("link", "flow"); });
-document.getElementById("influence_button").addEventListener("click", function () { setMode("link", "influence"); });
+document.getElementById("pointer_button").addEventListener("click", function () { setMode("pointer", "pointer"); toolSelect(event); });
+document.getElementById("stock_button").addEventListener("click", function () { setMode("node", "stock"); toolSelect(event); });
+document.getElementById("cloud_button").addEventListener("click", function () { setMode("node", "cloud"); toolSelect(event); });
+document.getElementById("variable_button").addEventListener("click", function () { setMode("node", "variable"); toolSelect(event); });
+document.getElementById("flow_button").addEventListener("click", function () { setMode("link", "flow"); toolSelect(event); });
+document.getElementById("influence_button").addEventListener("click", function () { setMode("link", "influence"); toolSelect(event); });
+// Set initial mode as pointer (for UI shading)
+document.getElementById("pointer_button").click();
+
+// tab buttons
+document.getElementById("defaultOpen").addEventListener("click", function () { opentab(event, "modalView"); });
+document.getElementById("secondaryOpen").addEventListener("click", function () { opentab(event, "chartsTables"); });
+// Open modal viewer
+document.getElementById("defaultOpen").click();
 
 // save, load, and run buttons
 document.getElementById("saveButton").addEventListener("click", loadTableToDiagram);
 document.getElementById("loadButton").addEventListener("click", load);
 document.getElementById("runButton").addEventListener("click", run);
-
-window.addEventListener('DOMContentLoaded', init);
