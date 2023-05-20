@@ -38,7 +38,7 @@ function init() {
             "linkingTool.doActivate": function () {  // an override must be function, not using => ES6 shorthand
                 // change the curve of the LinkingTool.temporaryLink
                 this.temporaryLink.curve = (SD.itemType === "flow") ? go.Link.None : go.Link.Bezier;
-                this.temporaryLink.path.stroke = (SD.itemType === "flow") ? "green" : "orange";
+                this.temporaryLink.path.stroke = (SD.itemType === "flow") ? "blue" : "orange";
                 this.temporaryLink.path.strokeWidth = (SD.itemType === "flow") ? 5 : 1;
                 go.LinkingTool.prototype.doActivate.call(this);
             },
@@ -110,6 +110,33 @@ function init() {
     myDiagram.addModelChangedListener(e => {
         // ignore unimportant Transaction events
         if (!e.isTransactionFinished) return;
+
+        // check for each ghost if there is a corresponding non-ghost, if not, remove the ghost
+        for (var i = 0; i < myDiagram.model.nodeDataArray.length; i++) {
+            if (myDiagram.model.nodeDataArray[i].category === "cloud") { // clouds don't have labels, and don't have ghosts
+                continue;
+            }
+
+            if (myDiagram.model.nodeDataArray[i].label[0] !== '$') { // if the label doesn't have a '$' in front of it, it is not a ghost
+                continue;
+            }
+
+            var node = myDiagram.model.nodeDataArray[i];
+            var nonGhostExists = false;
+            for (var j = 0; j < myDiagram.model.nodeDataArray.length; j++) {
+                if (myDiagram.model.nodeDataArray[j].label === node.label.substring(1)) { // if there is a non-ghost with the same label
+                    nonGhostExists = true;
+                }
+            }
+
+            if (!nonGhostExists) { // remove the ghost
+                // remove the node
+                myDiagram.model.removeNodeData(node);
+
+                loadTableToDiagram(); // delete the links as well
+            }
+        }
+
         updateTable();
     });
 
@@ -186,7 +213,10 @@ function buildTemplates() {
     myDiagram.nodeTemplateMap.add("stock",
         $(go.Node, nodeStyle(),
             $(go.Shape, shapeStyle(),
-                { desiredSize: new go.Size(50, 30) }),
+                new go.Binding("fill", "label", function (label) { return isGhost(label) ? "#ffffff" : "#f0f0f0";}), // change color if ghost ($ in front of label)
+                { desiredSize: new go.Size(50, 30),
+                    fill: "#ffcc99"
+                }),
             $(go.TextBlock, textStyle(),
                 {
                     _isNodeLabel: true,  // declare draggable by NodeLabelDraggingTool
@@ -228,6 +258,7 @@ function buildTemplates() {
     myDiagram.nodeTemplateMap.add("variable",
         $(go.Node, nodeStyle(),
             $(go.Shape, shapeStyle(),
+            new go.Binding("fill", "label", function (label) { return isGhost(label) ? "#ffffff" : "#f0f0f0";}), // change color if ghost ($ in front of label)
                 {
                     figure: "Ellipse",
                     desiredSize: new go.Size(25, 25)
@@ -356,6 +387,14 @@ function updateTable(load = false) {
 
     // 1. add new items to table
     $.each(json.nodeDataArray, function (i, item) { // includes stocks, variables, and clouds
+        if (item.label === undefined) { // if the item is a valve or cloud, skip it
+            return;
+        }
+
+        // check if the item is a ghost, if so, skip it
+        if (isGhost(item.label)) {
+            return;
+        }
 
         // check if item already exists in table, if not add it
         var exists = false;
@@ -365,7 +404,7 @@ function updateTable(load = false) {
             }
         });
 
-        if ((item.category === "stock" || item.category === "variable" || item.category === "valve") && !exists) {
+        if (!exists) {
             var category = item.category == "valve" ? "flow" : item.category; // if the item is a valve, change the category to flow
 
             var $tr = $('<tr>').append(
@@ -433,7 +472,9 @@ function updateTable(load = false) {
     });
 }
 
-function isBiflow(data, node) {
+// This function is used to determine if a flow is a uniflow or a biflow given the link data and the node data,
+// used by GoJS binding for displaying two vs one arrow on a flow
+function isBiflow(data, _) {
     // search through table to get link's checkbox value
     var $tbody = $('#eqTableBody');
     var biflow = false;
@@ -456,6 +497,11 @@ function isBiflow(data, node) {
     });
 
     return biflow;
+}
+
+// check if the node is a ghost by checking if its label has a '$' in front of it, return color string based on that
+function isGhost(label) {
+    return label[0] === '$';
 }
 
 function run() {
