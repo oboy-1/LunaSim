@@ -17,6 +17,10 @@ export function translate(obj) {
 
         if (node.category == "stock") {
             stockKeyToName[node.key] = node.label;
+            
+            if (node.label[0] === "$") {
+                continue;
+            }
 
             res.stocks[node.label.toString()] = {
                 "isNN": node.checkbox.toString(),
@@ -27,6 +31,10 @@ export function translate(obj) {
                 "outflows": {}
             };
         } else if (node.category == "variable") {
+            if (node.label[0] === "$") {
+                continue;
+            }
+
             res.converters[node.label.toString()] = {
                 "values": [],
                 "equation": node.equation
@@ -62,18 +70,28 @@ export function translate(obj) {
             }
 
             // check if the from is a stock
-            if (stockKeyToName[link.from] !== undefined) {
+            var stockName = stockKeyToName[link.from];
+            if (stockName !== undefined) {
+                if (stockName[0] === "$") {
+                    stockName = stockName.substring(1);
+                }
+
                 // add the flow to the outflows of the source
-                res.stocks[stockKeyToName[link.from]].outflows[flowName] = {
+                res.stocks[stockName].outflows[flowName] = {
                     "equation": flowEq,
                     "values": []
                 }
             }
 
             // check if the to is a stock
-            if (stockKeyToName[link.to] !== undefined) {
-                // add the flow to the inflows of the target
-                res.stocks[stockKeyToName[link.to]].inflows[flowName] = {
+            stockName = stockKeyToName[link.to];
+            if (stockName !== undefined) {
+                if (stockName[0] === "$") {
+                    stockName = stockName.substring(1);
+                }
+
+                // add the flow to the inflows of the destination
+                res.stocks[stockName].inflows[flowName] = {
                     "equation": flowEq,
                     "values": []
                 }
