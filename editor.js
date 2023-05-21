@@ -110,7 +110,7 @@ function init() {
     myDiagram.addModelChangedListener(e => {
         // ignore unimportant Transaction events
         if (!e.isTransactionFinished) return;
-
+        
         // check for each ghost if there is a corresponding non-ghost, if not, remove the ghost
         for (var i = 0; i < myDiagram.model.nodeDataArray.length; i++) {
             if (myDiagram.model.nodeDataArray[i].category === "cloud") { // clouds don't have labels, and don't have ghosts
@@ -130,14 +130,22 @@ function init() {
             }
 
             if (!nonGhostExists) { // remove the ghost
+                if (node.category === "valve") { // if the ghost is a valve, remove the corresponding flow link
+                    for (var j = 0; j < myDiagram.model.linkDataArray.length; j++) {
+                        if (myDiagram.model.linkDataArray[j].category === "flow" && myDiagram.model.linkDataArray[j].labelKeys[0] === node.key) {
+                            myDiagram.model.removeLinkData(myDiagram.model.linkDataArray[j]);
+                        }
+                    }
+                }
+
                 // remove the node
                 myDiagram.model.removeNodeData(node);
 
                 loadTableToDiagram(); // delete the links as well
             }
-        }
 
-        updateTable();
+            updateTable();
+        }
     });
 
     // generate unique label for valve on newly-created flow link
@@ -220,7 +228,9 @@ function buildTemplates() {
             $(go.TextBlock, textStyle(),
                 {
                     _isNodeLabel: true,  // declare draggable by NodeLabelDraggingTool
-                    alignment: new go.Spot(0.5, 0.5, 0, 30)    // initial value
+                    alignment: new go.Spot(0.5, 0.5, 0, 30),    // initial value
+                    isMultiline: false,
+                    textValidation: labelValidator, // make sure the label is unique
                 },
                 new go.Binding("alignment", "label_offset", go.Spot.parse).makeTwoWay(go.Spot.stringify))
         ));
@@ -242,6 +252,8 @@ function buildTemplates() {
                 alignmentFocus: go.Spot.None
             },
             $(go.Shape, shapeStyle(),
+                new go.Binding("fill", "label", function (label) {return isGhost(label) ? "#ffffff" : "#3489eb";}), // change color if ghost ($ in front of label)
+                new go.Binding("figure", "label", function (label) {return isGhost(label) ? "Circle" : "Diamond";}), // change shape if ghost ($ in front of label)
                 {
                     figure: "Diamond",
                     desiredSize: new go.Size(15, 15),
@@ -250,7 +262,9 @@ function buildTemplates() {
             $(go.TextBlock, textStyle(),
                 {
                     _isNodeLabel: true,  // declare draggable by NodeLabelDraggingTool
-                    alignment: new go.Spot(0.5, 0.5, 0, 20)    // initial value
+                    alignment: new go.Spot(0.5, 0.5, 0, 20),    // initial value
+                    isMultiline: false,
+                    textValidation: labelValidator, // make sure the label is unique
                 },
                 new go.Binding("alignment", "label_offset", go.Spot.parse).makeTwoWay(go.Spot.stringify))
         ));
@@ -258,7 +272,7 @@ function buildTemplates() {
     myDiagram.nodeTemplateMap.add("variable",
         $(go.Node, nodeStyle(),
             $(go.Shape, shapeStyle(),
-            new go.Binding("fill", "label", function (label) { return isGhost(label) ? "#ffffff" : "#f0f0f0";}), // change color if ghost ($ in front of label)
+            new go.Binding("fill", "label", function (label) {return isGhost(label) ? "#ffffff" : "#f0f0f0";}), // change color if ghost ($ in front of label)
                 {
                     figure: "Ellipse",
                     desiredSize: new go.Size(25, 25)
@@ -266,7 +280,9 @@ function buildTemplates() {
             $(go.TextBlock, textStyle(),
                 {
                     _isNodeLabel: true,  // declare draggable by NodeLabelDraggingTool
-                    alignment: new go.Spot(0.5, 0.5, 0, 30)    // initial value
+                    alignment: new go.Spot(0.5, 0.5, 0, 30),    // initial value
+                    isMultiline: false,
+                    textValidation: labelValidator, // make sure the label is unique
                 },
                 new go.Binding("alignment", "label_offset", go.Spot.parse).makeTwoWay(go.Spot.stringify))
         ));
@@ -277,13 +293,16 @@ function buildTemplates() {
             { toShortLength: 10 },
             new go.Binding("curviness", "curviness").makeTwoWay(),
             $(go.Shape,
-                { stroke: "#3489eb", strokeWidth: 5 }),
+                {
+                    stroke: "#3489eb",
+                    strokeWidth: 5 
+                }),
             $(go.Shape,
                 // add a binding to adjust if this shape is visible based on isBiflow function
                 new go.Binding("visible", "", isBiflow),
                 {
-                    fill: "#5a8d9e",
-                    stroke: "#5a8d9e",
+                    fill: "#ffffff",
+                    stroke: "#3489eb",
                     fromArrow: "Backward",
                     scale: 2.0,
                 }),
@@ -337,7 +356,7 @@ function load() {
     $('#eqTableBody').empty();
     myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value); // load in the model config to GoJS diagram
     updateTable(true); // load in the information to the equation editing table
-    loadTableToDiagram(); // bring the table information into the model json (for updating uniflow arrows)
+    loadTableToDiagram(); // bring the table information into the model json (for updating uniflow arrows and more)
 }
 
 // populates model json with tabel information (not just for saving model in the end, instead gets called every time the table is updated)
@@ -487,6 +506,10 @@ function isBiflow(data, _) {
         }
     }
 
+    if (flowName[0] === '$') { // if the flow is a ghost
+        flowName = flowName.substring(1); // remove the '$' from the name
+    }
+
     $tbody.find('tr').each(function () {
         var name = $(this).find('input[name="name"]').val(); // get the name of the object
         var checkbox = $(this).find('input[name="checkbox"]').is(':checked'); // get the checkbox value of the object
@@ -502,6 +525,24 @@ function isBiflow(data, _) {
 // check if the node is a ghost by checking if its label has a '$' in front of it, return color string based on that
 function isGhost(label) {
     return label[0] === '$';
+}
+
+function labelValidator(textblock, oldstr, newstr) {
+    if (newstr === oldstr) return true; // nothing changed
+
+    if (newstr === "") return false; // don't allow empty label
+
+    if (newstr[0] === "$") return true; // there can be repeats for ghost nodes
+
+    // check all the elements in the model to make sure the new label is unique
+    var unique = true;
+    for (var i = 0; i < myDiagram.model.nodeDataArray.length; i++) {
+        if (myDiagram.model.nodeDataArray[i].label === newstr) {
+            unique = false;
+        }
+    }
+
+    return unique;
 }
 
 function run() {

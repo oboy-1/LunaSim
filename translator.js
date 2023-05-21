@@ -17,7 +17,7 @@ export function translate(obj) {
 
         if (node.category == "stock") {
             stockKeyToName[node.key] = node.label;
-            
+
             if (node.label[0] === "$") {
                 continue;
             }
@@ -55,12 +55,24 @@ export function translate(obj) {
             var flowEq;
             var flowName;
             var isUniflow;
-            for (var j = 0; j < obj.nodeDataArray.length; j++) { // find
+            for (var j = 0; j < obj.nodeDataArray.length; j++) { // find the corresponding valve
                 if (obj.nodeDataArray[j].key == link.labelKeys[0]) {
                     flowEq = obj.nodeDataArray[j].equation;
                     flowName = obj.nodeDataArray[j].label.toString();
                     isUniflow = obj.nodeDataArray[j].checkbox;
                     break;
+                }
+            }
+
+            if (flowName[0] === "$") {
+                // get the corresponding info on flowEq and isUniflow from the non-ghost flow
+                for (var j = 0; j < obj.nodeDataArray.length; j++) {
+                    if (obj.nodeDataArray[j].label == flowName.substring(1)) {
+                        flowEq = obj.nodeDataArray[j].equation;
+                        flowName = obj.nodeDataArray[j].label.toString();
+                        isUniflow = obj.nodeDataArray[j].checkbox;
+                        break;
+                    }
                 }
             }
 
