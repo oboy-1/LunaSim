@@ -143,9 +143,9 @@ function init() {
 
                 loadTableToDiagram(); // delete the links as well
             }
-
-            updateTable();
         }
+
+        updateTable();
     });
 
     // generate unique label for valve on newly-created flow link
@@ -571,6 +571,8 @@ function run() {
     sim.reset();
 }
 
+init();
+
 // add button event listeners
 // mode buttons
 document.getElementById("pointer_button").addEventListener("click", function () { setMode("pointer", "pointer"); });
@@ -584,5 +586,3 @@ document.getElementById("influence_button").addEventListener("click", function (
 document.getElementById("saveButton").addEventListener("click", loadTableToDiagram);
 document.getElementById("loadButton").addEventListener("click", load);
 document.getElementById("runButton").addEventListener("click", run);
-
-window.addEventListener('DOMContentLoaded', init);
