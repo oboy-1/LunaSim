@@ -6,9 +6,9 @@
   <script>
     // set the viewport width to no less than minimum
     window.onload = function () {
-      if (screen.width < 450) {
+      if (screen.width < 710) {
         var mvp = document.getElementById('vp');
-        mvp.setAttribute('content', 'minimum-scale=1,width=450');
+        mvp.setAttribute('content', 'minimum-scale=1,width=710');
       }
     }
   </script>
@@ -46,7 +46,7 @@
   .tabContent {
     background-color: #35829fff;
     width: 100%;
-    height: 400px;
+    height: 500px;
     position: relative;
     top: 26px;
     padding-bottom: 20px;
@@ -54,7 +54,7 @@
 
   .tools {
     display: block;
-    width: 12%;
+    width: max(82px, min(116px, 12%));
     height: 385px;
     position: relative;
     left: 20px;
@@ -66,10 +66,10 @@
     background-color: white;
     border: 1px solid black;
     width: 100%;
-    height: 55px;
+    height: 20.6%;
     overflow-wrap: anywhere;
     overflow-y: hidden;
-    font-size: min(16px, 2.2vw);
+    font-size: min(18px, 2.2vw);
   }
 
   .tools button:hover {
@@ -98,15 +98,6 @@
 
   .action button:hover {
     background-color: #ddd;
-  }
-
-  .cells {
-    background-color: white;
-    border: 1px solid black;
-    width: 43vw;
-    height: 385px;
-    position: absolute;
-    top: 15px;
   }
 </style>
   
@@ -145,7 +136,6 @@
           <button id="variable_button" class="node_normal tool">Variable</button>
           <button id="flow_button" class="link_normal tool">Flow</button>
           <button id="influence_button" class="link_normal tool">Influence</button>
-          <button id="ghost_button" class="ghost_selected tool">Ghost</button>
         </div>
         <div id="myDiagram"
           style="width: 82%; height: 91.2%; border: 1px solid black; background-color: white; position: absolute; right: 20px; top: 15px;">
@@ -158,8 +148,6 @@
       <script>
       </script>
       <div class="tabContent" id="chartsTables">
-        <div class="cells" id="cell_1" style="left: 20px;"></div>
-        <div class="cells" id="cell_2" style="right: 20px;"></div>
       </div>
       <div
         style="border: 1px solid black; width: 100%; height: 200px; overflow: scroll; position: relative; top: 40px; font-size: min(18px, 2.8vw);">
