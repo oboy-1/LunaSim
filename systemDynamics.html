@@ -149,23 +149,7 @@
       </script>
       <div class="tabContent" id="chartsTables">
       </div>
-      <div
-        style="border: 1px solid black; width: 100%; height: 200px; overflow: scroll; position: relative; top: 40px; font-size: min(18px, 2.8vw);">
-        <div id="eqEditor"></div>
-        <table id="eqTable" class="eqTable">
-          <tr>
-            <th>Type</th>
-            <th>Variable</th>
-            <th>Equation</th>
-            <th>Nonnegative/Uniflow?</th>
-          </tr>
-          <tbody id="eqTableBody">
-          </tbody>
-        </table>
-      </div>
-      <div style="border: 1px solid black; display: none;">
-        <div id="modelConfig"></div>
-        <table id="modelConfigTable" class="modelConfigTable">
+      <table id="modelConfigTable" class="modelConfigTable" style="position: relative; top: 40px; font-size: min(18px, 2.8vw);">
           <tr>
             <th>Start Time</th>
             <th><input id="startTime" style="width:100%; height:20px"></input></th>
@@ -186,8 +170,21 @@
               </select></th>
           </tr>
         </table>
+      <div
+        style="width: 100%; height: 200px; overflow: scroll; position: relative; top: 60px; font-size: min(18px, 2.8vw);">
+        <div id="eqEditor"></div>
+        <table id="eqTable" class="eqTable">
+          <tr>
+            <th>Type</th>
+            <th>Variable</th>
+            <th>Equation</th>
+            <th>Nonnegative/Uniflow?</th>
+          </tr>
+          <tbody id="eqTableBody">
+          </tbody>
+        </table>
       </div>
-      <p class="text-xs" style="position:relative; top: 30px;">GoJS version 2.3.3. Copyright 1998-2023 by Northwoods
+      <p class="text-xs" style="position:relative; top: 50px;">GoJS version 2.3.3. Copyright 1998-2023 by Northwoods
         Software.</p>
       <textarea id="mySavedModel" style="width:100%; height:400px; visibility: hidden;">{ "class": "go.GraphLinksModel",
   "linkLabelKeysProperty": "labelKeys",
