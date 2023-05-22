@@ -100,6 +100,7 @@
   .action button:hover {
     background-color: #ddd;
   }
+  
 </style>
 
 <body>
@@ -150,14 +151,21 @@
         </div>
       </div>
       <div class="tabContent" id="chartsTables">
-        <div id="tabManager" style="border: 1px solid black; background-color: white; width: max(82px, min(116px, 12%)); height: 93%; position: relative; left: 20px; top: 15px; padding: 5px;">
-          <button id="addTab" style="width:100%; height: 10%; border: none; background-color: limegreen; border-radius: 5px;"><i class="material-icons">add</i></button>
-          <div id="tabsList" style="height: 90% width: 100%; top-padding: 15px; border: none; background-color: inherit;">
+        <div id="tabManager"
+          style="border: 1px solid black; background-color: white; width: max(82px, min(116px, 12%)); height: 93%; position: relative; left: 20px; top: 15px; padding: 5px;">
+          <button id="addTab"
+            style="width:100%; height: 10%; border: none; background-color: limegreen; border-radius: 5px;"><i
+              class="material-icons">add</i></button>
+          <div id="tabsList"
+            style="height: 90% width: 100%; top-padding: 15px; border: none; background-color: inherit;">
             <!-- Tabs added dynamically -->
           </div>
         </div>
-        <div id="display" style="width: 82%; height: 91.2%; border: 1px solid black; background-color: white; position: absolute; right: 20px; top: 15px;">
-        <button id="exportResults" style="padding: 5px; background-color: white; border: 1px solid black; border-radius: 5px; font-size: min(16px, 2.2vw); transition: background-color 0.6s; float: right; margin: 5px;">Export</button>
+        <div id="display"
+          style="width: 82%; height: 91.2%; border: 1px solid black; background-color: white; position: absolute; right: 20px; top: 15px;">
+          <div class="action" style="position: absolute; top: 5px; right: 5px;">
+            <button id="exportResults">Export</button>
+          </div>
         </div>
       </div>
       <div id="popForm"
@@ -178,9 +186,11 @@
           </div>
           <div>
             <p>Y-Axis:</p>
-            <!-- Multiple selects initialized dynamically -->
+            <!-- Multiple checkboxes initialized dynamically -->
           </div>
-          <button type="submit" id="submitModel" style="border: none; background-color: limegreen; position: absolute; right: 5%; bottom: 5%;padding: 5px; border-radius: 5px;"><i class="material-icons">chevron_right</i></button>
+          <button type="submit" id="submitModel"
+            style="border: none; background-color: limegreen; position: absolute; right: 5%; bottom: 5%;padding: 5px; border-radius: 5px;"><i
+              class="material-icons">chevron_right</i></button>
         </form>
       </div>
       <table id="modelConfigTable" class="modelConfigTable"
