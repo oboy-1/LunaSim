@@ -13,18 +13,19 @@
     }
   </script>
   <link rel="stylesheet" href="simulation.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 </head>
 
 <!-- Until stylesheet link is fixed -->
 <style>
-  .tabs {
+  .webTabs {
     display: inline-block;
     border: none;
     height: 42px;
     background-color: #35829fff;
   }
 
-  .tabs button {
+  .webTabs button {
     background-color: #176481ff;
     height: 100%;
     border: none;
@@ -35,11 +36,11 @@
     margin: 0px;
   }
 
-  .tabs button:hover {
+  .webTabs button:hover {
     font-weight: normal;
   }
 
-  .tabs button.active {
+  .webTabs button.active {
     background-color: #35829fff;
   }
 
@@ -100,7 +101,7 @@
     background-color: #ddd;
   }
 </style>
-  
+
 <body>
   <script src="https://unpkg.com/gojs@2.3.3/release/go.js"></script>
   <script src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
@@ -113,10 +114,13 @@
     </script>
     <div id="sample">
       <div id="header" style="height: 30px; width: 100%; border: none; background-color: inherit; margin: 10px;">
-        <p style="font-size: min(36px, 15vw); font-weight: bold; text-align: center; position: relative; bottom: 20px; font-family: sans-serif;"><img src="img/lunaLogo.png" alt="Logo" style="margin: 0px 2vw; height: 6vh;">LunaSim</p>
+        <p
+          style="font-size: min(36px, 15vw); font-weight: bold; text-align: center; position: relative; bottom: 20px; font-family: sans-serif;">
+          <img src="img/lunaLogo.png" alt="Logo" style="margin: 0px 2vw; height: 6vh;">LunaSim
+        </p>
       </div>
       <div id="nav" style="width: 100%; height: 15px;">
-        <div class="tabs">
+        <div class="webTabs">
           <button class="tablinks" id="defaultOpen">Modal View</button>
           <button class="tablinks" id="secondaryOpen">Charts/Tables</button>
         </div>
@@ -145,31 +149,62 @@
             element.</canvas>
         </div>
       </div>
-      <script>
-      </script>
       <div class="tabContent" id="chartsTables">
+        <div id="tabManager" style="border: 1px solid black; background-color: white; width: max(82px, min(116px, 12%)); height: 93%; position: relative; left: 20px; top: 15px; padding: 5px;">
+          <button id="addTab" style="width:100%; height: 10%; border: none; background-color: limegreen; border-radius: 5px;"><i class="material-icons">add</i></button>
+          <div id="tabsList" style="height: 90% width: 100%; top-padding: 15px; border: none; background-color: inherit;">
+            <!-- Tabs added dynamically -->
+          </div>
+        </div>
+        <div id="display" style="width: 82%; height: 91.2%; border: 1px solid black; background-color: white; position: absolute; right: 20px; top: 15px;">
+        <button id="exportResults" style="padding: 5px; background-color: white; border: 1px solid black; border-radius: 5px; font-size: min(16px, 2.2vw); transition: background-color 0.6s; float: right; margin: 5px;">Export</button>
+        </div>
       </div>
-      <table id="modelConfigTable" class="modelConfigTable" style="position: relative; top: 40px; font-size: min(18px, 2.8vw);">
-          <tr>
-            <th>Start Time</th>
-            <th><input id="startTime" style="width:100%; height:20px" value="0"></th>
-          </tr>
-          <tr>
-            <th>End Time</th>
-            <th><input id="endTime" style="width:100%; height:20px" value="10"></th>
-          </tr>
-          <tr>
-            <th>dt</th>
-            <th><input id="dt" style="width:100%; height:20px" value="1"></th>
-          </tr>
-          <tr>
-            <th>Integration Method</th>
-            <th><select id="integrationMethod" style="width:100%; height:20px">
-                <option value="rk4">Runge-Kutta 4</option>
-                <option value="euler">Euler</option>
-              </select></th>
-          </tr>
-        </table>
+      <div id="popForm"
+        style="border: 1px solid black; position: absolute; top: 180px; left: 30%; width: 40%; height: 400px; z-index: 10; background-color: white; overflow: auto; display: none;">
+        <form id="tabConfig" style="padding: 0 5vw; font-size: max(24px, 2vw);">
+          <div>
+            <p>Table or chart:</p>
+            <input type="radio" id="table" name="model_type" value="table" required>
+            <label for="table">Table</label><br>
+            <input type="radio" id="chart" name="model_type" value="chart" required>
+            <label for="chart">Chart</label>
+          </div>
+          <div>
+            <p>X-Axis:</p>
+            <select name="xAxis" id="xAxis" required>
+              <!-- Options initialized dynamically -->
+            </select>
+          </div>
+          <div>
+            <p>Y-Axis:</p>
+            <!-- Multiple selects initialized dynamically -->
+          </div>
+          <button type="submit" id="submitModel" style="border: none; background-color: limegreen; position: absolute; right: 5%; bottom: 5%;padding: 5px; border-radius: 5px;"><i class="material-icons">chevron_right</i></button>
+        </form>
+      </div>
+      <table id="modelConfigTable" class="modelConfigTable"
+        style="position: relative; top: 40px; font-size: min(18px, 2.8vw);">
+        <tr>
+          <th>Start Time</th>
+          <th><input id="startTime" style="width:100%; height:20px" value="0"></th>
+        </tr>
+        <tr>
+          <th>End Time</th>
+          <th><input id="endTime" style="width:100%; height:20px" value="10"></th>
+        </tr>
+        <tr>
+          <th>dt</th>
+          <th><input id="dt" style="width:100%; height:20px" value="1"></th>
+        </tr>
+        <tr>
+          <th>Integration Method</th>
+          <th><select id="integrationMethod" style="width:100%; height:20px">
+              <option value="rk4">Runge-Kutta 4</option>
+              <option value="euler">Euler</option>
+            </select></th>
+        </tr>
+      </table>
       <div
         style="width: 100%; height: 200px; overflow: scroll; position: relative; top: 60px; font-size: min(18px, 2.8vw);">
         <div id="eqEditor"></div>
@@ -221,4 +256,5 @@
       </textarea>
     </div>
 </body>
+
 </html>
