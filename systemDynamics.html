@@ -6,9 +6,9 @@
   <script>
     // set the viewport width to no less than minimum
     window.onload = function () {
-      if (screen.width < 710) {
+      if (screen.width < 600) {
         var mvp = document.getElementById('vp');
-        mvp.setAttribute('content', 'minimum-scale=1,width=710');
+        mvp.setAttribute('content', 'minimum-scale=1,width=600');
       }
     }
   </script>
@@ -18,6 +18,9 @@
 
 <!-- Until stylesheet link is fixed -->
 <style>
+  body{
+    font-family: sans-serif;
+  }
   .webTabs {
     display: inline-block;
     border: none;
@@ -61,6 +64,7 @@
     left: 20px;
     top: 15px;
     border: none;
+    z-index: 3;
   }
 
   .tools button {
@@ -70,7 +74,7 @@
     height: 20.6%;
     overflow-wrap: anywhere;
     overflow-y: hidden;
-    font-size: min(18px, 2.2vw);
+    font-size: min(18px, 2.4vw);
   }
 
   .tools button:hover {
