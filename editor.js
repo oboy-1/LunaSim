@@ -124,7 +124,7 @@ function init() {
             var node = myDiagram.model.nodeDataArray[i];
             var nonGhostExists = false;
             for (var j = 0; j < myDiagram.model.nodeDataArray.length; j++) {
-                if (myDiagram.model.nodeDataArray[j].label === node.label.substring(1)) { // if there is a non-ghost with the same label
+                if ((myDiagram.model.nodeDataArray[j].label === node.label.substring(1)) && (myDiagram.model.nodeDataArray[j].category === node.category)) { // if there is a non-ghost with the same label and the same category
                     nonGhostExists = true;
                 }
             }
