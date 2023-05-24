@@ -52,7 +52,7 @@
   .tabContent {
     background-color: #35829fff;
     width: 100%;
-    height: 500px;
+    height: 660px;
     position: relative;
     top: 26px;
     padding-bottom: 20px;
@@ -60,8 +60,8 @@
 
   .tools {
     display: block;
-    width: max(82px, min(116px, 12%));
-    height: 385px;
+    width: max(82px, min(100px, 12%));
+    height: 660px;
     position: relative;
     left: 20px;
     top: 15px;
@@ -73,7 +73,7 @@
     background-color: white;
     border: 1px solid black;
     width: 100%;
-    height: 20.6%;
+    height: 16.37%;
     overflow-wrap: anywhere;
     overflow-y: hidden;
     font-size: min(18px, 2.4vw);
@@ -150,7 +150,7 @@
           <button id="influence_button" class="link_normal tool">Influence</button>
         </div>
         <div id="myDiagram"
-          style="width: 82%; height: 91.2%; border: 1px solid black; background-color: white; position: absolute; right: 20px; top: 15px;">
+          style="width: 90%; max(82px, min(100px, 12%)); height: 95%; border: 1px solid black; background-color: white; position: absolute; right: 20px; top: 15px;">
           <canvas tabindex="0"
             style="position: absolute; top: 0px; left: 0px; z-index: 2; user-select: none; touch-action: none; width: 598px; height: 498px;"
             width="598" height="498">This text is displayed if your browser does not support the Canvas HTML
@@ -159,7 +159,7 @@
       </div>
       <div class="tabContent" id="chartsTables">
         <div id="tabManager"
-          style="border: 1px solid black; background-color: white; width: min(116px, 8.6%); height: 93%; position: relative; left: 20px; top: 15px; padding: 5px; z-index: 3;">
+          style="border: 1px solid black; background-color: white; width: min(116px, 8.6%); height: 96.4%; position: relative; left: 20px; top: 15px; padding: 5px; margin-right: 5px; z-index: 3;">
           <button id="addTab"
             style="width:100%; height: 10%; border: none; background-color: limegreen; border-radius: 5px;"><i
               class="material-icons">add</i></button>
@@ -169,7 +169,7 @@
           </div>
         </div>
         <div id="display"
-          style="width: 82%; height: 91.2%; border: 1px solid black; background-color: white; position: absolute; right: 20px; top: 15px;">
+          style="width: 85%; height: 95%; border: 1px solid black; background-color: white; position: absolute; right: 20px; top: 15px; display: flex;">
           <div class="action" style="position: absolute; top: 5px; right: 5px;">
             <button id="exportResults">Export</button>
           </div>
@@ -200,8 +200,22 @@
               class="material-icons">chevron_right</i></button>
         </form>
       </div>
+      <div
+        style="width: 100%; height: 200px; overflow: scroll; position: relative; top: 40px; font-size: min(18px, 2.8vw);">
+        <div id="eqEditor"></div>
+        <table id="eqTable" class="eqTable">
+          <tr>
+            <th>Type</th>
+            <th>Variable</th>
+            <th>Equation</th>
+            <th>Nonnegative/Uniflow?</th>
+          </tr>
+          <tbody id="eqTableBody">
+          </tbody>
+        </table>
+      </div>
       <table id="modelConfigTable" class="modelConfigTable"
-        style="position: relative; top: 40px; font-size: min(18px, 2.8vw);">
+        style="position: relative; top: 60px; font-size: min(18px, 2.8vw);">
         <tr>
           <th>Start Time</th>
           <th><input id="startTime" style="width:100%; height:20px" value="0"></th>
@@ -222,6 +236,7 @@
             </select></th>
         </tr>
       </table>
+<<<<<<< HEAD
       <div
         style="width: 100%; height: 200px; overflow: scroll; position: relative; top: 60px; font-size: min(18px, 2.8vw);">
         <div id="eqEditor"></div>
@@ -237,6 +252,11 @@
         </table>
       </div>
       <textarea id="mySavedModel" style="width:100%; height:400px; visibility: none;">{ "class": "go.GraphLinksModel",
+=======
+      <p class="text-xs" style="position:relative; top: 60px;">GoJS version 2.3.3. Copyright 1998-2023 by Northwoods
+        Software.</p>
+      <textarea id="mySavedModel" style="width:100%; height:400px; visibility: hidden;">{ "class": "go.GraphLinksModel",
+>>>>>>> Initial changes
   "linkLabelKeysProperty": "labelKeys",
   "nodeDataArray": [
 {"key":"grass", "category":"stock", "label":"Grass", "loc":"30 220", "label_offset":"0.5 0.5 0 30"},
