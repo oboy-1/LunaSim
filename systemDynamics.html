@@ -1,6 +1,113 @@
 <!DOCTYPE html>
 <html lang="en">
 
+<head>
+  <title>LunaSim</title>
+  <meta id="vp" name="viewport" content="width=device-width">
+  <script>
+    // set the viewport width to no less than minimum
+    window.onload = function () {
+      if (screen.width < 600) {
+        var mvp = document.getElementById('vp');
+        mvp.setAttribute('content', 'minimum-scale=1,width=600');
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="simulation.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+</head>
+
+<!-- Until stylesheet link is fixed -->
+<style>
+  body{
+    font-family: sans-serif;
+  }
+  .webTabs {
+    display: inline-block;
+    border: none;
+    height: 42px;
+    background-color: #35829fff;
+  }
+
+  .webTabs button {
+    background-color: #176481ff;
+    height: 100%;
+    border: none;
+    padding: 10px 14px;
+    font-weight: bold;
+    color: white;
+    font-size: min(20px, 2.8vw);
+    margin: 0px;
+  }
+
+  .webTabs button:hover {
+    font-weight: normal;
+  }
+
+  .webTabs button.active {
+    background-color: #35829fff;
+  }
+
+  .tabContent {
+    background-color: #35829fff;
+    width: 100%;
+    height: 500px;
+    position: relative;
+    top: 26px;
+    padding-bottom: 20px;
+  }
+
+  .tools {
+    display: block;
+    width: max(82px, min(116px, 12%));
+    height: 385px;
+    position: relative;
+    left: 20px;
+    top: 15px;
+    border: none;
+    z-index: 3;
+  }
+
+  .tools button {
+    background-color: white;
+    border: 1px solid black;
+    width: 100%;
+    height: 20.6%;
+    overflow-wrap: anywhere;
+    overflow-y: hidden;
+    font-size: min(18px, 2.4vw);
+  }
+
+  .tools button:hover {
+    background-color: #ddd;
+    transition: background-color 0.6s;
+  }
+
+  .tools button.active {
+    background-color: #ccc;
+  }
+
+  .action {
+    position: absolute;
+    right: 10px;
+    top: 80px;
+  }
+
+  .action button {
+    padding: 5px;
+    background-color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    font-size: min(16px, 2.2vw);
+    transition: background-color 0.6s;
+  }
+
+  .action button:hover {
+    background-color: #ddd;
+  }
+  
+</style>
+
 <body>
   <script src="https://unpkg.com/gojs@2.3.3/release/go.js"></script>
   <script src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
@@ -10,66 +117,126 @@
     <script id="code" type="module" src="editor.js"></script>
     <script id="code2" type="module" src="translator.js"></script>
     <script id="code3" type="module" src="engine.js">
-      </script>
-      <div id="sample">
-        <div id="myDiagram" style="height: 500px; border: 1px solid black; position: relative;"><canvas tabindex="0"
+    </script>
+    <div id="sample">
+      <div id="header" style="height: 30px; width: 100%; border: none; background-color: inherit; margin: 10px;">
+        <p
+          style="font-size: min(36px, 15vw); font-weight: bold; text-align: center; position: relative; bottom: 20px; font-family: sans-serif;">
+          <img src="img/lunaLogo.png" alt="Logo" style="margin: 0px 2vw; height: 6vh;">LunaSim
+        </p>
+      </div>
+      <div id="nav" style="width: 100%; height: 15px;">
+        <div class="webTabs">
+          <button class="tablinks" id="defaultOpen">Modal View</button>
+          <button class="tablinks" id="secondaryOpen">Charts/Tables</button>
+        </div>
+        <div class="action">
+          <button id="saveButton">Save</button>
+          <button id="runButton">Run</button>
+          <button id="loadButton">Load</button>
+          <button id="exportButton">Export</button>
+          <button id="helpButton">Help</button>
+        </div>
+      </div>
+      <div class="tabContent" id="modalView">
+        <div class="tools">
+          <button id="pointer_button" class="pointer_selected tool">Pointer</button>
+          <button id="stock_button" class="node_normal tool">Stock</button>
+          <button id="cloud_button" class="node_normal tool">Cloud</button>
+          <button id="variable_button" class="node_normal tool">Variable</button>
+          <button id="flow_button" class="link_normal tool">Flow</button>
+          <button id="influence_button" class="link_normal tool">Influence</button>
+        </div>
+        <div id="myDiagram"
+          style="width: 82%; height: 91.2%; border: 1px solid black; background-color: white; position: absolute; right: 20px; top: 15px;">
+          <canvas tabindex="0"
             style="position: absolute; top: 0px; left: 0px; z-index: 2; user-select: none; touch-action: none; width: 598px; height: 498px;"
             width="598" height="498">This text is displayed if your browser does not support the Canvas HTML
             element.</canvas>
-          <div style="position: absolute; overflow: auto; width: 598px; height: 498px; z-index: 1;">
-            <div style="position: absolute; width: 1px; height: 1px;"></div>
+        </div>
+      </div>
+      <div class="tabContent" id="chartsTables">
+        <div id="tabManager"
+          style="border: 1px solid black; background-color: white; width: min(116px, 8.6%); height: 93%; position: relative; left: 20px; top: 15px; padding: 5px; z-index: 3;">
+          <button id="addTab"
+            style="width:100%; height: 10%; border: none; background-color: limegreen; border-radius: 5px;"><i
+              class="material-icons">add</i></button>
+          <div id="tabsList"
+            style="height: 90% width: 100%; top-padding: 15px; border: none; background-color: inherit;">
+            <!-- Tabs added dynamically -->
           </div>
         </div>
-        <button id="pointer_button" class="pointer_selected">Pointer</button>
-        <button id="stock_button" class="node_normal" style="margin-left:20px;">Stock</button>
-        <button id="cloud_button" class="node_normal">Cloud</button>
-        <button id="variable_button" class="node_normal">Variable</button>
-        <button id="flow_button" class="link_normal" style="margin-left:20px;">Flow</button>
-        <button id="influence_button" class="link_normal">Influence</button>
-        <div style="border: 1px solid black;">
-          <div id="eqEditor"></div>
-          <table id="eqTable" class="eqTable">
-            <tr>
-              <th>Type</th>
-              <th>Variable</th>
-              <th>Equation</th>
-              <th>Nonnegative/Uniflow?</th>
-            </tr>
-            <tbody id="eqTableBody">
-            </tbody>
-          </table>
+        <div id="display"
+          style="width: 82%; height: 91.2%; border: 1px solid black; background-color: white; position: absolute; right: 20px; top: 15px;">
+          <div class="action" style="position: absolute; top: 5px; right: 5px;">
+            <button id="exportResults">Export</button>
+          </div>
         </div>
-        <div style="border: 1px solid black;">
-          <div id="modelConfig"></div>
-          <table id="modelConfigTable" class="modelConfigTable">
-            <tr>
-              <th>Start Time</th>
-              <th><input id="startTime" style="width:100%; height:20px"></input></th>
-            </tr>
-            <tr>
-              <th>End Time</th>
-              <th><input id="endTime" style="width:100%; height:20px"></input></th>
-            </tr>
-            <tr>
-              <th>dt</th> 
-              <th><input id="dt" style="width:100%; height:20px"></input></th>
-            </tr>
-            <!--add a choice of rk4 or euler-->
-            <tr>
-              <th>Integration Method</th>
-              <th><select id="integrationMethod" style="width:100%; height:20px">
-                  <option value="rk4">Runge-Kutta 4</option>
-                  <option value="euler">Euler</option>
-                </select></th>
-            </tr>
-          </table>
-        </div>
-        <div>
-          <button id="saveButton">Save</button>
-          <button id="loadButton">Load</button>
-          <button id="runButton">Run</button>
-        </div>
-        <textarea id="mySavedModel" style="width:100%; height:400px">{ "class": "go.GraphLinksModel",
+      </div>
+      <div id="popForm"
+        style="border: 1px solid black; position: absolute; top: 180px; left: 30%; width: 40%; height: 400px; z-index: 10; background-color: white; overflow: auto; display: none;">
+        <form id="tabConfig" style="padding: 0 5vw; font-size: max(24px, 2vw);">
+          <div>
+            <p>Table or chart:</p>
+            <input type="radio" id="table" name="model_type" value="table" required>
+            <label for="table">Table</label><br>
+            <input type="radio" id="chart" name="model_type" value="chart" required>
+            <label for="chart">Chart</label>
+          </div>
+          <div>
+            <p>X-Axis:</p>
+            <select name="xAxis" id="xAxis" required>
+              <!-- Options initialized dynamically -->
+            </select>
+          </div>
+          <div>
+            <p>Y-Axis:</p>
+            <!-- Multiple checkboxes initialized dynamically -->
+          </div>
+          <button type="submit" id="submitModel"
+            style="border: none; background-color: limegreen; position: absolute; right: 5%; bottom: 5%;padding: 5px; border-radius: 5px;"><i
+              class="material-icons">chevron_right</i></button>
+        </form>
+      </div>
+      <table id="modelConfigTable" class="modelConfigTable"
+        style="position: relative; top: 40px; font-size: min(18px, 2.8vw);">
+        <tr>
+          <th>Start Time</th>
+          <th><input id="startTime" style="width:100%; height:20px" value="0"></th>
+        </tr>
+        <tr>
+          <th>End Time</th>
+          <th><input id="endTime" style="width:100%; height:20px" value="10"></th>
+        </tr>
+        <tr>
+          <th>dt</th>
+          <th><input id="dt" style="width:100%; height:20px" value="1"></th>
+        </tr>
+        <tr>
+          <th>Integration Method</th>
+          <th><select id="integrationMethod" style="width:100%; height:20px">
+              <option value="rk4">Runge-Kutta 4</option>
+              <option value="euler">Euler</option>
+            </select></th>
+        </tr>
+      </table>
+      <div
+        style="width: 100%; height: 200px; overflow: scroll; position: relative; top: 60px; font-size: min(18px, 2.8vw);">
+        <div id="eqEditor"></div>
+        <table id="eqTable" class="eqTable">
+          <tr>
+            <th>Type</th>
+            <th>Variable</th>
+            <th>Equation</th>
+            <th>Nonnegative/Uniflow?</th>
+          </tr>
+          <tbody id="eqTableBody">
+          </tbody>
+        </table>
+      </div>
+      <p class="text-xs" style="position:relative; top: 50px;">GoJS version 2.3.3. Copyright 1998-2023 by Northwoods
+        Software.</p>
+      <textarea id="mySavedModel" style="width:100%; height:400px; visibility: hidden;">{ "class": "go.GraphLinksModel",
   "linkLabelKeysProperty": "labelKeys",
   "nodeDataArray": [
 {"key":"grass", "category":"stock", "label":"Grass", "loc":"30 220", "label_offset":"0.5 0.5 0 30"},
@@ -102,13 +269,7 @@
   ]
 }
       </textarea>
-      </div>
-      <p class="text-xs">GoJS version 2.3.3. Copyright 1998-2023 by Northwoods Software.</p>
-  </div>
-  <p><a href="https://github.com/NorthwoodsSoftware/GoJS/blob/master/samples/systemDynamics.html" target="_blank">View
-      this sample page's source on GitHub</a></p>
-  </div>
-
+    </div>
 </body>
 
 </html>
