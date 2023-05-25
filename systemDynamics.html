@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-  <title>LunaSim</title>
+  <title>Dynalysis - LunaSim</title>
   <meta id="vp" name="viewport" content="width=device-width">
   <script>
     // set the viewport width to no less than minimum
@@ -13,6 +13,7 @@
       }
     }
   </script>
+  <!-- style sheets -->
   <link rel="stylesheet" href="simulation.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
   <link rel="icon" href="./img/lunaLogo.svg">
@@ -117,9 +118,10 @@
     <script src="https://unpkg.com/gojs@2.3.3/extensions/NodeLabelDraggingTool.js"></script>
     <script id="code" type="module" src="editor.js"></script>
     <script id="code2" type="module" src="translator.js"></script>
-    <script id="code3" type="module" src="engine.js">
-    </script>
+    <script id="code3" type="module" src="engine.js"></script>
+    <script id="code4" type="module" src="tabsManagement.js"></script>
     <div id="sample">
+      <!-- Header with the logo -->
       <div id="header" style="height: 30px; width: 100%; border: none; background-color: inherit; margin: 10px;">
         <p
           style="font-size: min(36px, 15vw); font-weight: bold; text-align: center; position: relative; bottom: 20px; font-family: sans-serif;">
@@ -127,6 +129,7 @@
           <img src="./img/lunaLogo.svg" alt="LunaSim Logo" style="height: 4vb; position: relative; top: 5px;"> LunaSim
         </p>
       </div>
+      <!-- Navigation and actions -->
       <div id="nav" style="width: 100%; height: 15px;">
         <div class="webTabs">
           <button class="tablinks" id="defaultOpen">Modal View</button>
@@ -140,6 +143,7 @@
           <button id="helpButton">Help</button>
         </div>
       </div>
+      <!-- Content for the modal view -->
       <div class="tabContent" id="modalView">
         <div class="tools">
           <button id="pointer_button" class="pointer_selected tool">Pointer</button>
@@ -157,6 +161,7 @@
             element.</canvas>
         </div>
       </div>
+      <!-- Content for the charts and tables -->
       <div class="tabContent" id="chartsTables">
         <div id="tabManager"
           style="border: 1px solid black; background-color: white; width: min(116px, 8.6%); height: 96.4%; position: relative; left: 20px; top: 15px; padding: 5px; margin-right: 5px; z-index: 3;">
@@ -175,9 +180,10 @@
           </div>
         </div>
       </div>
+      <!-- The pop up to initialize the tables and charts -->
       <div id="popForm"
-        style="border: 1px solid black; position: absolute; top: 180px; left: 30%; width: 40%; height: 400px; z-index: 10; background-color: white; overflow: auto; display: none;">
-        <form id="tabConfig" style="padding: 0 5vw; font-size: max(24px, 2vw);">
+        style="border: 1px solid black; position: absolute; top: 180px; left: 30%; width: 40%; height: 400px; z-index: 10; background-color: white; overflow: scroll; display: none;">
+        <form id="tabConfig" name = "tabConfig" onsubmit="return false" style="padding: 0 5vw; font-size: max(24px, 2vw);"> <!-- Will not refresh page -->
           <div>
             <p>Table or chart:</p>
             <input type="radio" id="table" name="model_type" value="table" required>
@@ -187,19 +193,22 @@
           </div>
           <div>
             <p>X-Axis:</p>
-            <select name="xAxis" id="xAxis" required>
+            <select name="xAxis" id="xAxis" style="font-size: inherit;" required>
               <!-- Options initialized dynamically -->
             </select>
           </div>
-          <div>
+          <div >
             <p>Y-Axis:</p>
-            <!-- Multiple checkboxes initialized dynamically -->
+            <table id="yAxis">
+              <!-- Multiple checkboxes initialized dynamically -->
+            </table>
           </div>
-          <button type="submit" id="submitModel"
-            style="border: none; background-color: limegreen; position: absolute; right: 5%; bottom: 5%;padding: 5px; border-radius: 5px;"><i
-              class="material-icons">chevron_right</i></button>
+          <button id="submitModel"
+            style="border: none; background-color: limegreen; position: relative; left: 95%; margin: 6px; padding: 5px; border-radius: 5px;"><i
+              class="material-icons" style="font-size: max(30px, 2vw)";>chevron_right</i></button>
         </form>
       </div>
+      <!-- Equation editor -->
       <div
         style="width: 100%; height: 200px; overflow: scroll; position: relative; top: 40px; font-size: min(18px, 2.8vw);">
         <div id="eqEditor"></div>
@@ -214,6 +223,7 @@
           </tbody>
         </table>
       </div>
+      <!-- Simulation parameters -->
       <table id="modelConfigTable" class="modelConfigTable"
         style="position: relative; top: 60px; font-size: min(18px, 2.8vw);">
         <tr>
@@ -236,25 +246,10 @@
             </select></th>
         </tr>
       </table>
-<<<<<<< HEAD
-      <div
-        style="width: 100%; height: 200px; overflow: scroll; position: relative; top: 60px; font-size: min(18px, 2.8vw);">
-        <div id="eqEditor"></div>
-        <table id="eqTable" class="eqTable">
-          <tr>
-            <th>Type</th>
-            <th>Variable</th>
-            <th>Equation</th>
-            <th>Nonnegative/Uniflow?</th>
-          </tr>
-          <tbody id="eqTableBody">
-          </tbody>
-        </table>
-      </div>
-      <textarea id="mySavedModel" style="width:100%; height:400px; visibility: none;">{ "class": "go.GraphLinksModel",
-=======
+      <!-- Copyright and contact -->
       <p class="text-xs" style="position:relative; top: 60px;">GoJS version 2.3.3. Copyright 1998-2023 by Northwoods
         Software.</p>
+      <!-- The JSON storage -->
       <textarea id="mySavedModel" style="width:100%; height:400px; visibility: hidden;">{ "class": "go.GraphLinksModel",
 >>>>>>> Initial changes
   "linkLabelKeysProperty": "labelKeys",
