@@ -18,10 +18,6 @@ export function translate(obj) {
         if (node.category == "stock") {
             stockKeyToName[node.key] = node.label;
 
-            if (node.label[0] === "$") {
-                continue;
-            }
-
             res.stocks[node.label.toString()] = {
                 "isNN": node.checkbox.toString(),
                 "values": [],
@@ -31,10 +27,6 @@ export function translate(obj) {
                 "outflows": {}
             };
         } else if (node.category == "variable") {
-            if (node.label[0] === "$") {
-                continue;
-            }
-
             res.converters[node.label.toString()] = {
                 "values": [],
                 "equation": node.equation
@@ -55,24 +47,12 @@ export function translate(obj) {
             var flowEq;
             var flowName;
             var isUniflow;
-            for (var j = 0; j < obj.nodeDataArray.length; j++) { // find the corresponding valve
+            for (var j = 0; j < obj.nodeDataArray.length; j++) { // find
                 if (obj.nodeDataArray[j].key == link.labelKeys[0]) {
                     flowEq = obj.nodeDataArray[j].equation;
                     flowName = obj.nodeDataArray[j].label.toString();
                     isUniflow = obj.nodeDataArray[j].checkbox;
                     break;
-                }
-            }
-
-            if (flowName[0] === "$") {
-                // get the corresponding info on flowEq and isUniflow from the non-ghost flow
-                for (var j = 0; j < obj.nodeDataArray.length; j++) {
-                    if (obj.nodeDataArray[j].label == flowName.substring(1)) {
-                        flowEq = obj.nodeDataArray[j].equation;
-                        flowName = obj.nodeDataArray[j].label.toString();
-                        isUniflow = obj.nodeDataArray[j].checkbox;
-                        break;
-                    }
                 }
             }
 
@@ -82,28 +62,18 @@ export function translate(obj) {
             }
 
             // check if the from is a stock
-            var stockName = stockKeyToName[link.from];
-            if (stockName !== undefined) {
-                if (stockName[0] === "$") {
-                    stockName = stockName.substring(1);
-                }
-
+            if (stockKeyToName[link.from] !== undefined) {
                 // add the flow to the outflows of the source
-                res.stocks[stockName].outflows[flowName] = {
+                res.stocks[stockKeyToName[link.from]].outflows[flowName] = {
                     "equation": flowEq,
                     "values": []
                 }
             }
 
             // check if the to is a stock
-            stockName = stockKeyToName[link.to];
-            if (stockName !== undefined) {
-                if (stockName[0] === "$") {
-                    stockName = stockName.substring(1);
-                }
-
-                // add the flow to the inflows of the destination
-                res.stocks[stockName].inflows[flowName] = {
+            if (stockKeyToName[link.to] !== undefined) {
+                // add the flow to the inflows of the target
+                res.stocks[stockKeyToName[link.to]].inflows[flowName] = {
                     "equation": flowEq,
                     "values": []
                 }

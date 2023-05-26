@@ -23,129 +23,46 @@ var myDiagram;   // Declared as global
 var sim = new Simulation();
 
 function init() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make;
 
-    myDiagram = $(go.Diagram, "myDiagram",
-        {
-            "undoManager.isEnabled": true,
-            allowLink: false,  // linking is only started via buttons, not modelessly
-            "animationManager.isEnabled": false,
+  // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+  // For details, see https://gojs.net/latest/intro/buildingObjects.html
+  const $ = go.GraphObject.make;
 
-            "linkingTool.portGravity": 0,  // no snapping while drawing new links
-            "linkingTool.doActivate": function () {  // an override must be function, not using => ES6 shorthand
-                // change the curve of the LinkingTool.temporaryLink
-                this.temporaryLink.curve = (SD.itemType === "flow") ? go.Link.None : go.Link.Bezier;
-                this.temporaryLink.path.stroke = (SD.itemType === "flow") ? "blue" : "orange";
-                this.temporaryLink.path.strokeWidth = (SD.itemType === "flow") ? 5 : 1;
-                go.LinkingTool.prototype.doActivate.call(this);
-            },
-            "linkReshapingTool": new CurvedLinkReshapingTool(),
-            // override the link creation process
-            "linkingTool.insertLink": function (fromnode, fromport, tonode, toport) {  // method override must be function, not =>
-                // to control what kind of Link is created,
-                // change the LinkingTool.archetypeLinkData's category
-                myDiagram.model.setCategoryForLinkData(this.archetypeLinkData, SD.itemType);
-                // Whenever a new Link is drawng by the LinkingTool, it also adds a node data object
-                // that acts as the label node for the link, to allow links to be drawn to/from the link.
-                this.archetypeLabelNodeData = (SD.itemType === "flow") ? { category: "valve" } : null;
-                // also change the text indicating the condition, which the user can edit
-                this.archetypeLinkData.text = SD.itemType;
+  myDiagram = $(go.Diagram, "myDiagram",
+    {
+      "undoManager.isEnabled": true,
+      allowLink: false,  // linking is only started via buttons, not modelessly
+      "animationManager.isEnabled": false,
 
-                // only allow flow links from a stock or cloud and to a stock or cloud
-                if (SD.itemType === "flow" && (fromnode.category !== "stock" && fromnode.category !== "cloud" || tonode.category !== "stock" && tonode.category !== "cloud")) {
-                    return null;
-                }
+      "linkingTool.portGravity": 0,  // no snapping while drawing new links
+      "linkingTool.doActivate": function() {  // an override must be function, not using => ES6 shorthand
+        // change the curve of the LinkingTool.temporaryLink
+        this.temporaryLink.curve = (SD.itemType === "flow") ? go.Link.None : go.Link.Bezier;
+        this.temporaryLink.path.stroke = (SD.itemType === "flow") ? "green" : "orange";
+        this.temporaryLink.path.strokeWidth = (SD.itemType === "flow") ? 5 : 1;
+        go.LinkingTool.prototype.doActivate.call(this);
+      },
+      "linkReshapingTool": new CurvedLinkReshapingTool(),
+      // override the link creation process
+      "linkingTool.insertLink": function(fromnode, fromport, tonode, toport) {  // method override must be function, not =>
+        // to control what kind of Link is created,
+        // change the LinkingTool.archetypeLinkData's category
+        myDiagram.model.setCategoryForLinkData(this.archetypeLinkData, SD.itemType);
+        // Whenever a new Link is drawng by the LinkingTool, it also adds a node data object
+        // that acts as the label node for the link, to allow links to be drawn to/from the link.
+        this.archetypeLabelNodeData = (SD.itemType === "flow") ? { category: "valve" } : null;
+        // also change the text indicating the condition, which the user can edit
+        this.archetypeLinkData.text = SD.itemType;
 
-                // do not allow influences to go into a stock or a cloud
-                if (SD.itemType === "influence" && (tonode.category === "stock" || tonode.category === "cloud")) {
-                    return null;
-                }
-
-                return go.LinkingTool.prototype.insertLink.call(this, fromnode, fromport, tonode, toport);
-            },
-
-            "clickCreatingTool.archetypeNodeData": {},  // enable ClickCreatingTool
-            "clickCreatingTool.isDoubleClick": false,   // operates on a single click in background
-            // but only in "node" creation mode
-            "clickCreatingTool.canStart": function () {  // method override must be function, not =>
-                return SD.mode === "node" && go.ClickCreatingTool.prototype.canStart.call(this);
-            },
-            // customize the data for the new node (even includes valve of a flow link)
-            "clickCreatingTool.insertPart": function (loc) {  // method override must be function, not =>
-                SD.nodeCounter[SD.itemType] += 1;
-                var newNodeId = SD.itemType + SD.nodeCounter[SD.itemType];
-
-                while (myDiagram.model.findNodeDataForKey(newNodeId) !== null) { // make sure the key is unique
-                    SD.nodeCounter[SD.itemType] += 1;
-                    newNodeId = SD.itemType + SD.nodeCounter[SD.itemType];
-                }
-
-                this.archetypeNodeData = {
-                    key: newNodeId,
-                    category: SD.itemType,
-                    label: newNodeId
-                };
-                return go.ClickCreatingTool.prototype.insertPart.call(this, loc);
-            }
-        });
-
-    // install the NodeLabelDraggingTool as a "mouse move" tool
-    myDiagram.toolManager.mouseMoveTools.insertAt(0, new NodeLabelDraggingTool());
-
-    // add panning
-    myDiagram.toolManager.panningTool.isEnabled = true;
-    // store the last mouse-down event's position
-    // disable drag selection
-    myDiagram.toolManager.dragSelectingTool.isEnabled = false;
-
-    // when the document is modified, add a "*" to the title
-    myDiagram.addDiagramListener("Modified", e => {
-        document.title = document.title.replace(/\*.*/, "");
-    });
-
-    // add input listener which updates the table whenever the diagram model changes
-    myDiagram.addModelChangedListener(e => {
-        // ignore unimportant Transaction events
-        if (!e.isTransactionFinished) return;
-        
-        // check for each ghost if there is a corresponding non-ghost, if not, remove the ghost
-        for (var i = 0; i < myDiagram.model.nodeDataArray.length; i++) {
-            if (myDiagram.model.nodeDataArray[i].category === "cloud") { // clouds don't have labels, and don't have ghosts
-                continue;
-            }
-
-            if (myDiagram.model.nodeDataArray[i].label[0] !== '$') { // if the label doesn't have a '$' in front of it, it is not a ghost
-                continue;
-            }
-
-            var node = myDiagram.model.nodeDataArray[i];
-            var nonGhostExists = false;
-            for (var j = 0; j < myDiagram.model.nodeDataArray.length; j++) {
-                if ((myDiagram.model.nodeDataArray[j].label === node.label.substring(1)) && (myDiagram.model.nodeDataArray[j].category === node.category)) { // if there is a non-ghost with the same label and the same category
-                    nonGhostExists = true;
-                }
-            }
-
-            if (!nonGhostExists) { // remove the ghost
-                if (node.category === "valve") { // if the ghost is a valve, remove the corresponding flow link
-                    for (var j = 0; j < myDiagram.model.linkDataArray.length; j++) {
-                        if (myDiagram.model.linkDataArray[j].category === "flow" && myDiagram.model.linkDataArray[j].labelKeys[0] === node.key) {
-                            myDiagram.model.removeLinkData(myDiagram.model.linkDataArray[j]);
-                        }
-                    }
-                }
-
-                // remove the node
-                myDiagram.model.removeNodeData(node);
-
-                loadTableToDiagram(); // delete the links as well
-            }
+        // only allow flow links from a stock or cloud and to a stock or cloud
+        if (SD.itemType === "flow" && (fromnode.category !== "stock" && fromnode.category !== "cloud" || tonode.category !== "stock" && tonode.category !== "cloud")) {
+          return null;
         }
 
-        updateTable();
-    });
+        // do not allow influences to go into a stock or a cloud
+        if (SD.itemType === "influence" && (tonode.category === "stock" || tonode.category === "cloud")) {
+          return null;
+        }
 
         return go.LinkingTool.prototype.insertLink.call(this, fromnode, fromport, tonode, toport);
       },
@@ -224,158 +141,144 @@ function init() {
 }
 
 function buildTemplates() {
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
-    const $ = go.GraphObject.make;
 
-    // helper functions for the templates
-    function nodeStyle() {
-        return [
-            {
-                type: go.Panel.Spot,
-                layerName: "Background",
-                locationObjectName: "SHAPE",
-                selectionObjectName: "SHAPE",
-                locationSpot: go.Spot.Center
-            },
-            new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify)
-        ];
-    }
+  // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+  // For details, see https://gojs.net/latest/intro/buildingObjects.html
+  const $ = go.GraphObject.make;
 
-    function shapeStyle() {
-        return {
-            name: "SHAPE",
-            stroke: "black",
-            fill: "#f0f0f0",
-            portId: "", // So a link can be dragged from the Node: see /GraphObject.html#portId
-            fromLinkable: true,
-            toLinkable: true
-        };
-    }
+  // helper functions for the templates
+  function nodeStyle() {
+    return [
+      {
+        type: go.Panel.Spot,
+        layerName: "Background",
+        locationObjectName: "SHAPE",
+        selectionObjectName: "SHAPE",
+        locationSpot: go.Spot.Center
+      },
+      new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify)
+    ];
+  }
 
-    function textStyle() {
-        return [
-            {
-                font: "bold 11pt helvetica, bold arial, sans-serif",
-                margin: 2,
-                editable: true
-            },
-            new go.Binding("text", "label").makeTwoWay()
-        ];
-    }
+  function shapeStyle() {
+    return {
+      name: "SHAPE",
+      stroke: "black",
+      fill: "#f0f0f0",
+      portId: "", // So a link can be dragged from the Node: see /GraphObject.html#portId
+      fromLinkable: true,
+      toLinkable: true
+    };
+  }
 
-    // Node templates
-    myDiagram.nodeTemplateMap.add("stock",
-        $(go.Node, nodeStyle(),
-            $(go.Shape, shapeStyle(),
-                new go.Binding("fill", "label", function (label) { return isGhost(label) ? "#ffffff" : "#f0f0f0";}), // change color if ghost ($ in front of label)
-                { desiredSize: new go.Size(50, 30),
-                    fill: "#ffcc99"
-                }),
-            $(go.TextBlock, textStyle(),
-                {
-                    _isNodeLabel: true,  // declare draggable by NodeLabelDraggingTool
-                    alignment: new go.Spot(0.5, 0.5, 0, 30),    // initial value
-                    isMultiline: false,
-                    textValidation: labelValidator, // make sure the label is unique
-                },
-                new go.Binding("alignment", "label_offset", go.Spot.parse).makeTwoWay(go.Spot.stringify))
-        ));
+  function textStyle() {
+    return [
+      {
+        font: "bold 11pt helvetica, bold arial, sans-serif",
+        margin: 2,
+        editable: true
+      },
+      new go.Binding("text", "label").makeTwoWay()
+    ];
+  }
 
-    myDiagram.nodeTemplateMap.add("cloud",
-        $(go.Node, nodeStyle(),
-            $(go.Shape, shapeStyle(),
-                {
-                    figure: "Cloud",
-                    desiredSize: new go.Size(30, 30)
-                })
-        ));
+  // Node templates
+  myDiagram.nodeTemplateMap.add("stock",
+    $(go.Node, nodeStyle(),
+      $(go.Shape, shapeStyle(),
+        { desiredSize: new go.Size(50, 30) }),
+      $(go.TextBlock, textStyle(),
+        {
+          _isNodeLabel: true,  // declare draggable by NodeLabelDraggingTool
+          alignment: new go.Spot(0.5, 0.5, 0, 30)    // initial value
+        },
+        new go.Binding("alignment", "label_offset", go.Spot.parse).makeTwoWay(go.Spot.stringify))
+    ));
 
-    myDiagram.nodeTemplateMap.add("valve",
-        $(go.Node, nodeStyle(),
-            {
-                movable: false,
-                layerName: "Foreground",
-                alignmentFocus: go.Spot.None
-            },
-            $(go.Shape, shapeStyle(),
-                new go.Binding("fill", "label", function (label) {return isGhost(label) ? "#ffffff" : "#3489eb";}), // change color if ghost ($ in front of label)
-                new go.Binding("figure", "label", function (label) {return isGhost(label) ? "Circle" : "Diamond";}), // change shape if ghost ($ in front of label)
-                {
-                    figure: "Diamond",
-                    desiredSize: new go.Size(15, 15),
-                    fill: "#3489eb"
-                }),
-            $(go.TextBlock, textStyle(),
-                {
-                    _isNodeLabel: true,  // declare draggable by NodeLabelDraggingTool
-                    alignment: new go.Spot(0.5, 0.5, 0, 20),    // initial value
-                    isMultiline: false,
-                    textValidation: labelValidator, // make sure the label is unique
-                },
-                new go.Binding("alignment", "label_offset", go.Spot.parse).makeTwoWay(go.Spot.stringify))
-        ));
+  myDiagram.nodeTemplateMap.add("cloud",
+    $(go.Node, nodeStyle(),
+      $(go.Shape, shapeStyle(),
+        {
+          figure: "Cloud",
+          desiredSize: new go.Size(30, 30)
+        })
+    ));
 
-    myDiagram.nodeTemplateMap.add("variable",
-        $(go.Node, nodeStyle(),
-            $(go.Shape, shapeStyle(),
-            new go.Binding("fill", "label", function (label) {return isGhost(label) ? "#ffffff" : "#f0f0f0";}), // change color if ghost ($ in front of label)
-                {
-                    figure: "Ellipse",
-                    desiredSize: new go.Size(25, 25)
-                }),
-            $(go.TextBlock, textStyle(),
-                {
-                    _isNodeLabel: true,  // declare draggable by NodeLabelDraggingTool
-                    alignment: new go.Spot(0.5, 0.5, 0, 30),    // initial value
-                    isMultiline: false,
-                    textValidation: labelValidator, // make sure the label is unique
-                },
-                new go.Binding("alignment", "label_offset", go.Spot.parse).makeTwoWay(go.Spot.stringify))
-        ));
+  myDiagram.nodeTemplateMap.add("valve",
+    $(go.Node, nodeStyle(),
+      {
+        movable: false,
+        layerName: "Foreground",
+        alignmentFocus: go.Spot.None
+      },
+      $(go.Shape, shapeStyle(),
+        {
+          figure: "Diamond",
+          desiredSize: new go.Size(15, 15),
+          fill: "#3489eb"
+        }),
+      $(go.TextBlock, textStyle(),
+        {
+          _isNodeLabel: true,  // declare draggable by NodeLabelDraggingTool
+          alignment: new go.Spot(0.5, 0.5, 0, 20)    // initial value
+        },
+        new go.Binding("alignment", "label_offset", go.Spot.parse).makeTwoWay(go.Spot.stringify))
+    ));
 
-    // Link templates
-    myDiagram.linkTemplateMap.add("flow",
-        $(go.Link,
-            { toShortLength: 10 },
-            new go.Binding("curviness", "curviness").makeTwoWay(),
-            $(go.Shape,
-                {
-                    stroke: "#3489eb",
-                    strokeWidth: 5 
-                }),
-            $(go.Shape,
-                // add a binding to adjust if this shape is visible based on isBiflow function
-                new go.Binding("visible", "", isBiflow),
-                {
-                    fill: "#ffffff",
-                    stroke: "#3489eb",
-                    fromArrow: "Backward",
-                    scale: 2.0,
-                }),
-            $(go.Shape,
-                {
-                    fill: "#3489eb",
-                    stroke: "#3489eb",
-                    toArrow: "Standard",
-                    scale: 2.0
-                })
-        ));
+  myDiagram.nodeTemplateMap.add("variable",
+    $(go.Node, nodeStyle(),
+      $(go.Shape, shapeStyle(),
+        {
+          figure: "Ellipse",
+          desiredSize: new go.Size(25, 25)
+        }),
+      $(go.TextBlock, textStyle(),
+        {
+          _isNodeLabel: true,  // declare draggable by NodeLabelDraggingTool
+          alignment: new go.Spot(0.5, 0.5, 0, 30)    // initial value
+        },
+        new go.Binding("alignment", "label_offset", go.Spot.parse).makeTwoWay(go.Spot.stringify))
+    ));
 
-    myDiagram.linkTemplateMap.add("influence",
-        $(go.Link,
-            { curve: go.Link.Bezier, toShortLength: 8, reshapable: true },
-            new go.Binding("curviness", "curviness").makeTwoWay(),
-            $(go.Shape,
-                { stroke: "orange", strokeWidth: 1.5 }),
-            $(go.Shape,
-                {
-                    fill: "orange",
-                    stroke: null,
-                    toArrow: "Standard",
-                    scale: 1.5
-                })
-        ));
+  // Link templates
+  myDiagram.linkTemplateMap.add("flow",
+    $(go.Link,
+      { toShortLength: 10 },
+      new go.Binding("curviness", "curviness").makeTwoWay(),
+      $(go.Shape,
+        { stroke: "#3489eb", strokeWidth: 5 }),
+      $(go.Shape,
+        // add a binding to adjust if this shape is visible based on isBiflow function
+        new go.Binding("visible", "", isBiflow),
+        {
+          fill: "#3489eb",
+          stroke: "#3489eb",
+          fromArrow: "Backward",
+          scale: 2.0,
+        }),
+      $(go.Shape,
+        {
+          fill: "#3489eb",
+          stroke: "#3489eb",
+          toArrow: "Standard",
+          scale: 2.0
+        })
+    ));
+
+  myDiagram.linkTemplateMap.add("influence",
+    $(go.Link,
+      { curve: go.Link.Bezier, toShortLength: 8, reshapable: true },
+      new go.Binding("curviness", "curviness").makeTwoWay(),
+      $(go.Shape,
+        { stroke: "orange", strokeWidth: 1.5 }),
+      $(go.Shape,
+        {
+          fill: "orange",
+          stroke: null,
+          toArrow: "Standard",
+          scale: 1.5
+        })
+    ));
 }
 
 // set the mode (adding stock vs adding flow vs pointer etc) based on which button is clicked
@@ -399,11 +302,11 @@ function setMode(mode, itemType) {
 }
 
 function load() {
-    // empty the table 
-    $('#eqTableBody').empty();
-    myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value); // load in the model config to GoJS diagram
-    updateTable(true); // load in the information to the equation editing table
-    loadTableToDiagram(); // bring the table information into the model json (for updating uniflow arrows and more)
+  // empty the table 
+  $('#eqTableBody').empty();
+  myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value); // load in the model config to GoJS diagram
+  updateTable(true); // load in the information to the equation editing table
+  loadTableToDiagram(); // bring the table information into the model json (for updating uniflow arrows)
 }
 
 // populates model json with tabel information (not just for saving model in the end, instead gets called every time the table is updated)
@@ -445,76 +348,21 @@ function loadTableToDiagram() {
 // This function is used to update the equation editing table with the current model information
 // load is a boolean that is true if the function is called when the model is first loaded, as then the equations and checkboxes have to be populated
 function updateTable(load = false) {
-    var data = myDiagram.model.toJson();
-    var json = JSON.parse(data);
+  var data = myDiagram.model.toJson();
+  var json = JSON.parse(data);
 
-    // get tbody by id eqTableBody
-    var $tbody = $('#eqTableBody');
+  // get tbody by id eqTableBody
+  var $tbody = $('#eqTableBody');
 
-    // 1. add new items to table
-    $.each(json.nodeDataArray, function (i, item) { // includes stocks, variables, and clouds
-        if (item.label === undefined) { // if the item is a valve or cloud, skip it
-            return;
-        }
+  // 1. add new items to table
+  $.each(json.nodeDataArray, function(i, item) { // includes stocks, variables, and clouds
 
-        // check if the item is a ghost, if so, skip it
-        if (isGhost(item.label)) {
-            return;
-        }
-
-        // check if item already exists in table, if not add it
-        var exists = false;
-        $tbody.find('tr').each(function () {
-            if ($(this).find('input[name="name"]').val() === item.label) {
-                exists = true;
-            }
-        });
-
-        if (!exists) {
-            var category = item.category == "valve" ? "flow" : item.category; // if the item is a valve, change the category to flow
-
-            var $tr = $('<tr>').append(
-                $('<td>').append(
-                    $('<input>').attr('type', 'text').attr('name', 'type').attr('value', category).attr('readonly', true) // add the type of the object to the row (uneditable by user)
-                ),
-                $('<td>').append(
-                    $('<input>').attr('type', 'text').attr('name', 'name').attr('value', item.label).attr('readonly', true) // add the name of the object to the row (uneditable by user)
-                ),
-                $('<td>').append(
-                    $('<input>').attr('type', 'text').attr('name', 'equation') // in the next column, add the equation (editable by user)
-                ),
-            ).appendTo($tbody);
-
-            if (category === "stock" || category === "flow") {
-                // append a checkbox 
-                $('<td>').append(
-                    // this checkbox determines if the stock is non-negative or if the flow is uniflow
-                    // also has an event listener that calls the save function when the checkbox is changed (to update arrows on flows)
-                    $('<input>').attr('type', 'checkbox').attr('name', 'checkbox').change(function () {
-                        loadTableToDiagram();
-                    }))
-                    .appendTo($tr);
-            } else {
-                // if the object is a variable or cloud, add a blank column
-                $('<td>').appendTo($tr);
-            }
-
-            // depending on the category, change the color of the row (only first 2 columns)
-            if (category === "stock") {
-                // get the first 2 columns of the row
-                $tr.find('td').slice(0, 3).css('background-color', '#ffcc99');
-            } else if (category === "flow") {
-                $tr.find('td').slice(0, 3).css('background-color', '#99ccff');
-            } else if (category === "variable") {
-                $tr.find('td').slice(0, 3).css('background-color', '#99ff99');
-            }
-
-            if (load) {
-                // populate the equation and checkbox from json
-                $tr.find('input[name="equation"]').val(item.equation);
-                $tr.find('input[name="checkbox"]').prop('checked', item.checkbox);
-            }
-        }
+    // check if item already exists in table, if not add it
+    var exists = false;
+    $tbody.find('tr').each(function() {
+      if ($(this).find('input[name="name"]').val() === item.label) {
+        exists = true;
+      }
     });
 
     if ((item.category === "stock" || item.category === "variable" || item.category === "valve") && !exists) {
@@ -585,29 +433,22 @@ function updateTable(load = false) {
   });
 }
 
-// This function is used to determine if a flow is a uniflow or a biflow given the link data and the node data,
-// used by GoJS binding for displaying two vs one arrow on a flow
-function isBiflow(data, _) {
-    // search through table to get link's checkbox value
-    var $tbody = $('#eqTableBody');
-    var biflow = false;
+function isBiflow(data, node) {
+  // search through table to get link's checkbox value
+  var $tbody = $('#eqTableBody');
+  var biflow = false;
 
-    var labelKey = data.labelKeys[0]; // get the label key of the link
-    // search in nodeDataArray for the key with the same labelKey
-    for (var node of myDiagram.model["nodeDataArray"]) {
-        if (node.key === labelKey) {
-            var flowName = node.label;
-        }
+  var labelKey = data.labelKeys[0]; // get the label key of the link
+  // search in nodeDataArray for the key with the same labelKey
+  for (var node of myDiagram.model["nodeDataArray"]) {
+    if (node.key === labelKey) {
+      var flowName = node.label;
     }
   }
 
-    if (flowName[0] === '$') { // if the flow is a ghost
-        flowName = flowName.substring(1); // remove the '$' from the name
-    }
-
-    $tbody.find('tr').each(function () {
-        var name = $(this).find('input[name="name"]').val(); // get the name of the object
-        var checkbox = $(this).find('input[name="checkbox"]').is(':checked'); // get the checkbox value of the object
+  $tbody.find('tr').each(function() {
+    var name = $(this).find('input[name="name"]').val(); // get the name of the object
+    var checkbox = $(this).find('input[name="checkbox"]').is(':checked'); // get the checkbox value of the object
 
     if (name === flowName) {
       biflow = !checkbox; // if checked, that means it is a uniflow
@@ -615,29 +456,6 @@ function isBiflow(data, _) {
   });
 
   return biflow;
-}
-
-// check if the node is a ghost by checking if its label has a '$' in front of it, return color string based on that
-function isGhost(label) {
-    return label[0] === '$';
-}
-
-function labelValidator(textblock, oldstr, newstr) {
-    if (newstr === oldstr) return true; // nothing changed
-
-    if (newstr === "") return false; // don't allow empty label
-
-    if (newstr[0] === "$") return true; // there can be repeats for ghost nodes
-
-    // check all the elements in the model to make sure the new label is unique
-    var unique = true;
-    for (var i = 0; i < myDiagram.model.nodeDataArray.length; i++) {
-        if (myDiagram.model.nodeDataArray[i].label === newstr) {
-            unique = false;
-        }
-    }
-
-    return unique;
 }
 
 function run() {
@@ -711,6 +529,6 @@ document.getElementById("secondaryOpen").addEventListener("click", function() { 
 document.getElementById("defaultOpen").click();
 
 // save, load, and run buttons
-document.getElementById("saveButton").addEventListener("click", loadTableToDiagram);
-document.getElementById("loadButton").addEventListener("click", load);
-document.getElementById("runButton").addEventListener("click", run);
+document.getElementById("saveButton").addEventListener("click", loadTableToDiagram());
+document.getElementById("loadButton").addEventListener("click", load());
+document.getElementById("runButton").addEventListener("click", run());
