@@ -1,4 +1,5 @@
 import {myDiagram} from './editor.js';
+// import {data} from './editor.js';
 
 // Where the tab data is stored
 const tabs = [];
@@ -10,11 +11,9 @@ function seriesKeys(){
   let nodes = json.nodeDataArray; // Want only the array of nodes
 
   const series = ["time"]; // time as an option
-  var s = 1;  // The index of the series
   for(let i = 0; i < nodes.length; i++){
     if(nodes[i].category == "stock" || nodes[i].category == "variable" || nodes[i].category == "valve"){ // Only stocks, variables, and flows
-      series[s] = nodes[i].key; // Puts the key in the array
-      s++;
+      series.push(nodes[i].key); // Add the key to the array
     }
   }
   return series;
@@ -26,7 +25,7 @@ function addOptions(){
   let x = document.getElementById("xAxis"); // refers to x-axis select node
   let y = document.getElementById("yAxis"); // refers to y-axis div node
   
-  // Configuration for x-axis
+  // Configuration for buttons of x-axis
   for(let i = 0; i < series.length; i++){
     const opt = document.createElement("option"); // Creates an option
     var node = document.createTextNode(series[i]); // Assigns text node (used exterally)
@@ -36,7 +35,7 @@ function addOptions(){
     x.appendChild(opt);
   }
 
-  // Configuration for y-axis
+  // Configuration for buttos for y-axis
   for(let i = 1; i < series.length; i++){ // do not want to include time
     const row = document.createElement("tr"); // row for input
     const d1 = document.createElement("td"); // where checkboxes will go
@@ -101,19 +100,17 @@ function initializeTab() {
 
   // gets all y axis values
   var ySeries = [];
-  var s = 0;
   let inputs = document.getElementsByTagName('input');
   for (let i = 0; i < inputs.length; i++) {
     if (inputs.item(i).type == 'checkbox') {
       if (inputs.item(i).checked == true){
-        ySeries[s] = inputs.item(i).value;
-        s++;
+        ySeries.push(inputs.item(i).value);
       }
     }
   }
 
   var tab = new Graphic(form["model_type"].value, form["xAxis"].value, ySeries); // initializes the Graphic object
-  tabs[tabs.length] = tab; // add to end of array
+  tabs.push(tab); // add to end of array
   document.getElementById("popForm").style.display = "none"; // hide form
   form.reset(); // reset input
   resetOptions(); // reset options
@@ -121,8 +118,58 @@ function initializeTab() {
   console.log(tabs); // TO DO: delete later
 }
 
+// Array listener
+/* @arr array you want to listen to
+   @callback function that will be called on any change inside array
+ */
+function listenChangesinArray(arr,callback){
+     // Add more methods here if you want to listen to them
+    ['pop','push','reverse','shift','unshift','splice','sort'].forEach((m)=>{
+        arr[m] = function(){
+                     var res = Array.prototype[m].apply(arr, arguments);  // call normal behaviour
+                     callback.apply(arr, arguments);  // finally call the callback supplied
+                     return res;
+                 }
+    });
+}
+
+// Configures dynamic tabs
+function configTabs(){
+  let list = document.getElementById("tabsList");
+
+  // reset for updating
+  while (list.firstChild) { // removes all child elements
+    list.removeChild(list.lastChild);
+  }
+  
+  for(let i = 0; i < tabs.length; i++){
+    const delButton = document.createElement("button"); 
+    delButton.innerHTML = '<i style="font-size: 2vw;" class="fa fa-close"></i>'; // Font Awesome 4 icon button
+    delButton.style.backgroundColor = "inherit";
+    delButton.style.border = "none";
+    
+    const tab = document.createElement("div"); // Tabs are divs to allow button children
+    var node = document.createTextNode("Tab_" + i);  // Tab name based on index
+    tab.class = "graphTabs";
+    tab.style.border = "1px solid black";
+    tab.style.borderRadius = "5px";
+    tab.style.fontSize = "2vw";
+    tab.style.margin = "5px";
+    tab.style.padding = "2px";
+    tab.appendChild(delButton);
+    tab.appendChild(node);
+    list.appendChild(tab);
+    
+    delButton.addEventListener("click", function tabDelete(){ let i = tab.childNodes[1].nodeValue.charAt(4);  tabs.splice(Number(i), 1); console.log(tabs); /* TODO: delete later */ }); // Relies on name to modify the correct index
+    
+  }
+}
+
+// Updates tabs buttons on side when the array is changed
+listenChangesinArray(tabs, configTabs);
+
 // Object class to create charts and tables
-class Graphic{
+class Graphic {
   constructor(type, xAxis, yAxis){
     this.type = type;
     this.xAxis = xAxis;
