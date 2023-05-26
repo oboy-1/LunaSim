@@ -1,0 +1,86 @@
+body{
+    font-family: sans-serif;
+  }
+  .webTabs {
+    display: inline-block;
+    border: none;
+    height: 42px;
+    background-color: #35829fff;
+  }
+
+  .webTabs button {
+    background-color: #176481ff;
+    height: 100%;
+    border: none;
+    padding: 10px 14px;
+    font-weight: bold;
+    color: white;
+    font-size: min(20px, 2.8vw);
+    margin: 0px;
+  }
+
+  .webTabs button:hover {
+    font-weight: normal;
+  }
+
+  .webTabs button.active {
+    background-color: #35829fff;
+  }
+
+  .tabContent {
+    background-color: #35829fff;
+    width: 100%;
+    height: 500px;
+    position: relative;
+    top: 26px;
+    padding-bottom: 20px;
+  }
+
+  .tools {
+    display: block;
+    width: max(82px, min(116px, 12%));
+    height: 385px;
+    position: relative;
+    left: 20px;
+    top: 15px;
+    border: none;
+    z-index: 3;
+  }
+
+  .tools button {
+    background-color: white;
+    border: 1px solid black;
+    width: 100%;
+    height: 20.6%;
+    overflow-wrap: anywhere;
+    overflow-y: hidden;
+    font-size: min(18px, 2.4vw);
+  }
+
+  .tools button:hover {
+    background-color: #ddd;
+    transition: background-color 0.6s;
+  }
+
+  .tools button.active {
+    background-color: #ccc;
+  }
+
+  .action {
+    position: absolute;
+    right: 10px;
+    top: 80px;
+  }
+
+  .action button {
+    padding: 5px;
+    background-color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    font-size: min(16px, 2.2vw);
+    transition: background-color 0.6s;
+  }
+
+  .action button:hover {
+    background-color: #ddd;
+  }
