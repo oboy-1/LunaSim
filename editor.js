@@ -616,6 +616,6 @@ document.getElementById("secondaryOpen").addEventListener("click", function() { 
 document.getElementById("defaultOpen").click();
 
 // save, load, and run buttons
-document.getElementById("saveButton").addEventListener("click", loadTableToDiagram());
-document.getElementById("loadButton").addEventListener("click", load());
-document.getElementById("runButton").addEventListener("click", run());
+document.getElementById("saveButton").addEventListener("click", loadTableToDiagram);
+document.getElementById("loadButton").addEventListener("click", load);
+document.getElementById("runButton").addEventListener("click", run);
