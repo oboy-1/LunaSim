@@ -21,6 +21,7 @@ var SD = {
 
 var myDiagram;   // Declared as global
 var sim = new Simulation();
+var data;
 
 function init() {
 
@@ -565,6 +566,8 @@ function run() {
     engineJson.dt = parseFloat(dt);
     engineJson.integration_method = integrationMethod;
 
+  sim.setData(engineJson);
+  data = sim.run();
 
     sim.setData(engineJson);
     var data = sim.run();
@@ -624,4 +627,4 @@ document.getElementById("loadButton").addEventListener("click", function() { loa
 document.getElementById("runButton").addEventListener("click", function() { run(); });
 
 // Exporting myDiagram
-export {myDiagram};
+export {data};

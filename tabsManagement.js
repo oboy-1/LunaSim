@@ -1,21 +1,28 @@
-import {myDiagram} from './editor.js';
-// import {data} from './editor.js';
+import {data} from './editor.js';
 
 // Where the tab data is stored
 const tabs = [];
 
 // Creates an array of series keys
 function seriesKeys(){
-  var data = myDiagram.model.toJson();
-  var json = JSON.parse(data);
-  let nodes = json.nodeDataArray; // Want only the array of nodes
-
   const series = ["time"]; // time as an option
-  for(let i = 0; i < nodes.length; i++){
-    if(nodes[i].category == "stock" || nodes[i].category == "variable" || nodes[i].category == "valve"){ // Only stocks, variables, and flows
-      series.push(nodes[i].key); // Add the key to the array
+
+  for (var x in data.stocks) { // gets the keys of the stocks
+    series.push(x);
+    for (var inflow in data.stocks[x].inflows) { // gets the keys of the inflows
+      if (series.find(function(key) { key == inflow; }) == null) // avoids repeats
+        series.push(inflow);
+    }
+    for (var outflow in data.stocks[x].outflows) { // gets the keys of the inflows
+      if (series.find(function(key) { key == outflow; }) == null) // avoids repeats
+        series.push(outflow);
     }
   }
+  
+  for (var y in data.converters) { // gets the keys of the variables
+    series.push(y);
+  }
+    
   return series;
 }
 
@@ -26,7 +33,7 @@ function addOptions(){
   let y = document.getElementById("yAxis"); // refers to y-axis div node
   
   // Configuration for buttons of x-axis
-  for(let i = 0; i < series.length; i++){
+  for (var i = 0; i < series.length; i++){
     const opt = document.createElement("option"); // Creates an option
     var node = document.createTextNode(series[i]); // Assigns text node (used exterally)
     opt.appendChild(node);
@@ -36,7 +43,7 @@ function addOptions(){
   }
 
   // Configuration for buttos for y-axis
-  for(let i = 1; i < series.length; i++){ // do not want to include time
+  for (var i = 1; i < series.length; i++){ // do not want to include time
     const row = document.createElement("tr"); // row for input
     const d1 = document.createElement("td"); // where checkboxes will go
     const d2 = document.createElement("td"); // where labels will go
@@ -62,7 +69,11 @@ function addOptions(){
 
 // Opens and initializes the form popup
 function openForm(){
-  addOptions(); // dtnamically adds in the options
+  if (data == null){ // ensures that the simulation has been run first
+    alert("The simulation must be run first.");
+    return;
+  }
+  addOptions(); // dynamically adds in the options
   let form = document.getElementById("popForm");
   form.style.display = "block"; // display form
 }
@@ -99,17 +110,25 @@ function initializeTab() {
   let form = document.forms["tabConfig"];
 
   // gets all y axis values
-  var ySeries = [];
+  var y = [];
   let inputs = document.getElementsByTagName('input');
   for (let i = 0; i < inputs.length; i++) {
     if (inputs.item(i).type == 'checkbox') {
       if (inputs.item(i).checked == true){
-        ySeries.push(inputs.item(i).value);
+        y.push(inputs.item(i).value);
       }
     }
   }
 
-  var tab = new Graphic(form["model_type"].value, form["xAxis"].value, ySeries); // initializes the Graphic object
+  var x; // gets the correct x-axis value
+  if(form["model_type"].value == "table" && form["xAxis"].value != "time"){ // alerts if x-axis was anything but time for tables
+    x = "time" // auto-corrects the answer
+    alert("The x-axis must always be time for tables. (corrected)");
+  }
+  else
+    x = form["xAxis"].value;
+
+  var tab = new Graphic(form["model_type"].value, x, y); // initializes the Graphic object
   tabs.push(tab); // add to end of array
   document.getElementById("popForm").style.display = "none"; // hide form
   form.reset(); // reset input
@@ -160,10 +179,21 @@ function configTabs(){
     tab.appendChild(node);
     list.appendChild(tab);
     
-    delButton.addEventListener("click", function tabDelete(){ let i = tab.childNodes[1].nodeValue.charAt(4);  tabs.splice(Number(i), 1); console.log(tabs); /* TODO: delete later */ }); // Relies on name to modify the correct index
+    delButton.addEventListener("click", function tabDelete(){ let i = Number(tab.childNodes[1].nodeValue.charAt(4)); tabs.splice(i, 1); console.log(tabs); /*TO DO: delete later*/} );
     
+    /* just so i can test another section
+    tab.addEventListener("click", function render() {
+      let i = Number(tab.childNodes[1].nodeValue.charAt(4));
+      var tabInfo = tabs[i];
+
+      if (tabInfo.type == "chart") {
+        
+      }
+    }
+    */
   }
 }
+
 
 // Updates tabs buttons on side when the array is changed
 listenChangesinArray(tabs, configTabs);
