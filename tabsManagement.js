@@ -1,34 +1,48 @@
 import {data} from './editor.js';
 
+// Object class to create charts and tables
+class Graphic {
+  constructor(type, xAxis, yAxis){
+    this.type = type;
+    this.xAxis = xAxis;
+    this.yAxis = yAxis;
+  }
+}
+
 // Where the tab data is stored
-const tabs = [];
+const tabs = []; // default tab info
 
 // Creates an array of series keys
-function seriesKeys(){
+// @def true if only reuturns stocks for default
+function seriesKeys(def){
   const series = ["time"]; // time as an option
 
   for (var x in data.stocks) { // gets the keys of the stocks
     series.push(x);
-    for (var inflow in data.stocks[x].inflows) { // gets the keys of the inflows
-      if (series.find(function(key) { key == inflow; }) == null) // avoids repeats
-        series.push(inflow);
-    }
-    for (var outflow in data.stocks[x].outflows) { // gets the keys of the inflows
-      if (series.find(function(key) { key == outflow; }) == null) // avoids repeats
-        series.push(outflow);
+
+    if(def == false){ // not included in default
+      for (var inflow in data.stocks[x].inflows) { // gets the keys of the inflows
+        if (series.find(function(key) { key == inflow; }) == null) // avoids repeats
+          series.push(inflow);
+      }
+      for (var outflow in data.stocks[x].outflows) { // gets the keys of the inflows
+        if (series.find(function(key) { key == outflow; }) == null) // avoids repeats
+          series.push(outflow);
+      }    
     }
   }
-  
-  for (var y in data.converters) { // gets the keys of the variables
-    series.push(y);
+  if(def == false){ // not included in default
+    for (var y in data.converters) { // gets the keys of the variables
+      series.push(y);
+    }
   }
-    
+
   return series;
 }
 
 // Adds the options for the x and y axes
 function addOptions(){
-  const series = seriesKeys();
+  const series = seriesKeys(false);
   let x = document.getElementById("xAxis"); // refers to x-axis select node
   let y = document.getElementById("yAxis"); // refers to y-axis div node
   
@@ -108,7 +122,7 @@ function resetOptions(){
 // Enter objects into tabs data array
 function initializeTab() {
   let form = document.forms["tabConfig"];
-
+  
   // gets all y axis values
   var y = [];
   let inputs = document.getElementsByTagName('input');
@@ -168,14 +182,20 @@ function configTabs(){
     delButton.style.border = "none";
     
     const tab = document.createElement("div"); // Tabs are divs to allow button children
-    var node = document.createTextNode("Tab_" + i);  // Tab name based on index
+    var node;
+    if(i == 0)
+      node = document.createTextNode("Default");  // name of default tab
+    else
+      node = document.createTextNode("Tab_" + i);  // Tab name based on index
+    
     tab.class = "graphTabs";
     tab.style.border = "1px solid black";
     tab.style.borderRadius = "5px";
     tab.style.fontSize = "2vw";
     tab.style.margin = "5px";
     tab.style.padding = "2px";
-    tab.appendChild(delButton);
+    if(i != 0)  // default tab is not deletable
+      tab.appendChild(delButton);
     tab.appendChild(node);
     list.appendChild(tab);
     
@@ -198,15 +218,8 @@ function configTabs(){
 // Updates tabs buttons on side when the array is changed
 listenChangesinArray(tabs, configTabs);
 
-// Object class to create charts and tables
-class Graphic {
-  constructor(type, xAxis, yAxis){
-    this.type = type;
-    this.xAxis = xAxis;
-    this.yAxis = yAxis;
-  }
-}
 
 // Event listeners
+document.getElementById("runButton").addEventListener("click", function() { tabs[0] = new Graphic("chart", "time", seriesKeys(true).splice(1)); console.log(tabs[0]);/*TO DO: delete later*/ }); // updates default tab data
 document.getElementById("addTab").addEventListener("click", function() { openForm(); });
 document.getElementById("submitModel").addEventListener("click", function() { submit(); });
