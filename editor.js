@@ -534,6 +534,9 @@ function labelValidator(textblock, oldstr, newstr) {
 
     if (newstr[0] === "$") return true; // there can be repeats for ghost nodes
 
+    // make sure it is not **Just** a number
+    if (!isNaN(newstr)) return false;
+
     // check all the elements in the model to make sure the new label is unique
     var unique = true;
     for (var i = 0; i < myDiagram.model.nodeDataArray.length; i++) {
