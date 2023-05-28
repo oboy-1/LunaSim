@@ -10,7 +10,7 @@ class Graphic {
 }
 
 // Where the tab data is stored
-const tabs = []; // default tab info
+const tabs = [new Graphic("chart", "time", [])]; // default tab info
 
 // Creates an array of series keys
 // @def true if only reuturns stocks for default
