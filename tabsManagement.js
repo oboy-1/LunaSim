@@ -13,6 +13,7 @@ class Graphic {
 
 // Where the tab data is stored
 var tabs = [new Graphic("chart", "time", [])]; // default tab info
+let list = document.getElementById("tabsList"); // list of tab elements
 var chart = new ApexCharts(document.querySelector("#chart"), {
   chart: {
     type: 'scatter'
@@ -181,14 +182,12 @@ function listenChangesinArray(arr,callback){
 
 // Configures dynamic tabs
 function configTabs(){
-  let list = document.getElementById("tabsList");
-
   // reset for updating
   while (list.firstChild) { // removes all child elements
     list.removeChild(list.lastChild);
   }
   
-  for(let i = 0; i < tabs.length; i++){
+  for(let j = 0; j < tabs.length; j++){
     const delButton = document.createElement("button"); 
     delButton.innerHTML = '<i style="font-size: 2vw;" class="fa fa-close"></i>'; // Font Awesome 4 icon button
     delButton.style.backgroundColor = "inherit";
@@ -196,17 +195,17 @@ function configTabs(){
     
     const tab = document.createElement("div"); // Tabs are divs to allow button children
     var node;
-    if(i == 0) 
+    if(j == 0) 
       node = document.createTextNode("Default");  // name of default tab
     else
-      node = document.createTextNode("Tab_" + i);  // Tab name based on index
+      node = document.createTextNode("Tab_" + j);  // Tab name based on index
     tab.class = "graphTabs";
     tab.style.border = "1px solid black";
     tab.style.borderRadius = "5px";
     tab.style.fontSize = "min(28px, 2vw)";
     tab.style.margin = "5px";
     tab.style.padding = "2px";
-    if(i != 0)  // default tab is not deletable
+    if(j != 0)  // default tab is not deletable
       tab.appendChild(delButton);
     tab.appendChild(node);
     list.appendChild(tab);
@@ -214,7 +213,7 @@ function configTabs(){
     delButton.addEventListener("click", function tabDelete(){ 
       let i = Number(tab.childNodes[1].nodeValue.charAt(4)); // gets the correct index
       tabs.splice(i, 1); // removes one value from i
-      $(list[i-1]).click(); // renders the next tab
+      list.childNodes[i-1].click(); // switches to previous tab
     });
 
     tab.addEventListener("click", function render() {
@@ -281,7 +280,10 @@ function configTabs(){
         //console.log(tabInfo.yAxis);
         //console.log(getAllValues(yName, data));
         var tableData = [];
-        var tableColumns = [];
+        var tableColumns = [{
+          title: "time",
+          field: "time"
+        }];
 
         for (var i = 0; i < xValues.length; i++) {
           var x = {id : i};
@@ -294,16 +296,17 @@ function configTabs(){
         for (var yName of tabInfo.yAxis) {
           var yValues = getAllValues(yName, data);
           for (var i = 0; i < tableData.length; i++) {
+            console.log(tableData[i]);
             tableData[i][yName] = yValues[i];
           }
           tableColumns.push({
             title : yName,
-            field : yName.toLowerCase(),
+            field : yName,
           });
         }
 
-        console.log(tableData)
-        
+        console.log(tableData);
+        console.log(tableColumns);
 
         var table = new Tabulator("#datatable", {
           height:500, // set height of table (in CSS or here), this enables the Virtual DOM and improves render speed dramatically (can be any valid css height value)
@@ -364,7 +367,7 @@ listenChangesinArray(tabs, configTabs);
 
 
 // Event listeners
-
-document.getElementById("runButton").addEventListener("click", function() { tabs[0] = new Graphic("chart", "time", seriesKeys(true).splice(1)); }); // updates default tab data
+document.addEventListener("DOMContentLoaded", function() {configTabs(); });
+document.getElementById("runButton").addEventListener("click", function() { tabs[0] = new Graphic("chart", "time", seriesKeys(true).splice(1)); configTabs(); list.childNodes[0].click(); }); // updates data and goes to default
 document.getElementById("addTab").addEventListener("click", function() { openForm(); });
 document.getElementById("submitModel").addEventListener("click", function() { submit(); });
