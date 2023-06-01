@@ -1,5 +1,7 @@
 import {data} from './editor.js';
 
+//import {Tabulator} from 'tabulator-tables';
+
 // Object class to create charts and tables
 class Graphic {
   constructor(type, xAxis, yAxis){
@@ -10,7 +12,17 @@ class Graphic {
 }
 
 // Where the tab data is stored
-const tabs = [new Graphic("chart", "time", [])]; // default tab info
+var tabs = [new Graphic("chart", "time", [])]; // default tab info
+var chart = new ApexCharts(document.querySelector("#chart"), {
+  chart: {
+    type: 'scatter'
+  },
+  series: [{
+  }],
+  xaxis: {
+  }
+})
+chart.render()
 
 // Creates an array of series keys
 // @def true if only reuturns stocks for default
@@ -20,18 +32,21 @@ function seriesKeys(def){
   for (var x in data.stocks) { // gets the keys of the stocks
     series.push(x);
 
-    if(def == false){ // not included in default
+    if (def == false) { // not included in default
       for (var inflow in data.stocks[x].inflows) { // gets the keys of the inflows
-        if (series.find(function(key) { key == inflow; }) == null) // avoids repeats
+        if (!series.includes(inflow)) { // avoids repeats
           series.push(inflow);
+        }
       }
       for (var outflow in data.stocks[x].outflows) { // gets the keys of the inflows
-        if (series.find(function(key) { key == outflow; }) == null) // avoids repeats
+        if (!series.includes(outflow)) { // avoids repeats
           series.push(outflow);
+        }
       }    
     }
   }
-  if(def == false){ // not included in default
+  
+  if (def == false){ // not included in default
     for (var y in data.converters) { // gets the keys of the variables
       series.push(y);
     }
@@ -147,8 +162,6 @@ function initializeTab() {
   document.getElementById("popForm").style.display = "none"; // hide form
   form.reset(); // reset input
   resetOptions(); // reset options
-
-  console.log(tabs); // TO DO: delete later
 }
 
 // Array listener
@@ -183,15 +196,14 @@ function configTabs(){
     
     const tab = document.createElement("div"); // Tabs are divs to allow button children
     var node;
-    if(i == 0)
+    if(i == 0) 
       node = document.createTextNode("Default");  // name of default tab
     else
       node = document.createTextNode("Tab_" + i);  // Tab name based on index
-    
     tab.class = "graphTabs";
     tab.style.border = "1px solid black";
     tab.style.borderRadius = "5px";
-    tab.style.fontSize = "2vw";
+    tab.style.fontSize = "min(28px, 2vw)";
     tab.style.margin = "5px";
     tab.style.padding = "2px";
     if(i != 0)  // default tab is not deletable
@@ -199,18 +211,150 @@ function configTabs(){
     tab.appendChild(node);
     list.appendChild(tab);
     
-    delButton.addEventListener("click", function tabDelete(){ let i = Number(tab.childNodes[1].nodeValue.charAt(4)); tabs.splice(i, 1); console.log(tabs); /*TO DO: delete later*/} );
-    
-    /* just so i can test another section
-    tab.addEventListener("click", function render() {
-      let i = Number(tab.childNodes[1].nodeValue.charAt(4));
-      var tabInfo = tabs[i];
+    delButton.addEventListener("click", function tabDelete(){ 
+      let i = Number(tab.childNodes[1].nodeValue.charAt(4)); // gets the correct index
+      tabs.splice(i, 1); // removes one value from i
+      $(list[i-1]).click(); // renders the next tab
+    });
 
+    tab.addEventListener("click", function render() {
+      var i = this.lastChild.nodeValue.charAt(4); // Reads the text node
+      if(i == "u") // i = 0 if default
+        i = 0;
+      else
+        i = Number(i); // gets the number
+      
+      var tabInfo = tabs[i];
       if (tabInfo.type == "chart") {
+        document.getElementById('chart').hidden = false;
+        document.getElementById('datatable').hidden = true;
         
+        var options = {
+          series: [
+          ],
+          chart: {
+            type: 'scatter',
+            zoom: {
+              enabled: true,
+              type: 'xy'
+            },
+            height: "100%",
+            width: "100%"
+           },
+          dataLabels: {
+            enabled: false
+          },
+
+          legend: {showForSingleSeries: true},
+          xaxis: {
+          tickAmount: 10,
+          labels: {
+            formatter: function(val) {
+              return parseFloat(val).toFixed(1)
+            }
+          }
+        },
+        yaxis: {
+          tickAmount: 7
+        }
+        };
+
+        var xValues = getAllValues(tabInfo.xAxis, data);
+
+        for (var yName of tabInfo.yAxis) {
+          options.series.push({
+            name : yName,
+            data : getAllValues(yName, data).map((x, idx) => [xValues[idx], x])
+          });
+        }
+
+        options.xaxis.title = {text: tabInfo.xAxis};
+
+        chart.updateOptions(options, true)
+        
+      } else {
+        
+        document.getElementById('chart').hidden = true;
+        document.getElementById('datatable').hidden = false;
+        
+        var xValues = getAllValues(tabInfo.xAxis, data);
+        //console.log(tabInfo.yAxis);
+        //console.log(getAllValues(yName, data));
+        var tableData = [];
+        var tableColumns = [];
+
+        for (var i = 0; i < xValues.length; i++) {
+          var x = {id : i};
+          x[tabInfo.xAxis] = xValues[i];
+
+          tableData.push(x);
+        }
+          
+        
+        for (var yName of tabInfo.yAxis) {
+          var yValues = getAllValues(yName, data);
+          for (var i = 0; i < tableData.length; i++) {
+            tableData[i][yName] = yValues[i];
+          }
+          tableColumns.push({
+            title : yName,
+            field : yName.toLowerCase(),
+          });
+        }
+
+        console.log(tableData)
+        
+
+        var table = new Tabulator("#datatable", {
+          height:500, // set height of table (in CSS or here), this enables the Virtual DOM and improves render speed dramatically (can be any valid css height value)
+          data:tableData, //assign data to table
+          layout:"fitColumns", //fit columns to width of table (optional)
+          columns: tableColumns,
+        });
+        
+        table.on("tableBuilt", () => {
+          //making sure table is built
+          //table.setPage(2);
+        });
+
       }
+      // indicates the active tab
+      for (var t = 0; t < list.childNodes.length; t++){
+        list.childNodes[t].style.backgroundColor = "white";
+      }
+      
+      this.style.backgroundColor = "#ddd";
+  })
+}
+}
+
+function getAllValues(name, data, xValues) {
+  if (name == "time") {
+    return data.timesteps;
+  }
+  
+   for (var stock in data.stocks) {
+     if (name == stock) {
+       return data.stocks[stock]['values'];
+     }
+
+     for (var inflow in data.stocks[stock].inflows) {
+       if (name == inflow) {
+         return data.stocks[stock].inflows[inflow]['values'];
+       }
+     }
+
+     for (var outflow in data.stocks[stock].outflows) {
+       if (name == outflow) {
+         return data.stocks[stock].outflows[outflow]['values'];
+       }
+     }
+   }
+
+  for (var converter in data.converters) {
+    if (name == converter) {
+       return data.converters[converter]['values'];
     }
-    */
   }
 }
 
@@ -220,6 +364,7 @@ listenChangesinArray(tabs, configTabs);
 
 
 // Event listeners
-document.getElementById("runButton").addEventListener("click", function() { tabs[0] = new Graphic("chart", "time", seriesKeys(true).splice(1)); console.log(tabs[0]);/*TO DO: delete later*/ }); // updates default tab data
+
+document.getElementById("runButton").addEventListener("click", function() { tabs[0] = new Graphic("chart", "time", seriesKeys(true).splice(1)); }); // updates default tab data
 document.getElementById("addTab").addEventListener("click", function() { openForm(); });
 document.getElementById("submitModel").addEventListener("click", function() { submit(); });

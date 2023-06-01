@@ -9,7 +9,6 @@ export class Simulation {
         this.dt;
         this.startTime;
         this.endTime;
-        this.timesteps;
     }
 
     /*
@@ -153,7 +152,7 @@ export class Simulation {
             this.data.converters[converterName]["values"] = [];
         }
 
-        this.timesteps = [];
+        this.data.timesteps = [];
     }
 
     /* 
@@ -183,7 +182,7 @@ export class Simulation {
     */
     euler() {
         for (var t = this.startTime + this.dt; parseFloat(t.toFixed(5)) <= parseFloat(this.endTime.toFixed(5)); t += this.dt) { // (skip start time as that was covered in this.initObjects())
-            this.timesteps.push(parseFloat(t.toFixed(5)));
+            this.data.timesteps.push(parseFloat(t.toFixed(5)));
             
             // Calculate new values for all stocks
             for (var stockName in this.data.stocks) {
@@ -226,7 +225,7 @@ export class Simulation {
     */
     rk4() {
         for (var t = this.startTime + this.dt; parseFloat(t.toFixed(5)) <= parseFloat(this.endTime.toFixed(5)); t += this.dt) { // use high precision to make sure correct number of iterations
-            this.timesteps.push(parseFloat(t.toFixed(5)));
+            this.data.timesteps.push(parseFloat(t.toFixed(5)));
 
             let y0_dict = {};
             let k1_dict = {};
@@ -332,6 +331,8 @@ export class Simulation {
     */
     run() {
         this.initObjects(); // set initial values
+
+        this.data["timesteps"] = [this.startTime];
 
         if (this.data["integration_method"] == "euler") {
             this.euler();
