@@ -331,7 +331,7 @@ function configTabs(){
 }
 }
 
-function getAllValues(name, data, xValues) {
+function getAllValues(name, data) {
   if (name == "time") {
     return data.timesteps;
   }
