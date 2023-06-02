@@ -81,6 +81,19 @@
     transition: background-color 0.6s;
   }
 
+  .action label {
+    padding: 5px;
+    background-color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    font-size: min(16px, 2.2vw);
+    transition: background-color 0.6s;
+  }
+
+  .action label:hover {
+    background-color: #ddd;
+  }
+
   .action button:hover {
     background-color: #ddd;
   }

@@ -172,8 +172,6 @@ function init() {
     });
 
     buildTemplates();
-
-    load();
 }
 
 function buildTemplates() {
@@ -350,14 +348,6 @@ function setMode(mode, itemType) {
         myDiagram.nodes.each(n => n.port.cursor = "pointer");
     }
     myDiagram.commitTransaction("mode changed");
-}
-
-function load() {
-    // empty the table 
-    $('#eqTableBody').empty();
-    myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value); // load in the model config to GoJS diagram
-    updateTable(true); // load in the information to the equation editing table
-    loadTableToDiagram(); // bring the table information into the model json (for updating uniflow arrows and more)
 }
 
 // populates model json with tabel information (not just for saving model in the end, instead gets called every time the table is updated)
@@ -599,6 +589,47 @@ function opentab(evt, tabName) {
   evt.currentTarget.className += " active";
 }
 
+function exportData() {
+    var filename = document.getElementById("model_name").value;
+    loadTableToDiagram();
+
+    // download it 
+    download(filename + ".luna", myDiagram.model.toJson());
+}
+
+function download(filename, text) {
+    var pom = document.createElement('a');
+    pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+    pom.setAttribute('download', filename);
+
+    if (document.createEvent) {
+        var event = document.createEvent('MouseEvents');
+        event.initEvent('click', true, true);
+        pom.dispatchEvent(event);
+    }
+    else {
+        pom.click();
+    }
+}
+
+function loadModel(evt) {
+    var reader = new FileReader();
+
+    reader.onload = function (evt) {
+        console.log(evt.target.result)
+        myDiagram.model = go.Model.fromJson(evt.target.result);
+        updateTable(load = true);
+        console.log(myDiagram.model.toJson());
+        loadTableToDiagram();
+    }
+
+    reader.readAsText(evt.target.files[0]);
+
+    reader.onerror = function (evt) {
+        alert("error reading file");
+    }
+}
+
 init();
 
 // add button event listeners
@@ -620,8 +651,9 @@ document.getElementById("defaultOpen").click();
 
 // save, load, and run buttons
 document.getElementById("saveButton").addEventListener("click", loadTableToDiagram);
-document.getElementById("loadButton").addEventListener("click", function() { load(); });
+document.getElementById("load-actual-button").addEventListener("change", loadModel);
 document.getElementById("runButton").addEventListener("click", function() { run(); });
+document.getElementById("exportButton").addEventListener("click", function() { exportData(); });
 
 // Exporting myDiagram
 export {data};
