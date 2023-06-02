@@ -381,9 +381,6 @@ function loadTableToDiagram() {
     myDiagram.model = go.Model.fromJson(JSON.stringify(json));
     // set the diagram position back to what it was
     myDiagram.initialPosition = pos;
-
-    // change the textbox on bottom to the new json
-    document.getElementById("mySavedModel").value = myDiagram.model.toJson();
 }
 
 // This function is used to update the equation editing table with the current model information
@@ -613,14 +610,20 @@ function download(filename, text) {
 }
 
 function loadModel(evt) {
+    // clear the diagram
+    myDiagram.model = go.Model.fromJson("{}");
+    // clear the table
+    $('#eqTableBody').empty();
+
     var reader = new FileReader();
 
     reader.onload = function (evt) {
-        console.log(evt.target.result)
         myDiagram.model = go.Model.fromJson(evt.target.result);
-        updateTable(load = true);
-        console.log(myDiagram.model.toJson());
+        updateTable(true);
         loadTableToDiagram();
+
+        // set the diagram position back to what it was
+        myDiagram.initialPosition = myDiagram.position;
     }
 
     reader.readAsText(evt.target.files[0]);
@@ -629,6 +632,8 @@ function loadModel(evt) {
         alert("error reading file");
     }
 }
+
+document.getElementById("loadButton").addEventListener("click", function () { document.getElementById("load-actual-button").click(); });
 
 init();
 
