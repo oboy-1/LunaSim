@@ -565,12 +565,9 @@ function run() {
     engineJson.end_time = parseFloat(endTime);
     engineJson.dt = parseFloat(dt);
     engineJson.integration_method = integrationMethod;
-
-  sim.setData(engineJson);
-  data = sim.run();
-
+    
     sim.setData(engineJson);
-    var data = sim.run();
+    data = sim.run();
 
     console.log(data); // TODO: remove this
 
@@ -622,7 +619,7 @@ document.getElementById("secondaryOpen").addEventListener("click", function() { 
 document.getElementById("defaultOpen").click();
 
 // save, load, and run buttons
-document.getElementById("saveButton").addEventListener("click", loadTableToDiagram());
+document.getElementById("saveButton").addEventListener("click", loadTableToDiagram);
 document.getElementById("loadButton").addEventListener("click", function() { load(); });
 document.getElementById("runButton").addEventListener("click", function() { run(); });
 
