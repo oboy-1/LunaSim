@@ -41,14 +41,10 @@ export class Simulation {
     Example: 'converter1*converter2+stock1' --> '(1)*(2)+(3)'
     */
     parseObject(equation) {
-        if (equation.includes("Circular definition")) {
-            return equation;
-        }
-
         let objects = {} // stores all stocks, converters, and flows and their respective equation/safeval
 
         for (var stock in this.data.stocks) {
-            objects[stock] = this.data.stocks[stock]["equation"];
+            objects[stock] = this.data.stocks[stock]["safeval"];
 
             // add the inflows and outflows to the available objects
             for (var flow in this.data.stocks[stock]["inflows"]) {
@@ -69,11 +65,7 @@ export class Simulation {
         // Call parseObject recursively on all objects to replace the names with their respective values
         for (var object of sortedObjects) {
             if (equation.includes(object)) {
-                try {
-                    equation = equation.replace("[" + object + "]", this.parseObject('(' + objects[object] + ')')); // RECURSIVE
-                } catch (e) {
-                    return "Circular definition";
-                }
+                equation = equation.replace("[" + object + "]", this.parseObject('(' + objects[object] + ')')); // RECURSIVE
             }
         }
 
@@ -83,10 +75,6 @@ export class Simulation {
     parseAndEval(equation) {       
         var parsedEquation;
         parsedEquation = this.parseObject(equation);
-        if (parsedEquation.includes("Circular definition")) {
-            alert("Error: Circular definition in equation:\n" + equation + "\n\nPlease check your equations and try again.")
-            throw new Error("Invalid equation");
-        }
 
         var res;
         res = this.safeEval(parsedEquation);
@@ -126,6 +114,36 @@ export class Simulation {
 
         for (var converterName in this.data.converters) {
             this.data.converters[converterName]["values"] = [this.parseAndEval(this.data.converters[converterName]["equation"])];
+        }
+
+        // check if any values are null 
+        for (var stockName in this.data.stocks) {
+            let stock = this.data.stocks[stockName];
+
+            if (stock["values"][0] == null) {
+                alert("Error: Invalid equation (maybe circular definition):\n" + stock["equation"] + "\n\nPlease check your equations and try again.")
+                throw new Error("Invalid equation");
+            }
+
+            for (var flowName in stock["inflows"]) {
+                if (stock["inflows"][flowName]["values"][0] == null) {
+                    alert("Error: Invalid equation (maybe circular definition):\n" + stock["inflows"][flowName]["equation"] + "\n\nPlease check your equations and try again.")
+                    throw new Error("Invalid equation");
+                }
+            }
+            for (var flowName in stock["outflows"]) {
+                if (stock["outflows"][flowName]["values"][0] == null) {
+                    alert("Error: Invalid equation (maybe circular definition):\n" + stock["outflows"][flowName]["equation"] + "\n\nPlease check your equations and try again.")
+                    throw new Error("Invalid equation");
+                }
+            }
+        }
+
+        for (var converterName in this.data.converters) {
+            if (this.data.converters[converterName]["values"][0] == null) {
+                alert("Error: Invalid equation (maybe circular definition):\n" + this.data.converters[converterName]["equation"] + "\n\nPlease check your equations and try again.")
+                throw new Error("Invalid equation");
+            }
         }
     }
 
