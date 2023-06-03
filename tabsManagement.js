@@ -211,7 +211,7 @@ function configTabs(){
     list.appendChild(tab);
     
     delButton.addEventListener("click", function tabDelete(){ 
-      let i = Number(tab.childNodes[1].nodeValue.charAt(4)); // gets the correct index
+      let i = Number(tab.lastChild.nodeValue.charAt(4)); // gets the correct index
       tabs.splice(i, 1); // removes one value from i
       list.childNodes[i-1].click(); // switches to previous tab
     });
@@ -259,11 +259,22 @@ function configTabs(){
         };
 
         var xValues = getAllValues(tabInfo.xAxis, data);
+        if(xValues == null){ // deletes tab and sends alert when data is deleted
+          alert("There is missing data in this tab. (corrected)");
+          this.firstChild.click(); // Auto-clicks delete button
+          return;
+        }
 
         for (var yName of tabInfo.yAxis) {
+          var yValues = getAllValues(yName, data);
+          if(yValues == null){ // deletes tab and sends alert when data is deleted
+            alert("There is missing data in this tab. (corrected)");
+            this.firstChild.click(); // Auto-clicks delete button
+            return;
+          }
           options.series.push({
             name : yName,
-            data : getAllValues(yName, data).map((x, idx) => [xValues[idx], x])
+            data : yValues.map((x, idx) => [xValues[idx], x])
           });
         }
 
@@ -277,6 +288,12 @@ function configTabs(){
         document.getElementById('datatable').hidden = false;
         
         var xValues = getAllValues(tabInfo.xAxis, data);
+        if(xValues == null){ // deletes tab and sends alert when data is deleted
+          alert("There is missing data in this tab. (corrected)");
+          this.firstChild.click(); // Auto-clicks delete button
+          return;
+        }
+        
         //console.log(tabInfo.yAxis);
         //console.log(getAllValues(yName, data));
         var tableData = [];
@@ -295,6 +312,11 @@ function configTabs(){
         
         for (var yName of tabInfo.yAxis) {
           var yValues = getAllValues(yName, data);
+          if(yValues == null){ // deletes tab and sends alert when data is deleted
+            alert("There is missing data in this tab. (corrected)");
+            this.firstChild.click();
+            return;
+          }
           for (var i = 0; i < tableData.length; i++) {
             console.log(tableData[i]);
             tableData[i][yName] = yValues[i];
@@ -367,7 +389,7 @@ listenChangesinArray(tabs, configTabs);
 
 
 // Event listeners
-document.addEventListener("DOMContentLoaded", function() {configTabs(); });
-document.getElementById("runButton").addEventListener("click", function() { tabs[0] = new Graphic("chart", "time", seriesKeys(true).splice(1)); configTabs(); list.childNodes[0].click(); }); // updates data and goes to default
+document.addEventListener("DOMContentLoaded", function() { configTabs(); });
+document.getElementById("runButton").addEventListener("click", function() { tabs[0] = new Graphic("chart", "time", seriesKeys(true).splice(1)); configTabs(); list.firstChild.click(); }); // updates data and goes to default
 document.getElementById("addTab").addEventListener("click", function() { openForm(); });
 document.getElementById("submitModel").addEventListener("click", function() { submit(); });
