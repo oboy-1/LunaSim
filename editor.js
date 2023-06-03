@@ -172,6 +172,8 @@ function init() {
     });
 
     buildTemplates();
+
+    myDiagram.model = go.Model.fromJson("{ \"class\": \"GraphLinksModel\", \"linkLabelKeysProperty\": \"labelKeys\", \"nodeDataArray\": [],\"linkDataArray\": [] }"); // default if no model is loaded
 }
 
 function buildTemplates() {
@@ -611,7 +613,7 @@ function download(filename, text) {
 
 function loadModel(evt) {
     // clear the diagram
-    myDiagram.model = go.Model.fromJson("{}");
+    myDiagram.model = go.Model.fromJson("{ \"class\": \"GraphLinksModel\", \"linkLabelKeysProperty\": \"labelKeys\", \"nodeDataArray\": [],\"linkDataArray\": [] }");
     // clear the table
     $('#eqTableBody').empty();
 
