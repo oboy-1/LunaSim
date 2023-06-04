@@ -355,10 +355,12 @@ function setMode(mode, itemType) {
     myDiagram.commitTransaction("mode changed");
 }
 
-// populates model json with tabel information (not just for saving model in the end, instead gets called every time the table is updated)
+// populates model json with table information (not just for saving model in the end, instead gets called every time the table is updated)
 function loadTableToDiagram() {
     // get the json from the GoJS model
     var data = myDiagram.model.toJson();
+    console.log(sessionStorage.modelData);
+  
     var json = JSON.parse(data);
 
     var $tbody = $('#eqTableBody');
@@ -384,6 +386,7 @@ function loadTableToDiagram() {
 
     // update the model with the new json
     myDiagram.model = go.Model.fromJson(JSON.stringify(json));
+    sessionStorage.modelData = myDiagram.model.toJSON(); // updates session storage
     // set the diagram position back to what it was
     myDiagram.initialPosition = pos;
 }
@@ -642,6 +645,15 @@ function loadModel(evt) {
     reader.onerror = function (evt) {
         alert("error reading file");
     }
+}
+
+// Retrieves session storage data when loaded
+window.onload = function(){
+  if(sessionStorage.modelData){
+    myDiagram.model = go.Model.fromJson(sessionStorage.modelData);
+    updateTable(true);
+    loadTableToDiagram();
+  }
 }
 
 document.getElementById("loadButton").addEventListener("click", function () { document.getElementById("load-actual-button").click(); });
