@@ -555,6 +555,19 @@ function run() {
     var dt = document.getElementById("dt").value;
     var integrationMethod = document.getElementById("integrationMethod").value == "euler" ? "euler" : "rk4";
 
+    if(Number(startTime) >= Number(endTime)){ // terminates the end time is not greater than the start
+      alert("The end time must be greater than the start time.");
+      return;
+    }
+    if(Number(dt) > Number(endTime)-Number(startTime)){ // terminates the dt is greater than duration
+      alert("The dt must be less than or equal to the duration.");
+      return;
+    }
+    if(Number(dt) <= 0){ // terminates the dt is not greater than zero
+      alert("The dt must be greater than zero.");
+      return;
+    }
+
     engineJson.start_time = parseFloat(startTime);
     engineJson.end_time = parseFloat(endTime);
     engineJson.dt = parseFloat(dt);
