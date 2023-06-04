@@ -6,6 +6,9 @@
 // TODO: test save function (with uniflow)
 // TODO: have the diagram remember the last position of the overall diagram (panning) 
 
+var PERFORMANCE_MODE = false; // For testing runtime
+export {PERFORMANCE_MODE};
+
 import { Simulation } from "./engine.js";
 import { translate } from "./translator.js";
 import { CurvedLinkReshapingTool } from "./CurvedLinkReshapingTool.js";
@@ -539,6 +542,7 @@ function labelValidator(textblock, oldstr, newstr) {
 }
 
 function run() {
+  
     loadTableToDiagram();
 
     var json = JSON.parse(myDiagram.model.toJson());
@@ -556,10 +560,15 @@ function run() {
     engineJson.integration_method = integrationMethod;
     
     sim.setData(engineJson);
+
+    if (PERFORMANCE_MODE == true)
+      console.time('Simulation Runtime'); // Measuring simulation runtime
     data = sim.run();
 
-    console.log(data); // TODO: remove this
-
+    if (PERFORMANCE_MODE == true) { // Measuring simulation runtime
+      console.timeEnd('Simulation Runtime');
+    }
+  
     sim.reset();
 }
 
@@ -657,6 +666,8 @@ document.getElementById("secondaryOpen").addEventListener("click", function() { 
 document.getElementById("defaultOpen").click();
 
 // save, load, and run buttons
+document.getElementById("loadButton").addEventListener("click", function() { load(); });
+
 document.getElementById("load-actual-button").addEventListener("change", loadModel);
 document.getElementById("runButton").addEventListener("click", function() { run(); });
 document.getElementById("exportButton").addEventListener("click", function() { exportData(); });

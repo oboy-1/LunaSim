@@ -1,6 +1,8 @@
 import {data} from './editor.js';
+import { PERFORMANCE_MODE } from "./editor.js";
 
-//import {Tabulator} from 'tabulator-tables';
+
+var TESTING_MODE = false;
 
 // Object class to create charts and tables
 class Graphic {
@@ -13,6 +15,7 @@ class Graphic {
 
 // Where the tab data is stored
 var tabs = [new Graphic("chart", "time", [])]; // default tab info
+
 let list = document.getElementById("tabsList"); // list of tab elements
 var chart = new ApexCharts(document.querySelector("#chart"), {
   chart: {
@@ -182,6 +185,9 @@ function listenChangesinArray(arr,callback){
 
 // Configures dynamic tabs
 function configTabs(){
+  if(TESTING_MODE) 
+    console.log(tabs);
+  
   // reset for updating
   while (list.firstChild) { // removes all child elements
     list.removeChild(list.lastChild);
@@ -217,6 +223,10 @@ function configTabs(){
     });
 
     tab.addEventListener("click", function render() {
+      if (data == null){ // ensures that the simulation has been run first
+        alert("The simulation must be run first.");
+        return;
+      }
       var i = this.lastChild.nodeValue.charAt(4); // Reads the text node
       if(i == "u") // i = 0 if default
         i = 0;
@@ -225,6 +235,9 @@ function configTabs(){
       
       var tabInfo = tabs[i];
       if (tabInfo.type == "chart") {
+        if (PERFORMANCE_MODE == true)
+          console.time('Chart Render Time'); // Measuring chart render time
+        
         document.getElementById('chart').hidden = false;
         document.getElementById('datatable').hidden = true;
         
@@ -281,67 +294,68 @@ function configTabs(){
         options.xaxis.title = {text: tabInfo.xAxis};
 
         chart.updateOptions(options, true)
-        
+
+        if (PERFORMANCE_MODE == true) { // Measuring chart render time
+          console.timeEnd('Chart Render Time');
+        }
       } else {
+          if (PERFORMANCE_MODE == true)
+            console.time('Table Render Time'); // Measuring table render time
         
-        document.getElementById('chart').hidden = true;
-        document.getElementById('datatable').hidden = false;
+          document.getElementById('chart').hidden = true;
+          document.getElementById('datatable').hidden = false;
         
-        var xValues = getAllValues(tabInfo.xAxis, data);
-        if(xValues == null){ // deletes tab and sends alert when data is deleted
-          alert("There is missing data in this tab. (corrected)");
-          this.firstChild.click(); // Auto-clicks delete button
-          return;
-        }
-        
-        //console.log(tabInfo.yAxis);
-        //console.log(getAllValues(yName, data));
-        var tableData = [];
-        var tableColumns = [{
-          title: "time",
-          field: "time"
-        }];
-
-        for (var i = 0; i < xValues.length; i++) {
-          var x = {id : i};
-          x[tabInfo.xAxis] = xValues[i];
-
-          tableData.push(x);
-        }
-          
-        
-        for (var yName of tabInfo.yAxis) {
-          var yValues = getAllValues(yName, data);
-          if(yValues == null){ // deletes tab and sends alert when data is deleted
+          var xValues = getAllValues(tabInfo.xAxis, data);
+          if(xValues == null){ // deletes tab and sends alert when data is deleted
             alert("There is missing data in this tab. (corrected)");
-            this.firstChild.click();
+            this.firstChild.click(); // Auto-clicks delete button
             return;
           }
-          for (var i = 0; i < tableData.length; i++) {
-            console.log(tableData[i]);
-            tableData[i][yName] = yValues[i];
-          }
-          tableColumns.push({
-            title : yName,
-            field : yName,
-          });
-        }
-
-        console.log(tableData);
-        console.log(tableColumns);
-
-        var table = new Tabulator("#datatable", {
-          height:500, // set height of table (in CSS or here), this enables the Virtual DOM and improves render speed dramatically (can be any valid css height value)
-          data:tableData, //assign data to table
-          layout:"fitColumns", //fit columns to width of table (optional)
-          columns: tableColumns,
-        });
         
-        table.on("tableBuilt", () => {
-          //making sure table is built
-          //table.setPage(2);
-        });
+          var tableData = [];
+          var tableColumns = [{
+            title: "time",
+            field: "time"
+          }];
 
+          for (var i = 0; i < xValues.length; i++) {
+            var x = {id : i};
+            x[tabInfo.xAxis] = xValues[i];
+
+            tableData.push(x);
+          }
+          
+        
+          for (var yName of tabInfo.yAxis) {
+            var yValues = getAllValues(yName, data);
+            if(yValues == null){ // deletes tab and sends alert when data is deleted
+              alert("There is missing data in this tab. (corrected)");
+              this.firstChild.click();
+              return;
+            }
+            for (var i = 0; i < tableData.length; i++) {
+              tableData[i][yName] = yValues[i];
+            }
+            tableColumns.push({
+              title : yName,
+              field : yName,
+            });
+          }
+        
+          var table = new Tabulator("#datatable", {
+            height:500, // set height of table (in CSS or here), this enables the Virtual DOM and improves render speed dramatically (can be any valid css height value)
+            data:tableData, //assign data to table
+            layout:"fitColumns", //fit columns to width of table (optional)
+            columns: tableColumns,
+          });
+        
+          table.on("tableBuilt", () => {
+            //making sure table is built
+          });
+
+          if (PERFORMANCE_MODE == true) { // Measuring table render time
+            console.timeEnd('Table Render Time');
+          }
       }
       // indicates the active tab
       for (var t = 0; t < list.childNodes.length; t++){
@@ -390,6 +404,14 @@ listenChangesinArray(tabs, configTabs);
 
 // Event listeners
 document.addEventListener("DOMContentLoaded", function() { configTabs(); });
-document.getElementById("runButton").addEventListener("click", function() { tabs[0] = new Graphic("chart", "time", seriesKeys(true).splice(1)); configTabs(); list.firstChild.click(); }); // updates data and goes to default
+
+ // updates data and goes to default
+document.getElementById("runButton").addEventListener("click", function() { 
+  tabs[0] = new Graphic("chart", "time", seriesKeys(true).splice(1)); 
+  configTabs(); 
+  list.firstChild.click(); 
+  if(TESTING_MODE) console.log(tabs);  
+});
+
 document.getElementById("addTab").addEventListener("click", function() { openForm(); });
 document.getElementById("submitModel").addEventListener("click", function() { submit(); });
