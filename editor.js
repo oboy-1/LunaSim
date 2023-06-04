@@ -176,7 +176,7 @@ function init() {
 
     buildTemplates();
 
-    load();
+    myDiagram.model = go.Model.fromJson("{ \"class\": \"GraphLinksModel\", \"linkLabelKeysProperty\": \"labelKeys\", \"nodeDataArray\": [],\"linkDataArray\": [] }"); // default if no model is loaded
 }
 
 function buildTemplates() {
@@ -355,14 +355,6 @@ function setMode(mode, itemType) {
     myDiagram.commitTransaction("mode changed");
 }
 
-function load() {
-    // empty the table 
-    $('#eqTableBody').empty();
-    myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value); // load in the model config to GoJS diagram
-    updateTable(true); // load in the information to the equation editing table
-    loadTableToDiagram(); // bring the table information into the model json (for updating uniflow arrows and more)
-}
-
 // populates model json with tabel information (not just for saving model in the end, instead gets called every time the table is updated)
 function loadTableToDiagram() {
     // get the json from the GoJS model
@@ -394,9 +386,6 @@ function loadTableToDiagram() {
     myDiagram.model = go.Model.fromJson(JSON.stringify(json));
     // set the diagram position back to what it was
     myDiagram.initialPosition = pos;
-
-    // change the textbox on bottom to the new json
-    document.getElementById("mySavedModel").value = myDiagram.model.toJson();
 }
 
 // This function is used to update the equation editing table with the current model information
@@ -608,6 +597,55 @@ function opentab(evt, tabName) {
   evt.currentTarget.className += " active";
 }
 
+function exportData() {
+    var filename = document.getElementById("model_name").value;
+    loadTableToDiagram();
+
+    // download it 
+    download(filename + ".luna", myDiagram.model.toJson());
+}
+
+function download(filename, text) {
+    var pom = document.createElement('a');
+    pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+    pom.setAttribute('download', filename);
+
+    if (document.createEvent) {
+        var event = document.createEvent('MouseEvents');
+        event.initEvent('click', true, true);
+        pom.dispatchEvent(event);
+    }
+    else {
+        pom.click();
+    }
+}
+
+function loadModel(evt) {
+    // clear the diagram
+    myDiagram.model = go.Model.fromJson("{ \"class\": \"GraphLinksModel\", \"linkLabelKeysProperty\": \"labelKeys\", \"nodeDataArray\": [],\"linkDataArray\": [] }");
+    // clear the table
+    $('#eqTableBody').empty();
+
+    var reader = new FileReader();
+
+    reader.onload = function (evt) {
+        myDiagram.model = go.Model.fromJson(evt.target.result);
+        updateTable(true);
+        loadTableToDiagram();
+
+        // set the diagram position back to what it was
+        myDiagram.initialPosition = myDiagram.position;
+    }
+
+    reader.readAsText(evt.target.files[0]);
+
+    reader.onerror = function (evt) {
+        alert("error reading file");
+    }
+}
+
+document.getElementById("loadButton").addEventListener("click", function () { document.getElementById("load-actual-button").click(); });
+
 init();
 
 // add button event listeners
@@ -631,7 +669,9 @@ document.getElementById("defaultOpen").click();
 document.getElementById("saveButton").addEventListener("click", loadTableToDiagram);
 document.getElementById("loadButton").addEventListener("click", function() { load(); });
 
+document.getElementById("load-actual-button").addEventListener("change", loadModel);
 document.getElementById("runButton").addEventListener("click", function() { run(); });
+document.getElementById("exportButton").addEventListener("click", function() { exportData(); });
 
 // Exporting myDiagram
 export {data};
