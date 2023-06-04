@@ -65,7 +65,7 @@ export class Simulation {
         // Call parseObject recursively on all objects to replace the names with their respective values
         for (var object of sortedObjects) {
             if (equation.includes(object)) {
-                equation = equation.replace("[" + object + "]", this.parseObject('(' + objects[object] + ')')); // RECURSIVE
+                equation = equation.replaceAll("[" + object + "]", this.parseObject('(' + objects[object] + ')')); // RECURSIVE
             }
         }
 
