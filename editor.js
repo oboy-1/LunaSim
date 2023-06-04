@@ -358,9 +358,7 @@ function setMode(mode, itemType) {
 // populates model json with table information (not just for saving model in the end, instead gets called every time the table is updated)
 function loadTableToDiagram() {
     // get the json from the GoJS model
-    var data = myDiagram.model.toJson();
-    console.log(sessionStorage.modelData);
-  
+    var data = myDiagram.model.toJson();  
     var json = JSON.parse(data);
 
     var $tbody = $('#eqTableBody');
