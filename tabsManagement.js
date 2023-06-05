@@ -408,8 +408,8 @@ function getAllValues(name, data) {
 // Updates tabs buttons on side when the array is changed
 listenChangesinArray(tabs, configTabs);
 
-
 // Event listeners
+
 document.addEventListener("DOMContentLoaded", function() { configTabs(); });
 
  // updates data and goes to default
