@@ -689,7 +689,6 @@ document.getElementById("secondaryOpen").addEventListener("click", function() { 
 document.getElementById("defaultOpen").click();
 
 // save, load, and run buttons
-document.getElementById("loadButton").addEventListener("click", function() { load(); });
 
 document.getElementById("load-actual-button").addEventListener("change", loadModel);
 document.getElementById("runButton").addEventListener("click", function() { run(); });
