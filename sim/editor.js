@@ -108,6 +108,7 @@ function init() {
     // when the document is modified, add a "*" to the title
     myDiagram.addDiagramListener("Modified", e => {
         document.title = document.title.replace(/\*.*/, "");
+        sessionStorage.modelData = myDiagram.model.toJSON(); // updates session storage
     });
 
     // add input listener which updates the table whenever the diagram model changes
@@ -355,10 +356,10 @@ function setMode(mode, itemType) {
     myDiagram.commitTransaction("mode changed");
 }
 
-// populates model json with tabel information (not just for saving model in the end, instead gets called every time the table is updated)
+// populates model json with table information (not just for saving model in the end, instead gets called every time the table is updated)
 function loadTableToDiagram() {
     // get the json from the GoJS model
-    var data = myDiagram.model.toJson();
+    var data = myDiagram.model.toJson();  
     var json = JSON.parse(data);
 
     var $tbody = $('#eqTableBody');
@@ -384,6 +385,7 @@ function loadTableToDiagram() {
 
     // update the model with the new json
     myDiagram.model = go.Model.fromJson(JSON.stringify(json));
+    sessionStorage.modelData = myDiagram.model.toJSON(); // updates session storage
     // set the diagram position back to what it was
     myDiagram.initialPosition = pos;
 }
@@ -554,6 +556,19 @@ function run() {
     var dt = document.getElementById("dt").value;
     var integrationMethod = document.getElementById("integrationMethod").value == "euler" ? "euler" : "rk4";
 
+    if(Number(startTime) >= Number(endTime)){ // terminates the end time is not greater than the start
+      alert("The end time must be greater than the start time.");
+      return;
+    }
+    if(Number(dt) > Number(endTime)-Number(startTime)){ // terminates the dt is greater than duration
+      alert("The dt must be less than or equal to the duration.");
+      return;
+    }
+    if(Number(dt) <= 0){ // terminates the dt is not greater than zero
+      alert("The dt must be greater than zero.");
+      return;
+    }
+
     engineJson.start_time = parseFloat(startTime);
     engineJson.end_time = parseFloat(endTime);
     engineJson.dt = parseFloat(dt);
@@ -644,6 +659,15 @@ function loadModel(evt) {
     }
 }
 
+// Retrieves session storage data when loaded
+window.onload = function(){
+  if(sessionStorage.modelData){
+    myDiagram.model = go.Model.fromJson(sessionStorage.modelData);
+    updateTable(true);
+    loadTableToDiagram();
+  }
+}
+
 document.getElementById("loadButton").addEventListener("click", function () { document.getElementById("load-actual-button").click(); });
 
 init();
@@ -666,7 +690,6 @@ document.getElementById("secondaryOpen").addEventListener("click", function() { 
 document.getElementById("defaultOpen").click();
 
 // save, load, and run buttons
-document.getElementById("loadButton").addEventListener("click", function() { load(); });
 
 document.getElementById("load-actual-button").addEventListener("change", loadModel);
 document.getElementById("runButton").addEventListener("click", function() { run(); });

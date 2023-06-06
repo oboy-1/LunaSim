@@ -15,6 +15,8 @@ class Graphic {
 
 // Where the tab data is stored
 var tabs = [new Graphic("chart", "time", [])]; // default tab info
+if(sessionStorage.tabsData)
+  tabs = JSON.parse(sessionStorage.tabsData);
 
 let list = document.getElementById("tabsList"); // list of tab elements
 var chart = new ApexCharts(document.querySelector("#chart"), {
@@ -106,6 +108,10 @@ function openForm(){
     alert("The simulation must be run first.");
     return;
   }
+  if (seriesKeys(false).length == 1){
+    alert("Must create a model first.");
+    return;
+  }
   addOptions(); // dynamically adds in the options
   let form = document.getElementById("popForm");
   form.style.display = "block"; // display form
@@ -185,6 +191,7 @@ function listenChangesinArray(arr,callback){
 
 // Configures dynamic tabs
 function configTabs(){
+  sessionStorage.tabsData = JSON.stringify(tabs); // updates session storage
   if(TESTING_MODE) 
     console.log(tabs);
   
@@ -343,7 +350,7 @@ function configTabs(){
           }
         
           var table = new Tabulator("#datatable", {
-            height:500, // set height of table (in CSS or here), this enables the Virtual DOM and improves render speed dramatically (can be any valid css height value)
+            height:640, // set height of table (in CSS or here), this enables the Virtual DOM and improves render speed dramatically (can be any valid css height value)
             data:tableData, //assign data to table
             layout:"fitColumns", //fit columns to width of table (optional)
             columns: tableColumns,
@@ -401,8 +408,8 @@ function getAllValues(name, data) {
 // Updates tabs buttons on side when the array is changed
 listenChangesinArray(tabs, configTabs);
 
-
 // Event listeners
+
 document.addEventListener("DOMContentLoaded", function() { configTabs(); });
 
  // updates data and goes to default
