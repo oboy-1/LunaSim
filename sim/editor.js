@@ -108,6 +108,7 @@ function init() {
     // when the document is modified, add a "*" to the title
     myDiagram.addDiagramListener("Modified", e => {
         document.title = document.title.replace(/\*.*/, "");
+        sessionStorage.modelData = myDiagram.model.toJSON(); // updates session storage
     });
 
     // add input listener which updates the table whenever the diagram model changes
