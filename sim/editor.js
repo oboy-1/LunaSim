@@ -432,7 +432,8 @@ function updateTable(load = false) {
                     $('<input>').attr('type', 'text').attr('name', 'name').attr('value', item.label).attr('readonly', true) // add the name of the object to the row (uneditable by user)
                 ),
                 $('<td>').append(
-                    $('<input>').attr('type', 'text').attr('name', 'equation') // in the next column, add the equation (editable by user)
+                    // make width 100% so that the equation takes up the entire column
+                    $('<input>').attr('type', 'text').attr('name', 'equation').css('width', '99%')
                 ),
             ).appendTo($tbody);
 
