@@ -108,7 +108,6 @@ function init() {
     // when the document is modified, add a "*" to the title
     myDiagram.addDiagramListener("Modified", e => {
         document.title = document.title.replace(/\*.*/, "");
-        sessionStorage.modelData = myDiagram.model.toJSON(); // updates session storage
     });
 
     // add input listener which updates the table whenever the diagram model changes
@@ -151,6 +150,10 @@ function init() {
         }
 
         updateTable();
+        // don't do this if model is empty
+        if (myDiagram.model.nodeDataArray.length !== 0) {
+            sessionStorage.modelData = myDiagram.model.toJson();
+        }
     });
 
     // generate unique label for valve on newly-created flow link
