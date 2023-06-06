@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+<head>
+  <title>LunaSim</title>
+  <meta id="vp" name="viewport" content="width=device-width">
+  <script>
+    // set the viewport width to no less than minimum
+    window.onload = function () {
+      if (screen.width < 600) {
+        var mvp = document.getElementById('vp');
+        mvp.setAttribute('content', 'minimum-scale=1,width=600');
+      }
+    }
+  </script>
+  <link rel="icon" href="../img/lunaLogo.svg">
+</head>
+<style>
+  .body{
+    font-family: sans-serif;
+    line-height: 60px;
+  }
+  .tablinks{
+    background-color: inherit;
+    border: none;
+    width: 20vw;
+    height: 100%;
+    font-weight: bold;
+    color: white;
+    font-size: min(30px, 4vw);
+  }
+  .tablinks:hover{
+    font-weight: normal;
+  }
+  .tablinks.active{
+    background-color: #bf9000ff;
+  }
+  .tabContent{
+    width: 100%;
+    height: 90vh;
+  }
+</style>
+<body>
+  <div style="width: 100%; height: 10vh; background-color: #f1c232ff;">
+    <button class = "tablinks active" onclick = "opentab(event, 'home');">Home</button>
+    <button class = "tablinks" onclick = "opentab(event, 'about');">About</button>
+    <button class = "tablinks" onclick = "opentab(event, 'contact');">Contact</button>
+  </div>
+  <div class="tabContent" id="home">
+    <p style="font-size: min(50px, 8vw); text-align: center; font-weight: bold;">LunaSim</p>
+    <p style="font-size: min(40px, 5vw); text-align: center;">A <b>brower-based</b> system dynamics software made <b>free</b> and <b>practical</b> for you.</p>
+    <button onclick="window.location.href='../sim/systemDynamics.html'"style="width: min(360px, 40vw); height: 40px; border-radius: 20px; background-color: #212121ff; margin-left: calc((100% - min(360px, 40vw))/2); color: white; font-size: min(30px, 4vw);">
+      <img src="../img/lunaLogo.svg" alt="LunaSim" style="height: 5vh; float: left;">Click to launch
+    </button>
+  </div>
+  <div class="tabContent" id="about"><img src="../img/dynalysisLogo.png" alt="Dynalysis" style="height: 15vw; float: left;"><p style="font-size: min(40px, 4vw);">For a school project our client tasked us with creating a free, browser-based software the could replace Stella Architect for his students to use. It has the same functionality, but it is completely free and compatible with Chromebooks, a school-approved device.
+<br><br>Thank you to <strong>Northwoods Software</strong> for providing us with your libraries.</p>
+  </div>
+  <div class="tabContent" id="contact"> Contacts page
+  </div>
+  <script>
+    function opentab(evt, tabName) {
+      var i, tabcontent, tablinks;
+      tabcontent = document.getElementsByClassName("tabContent");
+      for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+      }
+      tablinks = document.getElementsByClassName("tablinks");
+      for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+      }
+      document.getElementById(tabName).style.display = "block";
+      evt.currentTarget.className += " active";
+    }
+  </script>
+</body>
+</html>
