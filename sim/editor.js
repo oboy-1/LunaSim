@@ -433,7 +433,7 @@ function updateTable(load = false) {
                 ),
                 $('<td>').append(
                     // make width 100% so that the equation takes up the entire column
-                    $('<input>').attr('type', 'text').attr('name', 'equation').css('width', '99%')
+                    $("<input style='width: inherit;'>").attr('type', 'text').attr('name', 'equation').css('width', '99%')
                 ),
             ).appendTo($tbody);
 
