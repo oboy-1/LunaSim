@@ -87,6 +87,7 @@ function addOptions(){
     opt.type = "checkbox"; // The input is a checkbox
     opt.value = series[i];
     opt.name = "yAxis";
+    opt.className = "yAxisCheckbox";
     d1.appendChild(opt);
 
     const label = document.createElement("label"); // Creates a label
@@ -121,7 +122,7 @@ function openForm(){
 function submit(){
   let inputs = document.getElementsByTagName('input');
   for (let i = 0; i < inputs.length; i++) {
-    if (inputs.item(i).type == 'checkbox') {
+    if (inputs.item(i).className == 'yAxisCheckbox') {
       if (inputs.item(i).checked == true){
         initializeTab(); // add data if valid
         return false; // want to return false to disable default submission
@@ -152,7 +153,7 @@ function initializeTab() {
   var y = [];
   let inputs = document.getElementsByTagName('input');
   for (let i = 0; i < inputs.length; i++) {
-    if (inputs.item(i).type == 'checkbox') {
+    if (inputs.item(i).className == 'yAxisCheckbox') {
       if (inputs.item(i).checked == true){
         y.push(inputs.item(i).value);
       }

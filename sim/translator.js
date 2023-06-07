@@ -23,7 +23,7 @@ export function translate(obj) {
             }
 
             res.stocks[node.label.toString()] = {
-                "isNN": node.checkbox.toString(),
+                "isNN": node.checkbox,
                 "values": [],
                 "safeval": null,
                 "equation": node.equation,
@@ -78,7 +78,7 @@ export function translate(obj) {
 
             // add a '#' to the flow equation if it is a uniflow (processed in engine.js)
             if (isUniflow) {
-                flowEq = "#" + flowEq;
+                flowEq = "Math.max(0," + flowEq + ")";
             }
 
             // check if the from is a stock

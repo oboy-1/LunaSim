@@ -16,21 +16,8 @@ export class Simulation {
     TODO: Fully test this function.
     */
     safeEval(expression) {
-        // ensure that the expression is only parentheses, numbers, operators, and variables, unless if it is a Math function
-        var regex = /[^0-9\(\)\+\-\*\/\%\.\s\[\]a-zA-Z]/g; // TODO: Fully test this regex
-        if (regex.test(expression)) {
-            return NaN;
-        }
-
         try {
-            let res;
-            if (expression[0] == "#") { // check if the expression is a uniflow
-                res = Math.max(0, eval?.(expression.slice(1)));
-            } else {
-                res = eval?.(expression);
-            }
-
-            return res;
+            return eval?.(expression);
         } catch (e) {
             return NaN;
         }
@@ -65,7 +52,7 @@ export class Simulation {
         // Call parseObject recursively on all objects to replace the names with their respective values
         for (var object of sortedObjects) {
             if (equation.includes(object)) {
-                equation = equation.replaceAll("[" + object + "]", this.parseObject('(' + objects[object] + ')')); // RECURSIVE
+                equation = equation.replaceAll("[" + object + "]", this.parseAndEval('(' + objects[object] + ')')); // RECURSIVE
             }
         }
 
@@ -75,9 +62,7 @@ export class Simulation {
     parseAndEval(equation) {       
         var parsedEquation;
         parsedEquation = this.parseObject(equation);
-
-        var res;
-        res = this.safeEval(parsedEquation);
+        var res = this.safeEval(parsedEquation);
 
         if (isNaN(res)) {
             alert("Error: Invalid equation:\n" + equation + "\n\nParsed equation:\n" + parsedEquation + "\n\nPlease check your equations and try again.")
@@ -95,6 +80,10 @@ export class Simulation {
             let stock = this.data.stocks[stockName];
 
             let value = this.parseAndEval(stock["equation"]);
+
+            if (stock["isNN"] == true) {
+                value = Math.max(0, value);
+            }
             
             stock["safeval"] = value;
             stock["values"] = [value];
@@ -294,17 +283,23 @@ export class Simulation {
                 stock["safeval"] = y0_dict[stockName] + k3_dict[stockName];
             }
 
-            // k4 and final value
+            // k4
             for (var stockName in this.data.stocks) {
                 let stock = this.data.stocks[stockName];
 
                 let k4 = this.dydt(stock) * this.dt;
                 k4_dict[stockName] = k4;
             }
+
+            // final value
             for (var stockName in this.data.stocks) {
                 let stock = this.data.stocks[stockName];
 
-                stock["values"].push(y0_dict[stockName] + (k1_dict[stockName] + 2 * k2_dict[stockName] + 2 * k3_dict[stockName] + k4_dict[stockName]) / 6);
+                if (stock["isNN"] == true) { // check if stock is non-negative
+                    stock["values"].push(Math.max(0, y0_dict[stockName] + (k1_dict[stockName] + 2 * k2_dict[stockName] + 2 * k3_dict[stockName] + k4_dict[stockName]) / 6));
+                } else {
+                    stock["values"].push(y0_dict[stockName] + (k1_dict[stockName] + 2 * k2_dict[stockName] + 2 * k3_dict[stockName] + k4_dict[stockName]) / 6);
+                }
             }
             
 

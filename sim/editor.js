@@ -442,7 +442,7 @@ function updateTable(load = false) {
                 $('<td>').append(
                     // this checkbox determines if the stock is non-negative or if the flow is uniflow
                     // also has an event listener that calls the save function when the checkbox is changed (to update arrows on flows)
-                    $('<input>').attr('type', 'checkbox').attr('name', 'checkbox').change(function () {
+                    $('<input>').attr('type', 'checkbox').attr('name', 'checkbox').attr('class', 'nncheckbox').change(function () {
                         loadTableToDiagram();
                     }))
                     .appendTo($tr);
@@ -582,11 +582,14 @@ function run() {
 
     if (PERFORMANCE_MODE == true)
       console.time('Simulation Runtime'); // Measuring simulation runtime
+
     data = sim.run();
 
     if (PERFORMANCE_MODE == true) { // Measuring simulation runtime
       console.timeEnd('Simulation Runtime');
     }
+
+    console.log(data);
   
     sim.reset();
 }
