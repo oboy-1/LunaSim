@@ -568,6 +568,11 @@ function run() {
       alert("The dt must be greater than zero.");
       return;
     }
+  
+    if((Number(endTime)-Number(startTime))/Number(dt) > 1000){
+          alert("There are too many timesteps (max = 1000).");
+          return;
+        }
 
     engineJson.start_time = parseFloat(startTime);
     engineJson.end_time = parseFloat(endTime);
