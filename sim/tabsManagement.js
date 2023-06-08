@@ -275,9 +275,24 @@ function configTabs(){
           }
         },
         yaxis: {
-          tickAmount: 7
+          tickAmount: 7,
         }
         };
+
+        var maxyValue = Number.MIN_VALUE;
+        var minyValue = Number.MAX_VALUE;
+
+        for (var yName of tabInfo.yAxis) {
+          var yValues = getAllValues(yName, data);
+          for (var yValue of yValues) {
+            if (yValue > maxyValue) {
+              maxyValue = yValue;
+            }
+            if (yValue < minyValue) {
+              minyValue = yValue;
+            }
+          }
+        }
 
         var xValues = getAllValues(tabInfo.xAxis, data);
         if(xValues == null){ // deletes tab and sends alert when data is deleted
@@ -300,6 +315,8 @@ function configTabs(){
         }
 
         options.xaxis.title = {text: tabInfo.xAxis};
+        options.yaxis.min = minyValue;
+        options.yaxis.max = maxyValue;
 
         chart.updateOptions(options, true)
 

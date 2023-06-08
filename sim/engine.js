@@ -16,9 +16,14 @@ export class Simulation {
     TODO: Fully test this function.
     */
     safeEval(expression) {
+        // if there are two -- or two ++, remove one
+        expression = expression.replaceAll("--", "+");
+        expression = expression.replaceAll("++", "+");
+
         try {
             return eval?.(expression);
         } catch (e) {
+            console.log(e);
             return NaN;
         }
     }
