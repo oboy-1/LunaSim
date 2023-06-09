@@ -267,17 +267,34 @@ function configTabs(){
 
           legend: {showForSingleSeries: true},
           xaxis: {
-          tickAmount: 10,
-          labels: {
-            formatter: function(val) {
-              return parseFloat(val).toFixed(1)
+            tickAmount: 10,
+            labels: {
+              formatter: function(val) {
+                return parseFloat(val).toFixed(1)
+              }
+            }
+          },
+          yaxis: {
+            forceNiceScale: true,
+            labels: {
+              formatter: function(val) {
+                return parseFloat(val).toFixed(1)
+              }
+            }
+          }, 
+          tooltip: {
+            x: {
+              formatter: function(val) {
+                return parseFloat(val).toFixed(10)
+              }
+            },
+            y: {
+              formatter: function(val) {
+                return parseFloat(val).toFixed(10)
+              }
             }
           }
-        },
-        yaxis: {
-          tickAmount: 7,
         }
-        };
 
         var maxyValue = Number.MIN_VALUE;
         var minyValue = Number.MAX_VALUE;
