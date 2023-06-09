@@ -664,10 +664,19 @@ function loadModel(evt) {
     reader.onload = function (evt) {
         // add simulation parameters from the json
         var json = JSON.parse(evt.target.result);
-        document.getElementById("startTime").value = json.simulationParameters.startTime;
-        document.getElementById("endTime").value = json.simulationParameters.endTime;
-        document.getElementById("dt").value = json.simulationParameters.dt;
-        document.getElementById("integrationMethod").value = json.simulationParameters.integrationMethod;
+
+        // check if the json has simulation parameters
+        if (json.simulationParameters) {
+            document.getElementById("startTime").value = json.simulationParameters.startTime;
+            document.getElementById("endTime").value = json.simulationParameters.endTime;
+            document.getElementById("dt").value = json.simulationParameters.dt;
+            document.getElementById("integrationMethod").value = json.simulationParameters.integrationMethod;
+        } else {
+            document.getElementById("startTime").value = 0;
+            document.getElementById("endTime").value = 10;
+            document.getElementById("dt").value = 0.1;
+            document.getElementById("integrationMethod").value = "rk4";
+        }
 
         myDiagram.model = go.Model.fromJson(evt.target.result);
 
