@@ -275,7 +275,7 @@ function configTabs(){
             }
           },
           yaxis: {
-            forceNiceScale: true,
+            forceNiceScale: false,
             labels: {
               formatter: function(val) {
                 return parseFloat(val).toFixed(1)

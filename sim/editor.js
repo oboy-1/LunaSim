@@ -388,7 +388,9 @@ function loadTableToDiagram() {
 
     // update the model with the new json
     myDiagram.model = go.Model.fromJson(JSON.stringify(json));
+
     sessionStorage.modelData = myDiagram.model.toJSON(); // updates session storage
+
     // set the diagram position back to what it was
     myDiagram.initialPosition = pos;
 }
@@ -622,9 +624,18 @@ function opentab(evt, tabName) {
 function exportData() {
     var filename = document.getElementById("model_name").value;
     loadTableToDiagram();
+    var json = JSON.parse(myDiagram.model.toJson());
+
+    // add simulation parameters to the json
+    json.simulationParameters = {
+        "startTime": parseFloat(document.getElementById("startTime").value),
+        "endTime": parseFloat(document.getElementById("endTime").value),
+        "dt": parseFloat(document.getElementById("dt").value),
+        "integrationMethod": document.getElementById("integrationMethod").value == "euler" ? "euler" : "rk4"
+    };
 
     // download it 
-    download(filename + ".luna", myDiagram.model.toJson());
+    download(filename + ".luna", JSON.stringify(json));
 }
 
 function download(filename, text) {
@@ -651,7 +662,15 @@ function loadModel(evt) {
     var reader = new FileReader();
 
     reader.onload = function (evt) {
+        // add simulation parameters from the json
+        var json = JSON.parse(evt.target.result);
+        document.getElementById("startTime").value = json.simulationParameters.startTime;
+        document.getElementById("endTime").value = json.simulationParameters.endTime;
+        document.getElementById("dt").value = json.simulationParameters.dt;
+        document.getElementById("integrationMethod").value = json.simulationParameters.integrationMethod;
+
         myDiagram.model = go.Model.fromJson(evt.target.result);
+
         updateTable(true);
         loadTableToDiagram();
 
