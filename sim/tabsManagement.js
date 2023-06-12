@@ -1,3 +1,7 @@
+/* Authors: Sienna Simms, Aditya Patil, Karthik S. Vedula
+ * This file contains the code for the tabs management system and rendering of charts and tables.
+ */
+
 import {data} from './editor.js';
 import { PERFORMANCE_MODE } from "./editor.js";
 

@@ -1,6 +1,5 @@
 /* Author: Karthik S. Vedula
  * This file contains the main engine for the simulation.  It runs both euler's method and the RK4 method, given input in the form of a json.
- * TODO: FIX EVAL() SECURITY ISSUE 
  */
 
 export class Simulation {
@@ -12,8 +11,7 @@ export class Simulation {
     }
 
     /*
-    Wrapper for eval() that alerts user if there is a ReferenceError.  Does not catch any errors, only alerts.
-    TODO: Fully test this function.
+    Wrapper for eval().
     */
     safeEval(expression) {
         // if there are two -- or two ++, remove one
@@ -64,6 +62,9 @@ export class Simulation {
         return equation;
     }
 
+    /*
+    Combines parseObject and safeEval to parse and evaluate an equation.  It alrts the user if the equation is invalid.
+    */
     parseAndEval(equation) {       
         var parsedEquation;
         parsedEquation = this.parseObject(equation);

@@ -1,10 +1,7 @@
-/* Author: Karthik S. Vedula, adapted from https://gojs.net/latest/samples/systemDynamics.html
+/* Authors: Karthik S. Vedula, Sienna Simms, adapted from https://gojs.net/latest/samples/systemDynamics.html
  * This file uses the GoJS library to create a system dynamics editor.  Additionally, there is an equation editing table, 
  * which allows the user to edit the equations and characteristics of the objects in the model.
  */
-
-// TODO: test save function (with uniflow)
-// TODO: have the diagram remember the last position of the overall diagram (panning) 
 
 var PERFORMANCE_MODE = false; // For testing runtime
 export {PERFORMANCE_MODE};
