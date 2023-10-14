@@ -166,14 +166,28 @@
               <input id="dt" placeholder="Enter a number" style="box-sizing: border-box; padding-left: 8px; font-size: 18px; width:80%; height:40px; border: 3px solid black;" value="0.1">
             </th>
             <th>
-              <select id="integrationMethod" style="box-sizing: border-box; padding-left: 8px;width:80%; font-size: 18px; height:40px; border: 3px solid black;">
+              <select id="integrationMethod" style="box-sizing: border-box; padding-left: 8px; font-size: 18px; width:80%; height:40px; border: 3px solid black;">
                 <option value="rk4">Runge-Kutta 4</option>
                 <option value="euler">Euler</option>
               </select>
             </th>
           </tr>
         </table>
-        
+
+        <table style="margin-left: 50px;">
+          <tr>
+            <th>
+              <input type="checkbox" id="simParamHighStepCount">
+            </th>
+            <th>
+              <p id="simParamHighStepCountDesc" style="color: yellow;">Enable High Step-Count Simulations (Not Recommended)</p>
+            </th>
+          </tr>
+        </table>
+          
+          
+        </div>
+
         <!--
         <table id="modelConfigTable" class="modelConfigTable"
           style="position: relative; top: 60px; font-size: min(18px, 2.8vw);">

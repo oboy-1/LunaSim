@@ -559,19 +559,74 @@ function run() {
     var dt = document.getElementById("dt").value;
     var integrationMethod = document.getElementById("integrationMethod").value == "euler" ? "euler" : "rk4";
 
-    if(Number(startTime) >= Number(endTime)){ // terminates the end time is not greater than the start
-      alert("The end time must be greater than the start time.");
-      return;
+    document.getElementById("startTime").style = "box-sizing: border-box; padding-left: 8px; font-size: 18px; width:80%; height:40px; border: 3px solid black;";
+    document.getElementById("endTime").style = "box-sizing: border-box; padding-left: 8px; font-size: 18px; width:80%; height:40px; border: 3px solid black;";
+    document.getElementById("dt").style = "box-sizing: border-box; padding-left: 8px; font-size: 18px; width:80%; height:40px; border: 3px solid black;";
+    
+    // Error Checking part 1: All fields must be numbers
+    var errors = [];
+    if (isNaN(Number(startTime))) {
+        errors.push("The start time must be a number");
+        document.getElementById("startTime").style = "box-sizing: border-box; padding-left: 8px; font-size: 18px; width:80%; height:40px; border: 3px solid red;";
     }
-    if(Number(dt) > Number(endTime)-Number(startTime)){ // terminates the dt is greater than duration
-      alert("The dt must be less than or equal to the duration.");
-      return;
+    if (isNaN(Number(endTime))) {
+        errors.push("The end time must be a number");
+        document.getElementById("endTime").style = "box-sizing: border-box; padding-left: 8px; font-size: 18px; width:80%; height:40px; border: 3px solid red;";
     }
-    if(Number(dt) <= 0){ // terminates the dt is not greater than zero
-      alert("The dt must be greater than zero.");
-      return;
+    if (isNaN(Number(dt))) {
+        errors.push("The dt must be a number");
+        document.getElementById("dt").style = "box-sizing: border-box; padding-left: 8px; font-size: 18px; width:80%; height:40px; border: 3px solid red;";
     }
 
+    if (errors.length != 0) {
+        window.scroll({
+            top: document.body.scrollHeight,
+            behavior: "smooth",
+        });
+        alert("There are errors with the simulation parameters:\n\n" + errors.join("\n"));
+        return;
+    }
+
+    // Error Checking part 2: Other issues
+    if(Number(startTime) >= Number(endTime)){ // terminates if the end time is not greater than the start
+      errors.push("The end time must be greater than the start time");
+      document.getElementById("endTime").style = "box-sizing: border-box; padding-left: 8px; font-size: 18px; width:80%; height:40px; border: 3px solid red;";
+    }
+
+    if(Number(dt) > Number(endTime)-Number(startTime)){ // terminates if the dt is greater than duration
+      errors.push("The dt must be less than or equal to the duration.");
+      document.getElementById("dt").style = "box-sizing: border-box; padding-left: 8px; font-size: 18px; width:80%; height:40px; border: 3px solid red;";
+    }
+
+    if(Number(dt) <= 0){ // terminates if the dt is not greater than zero
+      errors.push("The dt must be positive");
+      document.getElementById("dt").style = "box-sizing: border-box; padding-left: 8px; font-size: 18px; width:80%; height:40px; border: 3px solid red;";
+    }
+
+    if (errors.length != 0) {
+        window.scroll({
+            top: document.body.scrollHeight,
+            behavior: "smooth",
+        });
+        alert("There are errors with the simulation parameters:\n\n" + errors.join("\n"));
+        return;
+    }
+
+    // Error Checking part 3: High Step-Count Checker (avoids freezing)
+    if((Number(endTime) - Number(startTime)) / Number(dt) >= 1000){ // 1000+ Steps
+        if (!document.getElementById("simParamHighStepCount").checked) {
+            // The user did not enable high step-count simulations
+            document.getElementById("dt").style = "box-sizing: border-box; padding-left: 8px; font-size: 18px; width:80%; height:40px; border: 3px solid orange;";            
+            window.scroll({
+                top: document.body.scrollHeight,
+                behavior: "smooth",
+            });
+            alert("This simulation contains 1000+ steps; as such, running it may lead to lag or the website freezing. Please adjust dt or enable high step-count simulations.\n\nIf you proceed with the simulation, it may be wise to export your LunaSim project in case the website crashes.");
+            return;
+        }       
+    }
+
+    // Looks all good!
     engineJson.start_time = parseFloat(startTime);
     engineJson.end_time = parseFloat(endTime);
     engineJson.dt = parseFloat(dt);
