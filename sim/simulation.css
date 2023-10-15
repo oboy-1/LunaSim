@@ -7,7 +7,7 @@ body {
   position: fixed;
 
   height: 100px; width: 100%;
-  border: 2px solid black;
+  border-bottom: 2px solid black;
   background-color: white;
 
   z-index: 1000;
@@ -20,6 +20,7 @@ body {
   position: relative;
   font-family: sans-serif;
   margin-left: 20px;
+  bottom: 5px;
 }
 
 #logoImage {
@@ -35,10 +36,10 @@ body {
   border: 1px solid black;
   float: right;
 
-  width: 20%;
+  width: 25%;
   height: 30px;
   right: 25px;
-  bottom: 20px;
+  bottom: 15px;
 }
 
 .action {
@@ -50,10 +51,17 @@ body {
 .action button {
   padding: 5px;
   background-color: white;
-  border: 1px solid black;
+  border: none;
   border-radius: 5px;
   font-size: min(16px, 2.2vw);
   transition: background-color 0.6s;
+}
+
+.action img {
+  position: relative;
+  float: left;
+  width: 18px;
+  height: 18px;
 }
 
 .action label {
@@ -73,13 +81,60 @@ body {
   background-color: #ddd;
 }
 
+#runButton {
+  background-color: #009933;
+  color: white;
+  width: 100px;
+}
 
+#runButton:hover {
+  background-color: #33cc33;
+  transition: 0.2s;
+}
 
+#loadButton {
+  background-color: #35829f;
+  color: white;
+  width: 100px;
+}
 
+#loadButton:hover {
+  background-color: #3ab3df;
+  transition: 0.2s;
+}
 
+#exportButton {
+  background-color: #35829f;
+  color: white;
+  width: 100px;
+}
 
+#exportButton:hover {
+  background-color: #3ab3df;
+  transition: 0.2s;
+}
 
+#switchThemeButton {
+  background-color: #9933ff;
+  color: white;
+  width: 150px;
+}
 
+#switchThemeButton:hover {
+  background-color: #a77aff;
+  transition: 0.2s;
+}
+
+#helpButton {
+  background-color: #9933ff;
+  color: white;
+  width: 80px;
+}
+
+#helpButton:hover {
+  background-color: #a77aff;
+  color: white;
+}
 
 
 
