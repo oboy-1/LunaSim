@@ -646,6 +646,14 @@ function run() {
     console.log(data);
   
     sim.reset();
+
+    // Hopefully, the simulation should have successfully completed; scroll to top of page
+    // and open the "Charts/Tables" tab
+    window.scroll({
+        top: 0,
+        behavior: "smooth",
+    });
+    document.getElementById("secondaryOpen").click();
 }
 
 // function to change color of the tool button when selected (does through changing the class)
