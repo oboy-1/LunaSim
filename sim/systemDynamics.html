@@ -39,16 +39,16 @@
     <script id="code4" type="module" src="tabsManagement.js"></script>
     <div id="sample">
       <!-- Header with the logo -->
-      <div id="header" style="height: 30px; width: 99.8%; border: none; background-color: inherit; margin: 10px;">
-        <p style="font-size: min(36px, 15vw); font-weight: bold; text-align: left; position: relative; bottom: 20px; font-family: sans-serif;">
+      <div id="header">
+        <p id="logoContainer">
           <!--Add logo where both logo and text are same height-->
-          <img src="../img/lunaLogo.svg" alt="LunaSim Logo" style="height: 4vb; position: relative; top: 5px;"> <a href="../landing/homePage.html">LunaSim</a>
+          <img id="logoImage" src="../img/lunaLogo.svg" alt="LunaSim Logo"> <a href="../landing/homePage.html">LunaSim</a>
           <!--Add a textbox to the side-->
-        <input type="text" id="model_name" name="model_name" placeholder="Model Name" style="box-sizing: border-box; padding: 8px; position: relative; right: 15px; top: 10px; width: 20%; height: 30px; font-size: min(24px, 2.8vw); border-radius: 5px; border: 1px solid black; float: right;">
+        <input type="text" id="model_name" name="model_name" placeholder="Model Name">
         </p>
       </div>
       <!-- Navigation and actions -->
-      <div id="nav" style="width: 100%; height: 15px;">
+      <div id="nav">
         <div class="webTabs">
           <button class="tablinks" id="defaultOpen">Model View</button>
           <button class="tablinks" id="secondaryOpen">Charts/Tables</button>
@@ -59,7 +59,7 @@
           <input type="file" id="load-actual-button" hidden/>
           <button id="loadButton">Load</button>
           <button id="exportButton">Export</button>
-          <a href="/UserDocumentation.html" target="_blank"><button id="helpButton" >Help</button></a>
+          <a href="/UserDocumentation.html" target="_blank"><button id="helpButton">Help</button></a>
         </div>
       </div>
       <!-- Content for the modal view -->
@@ -72,37 +72,29 @@
           <button id="flow_button" class="link_normal tool">Flow</button>
           <button id="influence_button" class="link_normal tool">Influence</button>
         </div>
-        <div id="myDiagram"
-          style="width: 90%; height: 94%; border: 1px solid black; background-color: white; position: absolute; right: 20px; top: 15px;">
-          <canvas tabindex="0"
-            style="position: absolute; top: 0px; left: 0px; z-index: 2; user-select: none; touch-action: none; width: 598px; height: 498px;"
-            width="598" height="498">This text is displayed if your browser does not support the Canvas HTML
+        <div id="myDiagram">
+          <canvas tabindex="0" width="598" height="498">This text is displayed if your browser does not support the Canvas HTML
             element.</canvas>
         </div>
       </div>
       <!-- Content for the charts and tables -->
       <div class="tabContent" id="chartsTables">
-        <div id="tabManager"
-          style="border: 1px solid black; background-color: white; width: min(116px, 8.6%); height: 95.8%; position: relative; left: 20px; top: 15px; padding: 5px; margin-right: 5px; z-index: 3; overflow: scroll;">
-          <button id="addTab"
-            style="width:100%; height: 10%; border: none; background-color: inherit; border-radius: 5px; position: sticky;"><i
-              style="font-size: 6vw; color: limegreen;" class="fa fa-plus-square"></i></button>
-          <div id="tabsList"
-            style="height: 90%; width: 100%; top-padding: 15px; border: none; background-color: inherit;">
+        <div id="tabManager">
+          <button id="addTab">
+            <i id="addTabButton" class="fa fa-plus-square"></i></button>
+          <div id="tabsList">
             <!-- Tabs added dynamically -->
           </div>
         </div>
-        <div id="display"
-          style="width: 85%; height: 94.5%; border: 1px solid black; background-color: white; position: absolute; right: 20px; top: 15px; display: flex;">
+        <div id="display">
           <div id="chart" style="width: 85%"></div>
           <div id = "datatable">
           </div>
         </div>
       </div>
       <!-- The pop up to initialize the tables and charts -->
-      <div id="popForm"
-        style="border: 1px solid black; position: absolute; top: 180px; left: 30%; width: 40%; height: 400px; z-index: 10; background-color: white; overflow: scroll; display: none;">
-        <form id="tabConfig" name = "tabConfig" onsubmit="return false" style="padding: 0 5vw; font-size: max(24px, 2vw);"> <!-- Will not refresh page -->
+      <div id="popForm">
+        <form id="tabConfig" name = "tabConfig" onsubmit="return false"> <!-- Will not refresh page -->
           <div>
             <p>Table or chart:</p>
             <input type="radio" id="table" name="model_type" value="table" required>
@@ -122,14 +114,12 @@
               <!-- Multiple checkboxes initialized dynamically -->
             </table>
           </div>
-          <button id="submitModel"
-            style="border: none; background-color: inherit; position: relative; left: 90%; margin: 6px; padding: 5px; border-radius: 5px;"><i
-              class="fa fa-chevron-circle-right" style="color: limegreen; font-size: max(50px, 3vw)";></i></button>
+          <button id="submitModel"><i id="submitModelButton" class="fa fa-chevron-circle-right"></i></button>
         </form>
       </div>
       <!-- Equation editor -->
       <div id="eqEditor">
-        <p style="position: relative; color: #ffffff; font-size: 25px; margin-left: 20px; top: 10px;"><b>Equation Editor</b></p>
+        <p id="eqEditorTitle"><b>Equation Editor</b></p>
         <div id="eqTableDiv">
           <table id="eqTable" class="eqTable">
             <tr>
@@ -146,9 +136,9 @@
       </div>
       <!-- Simulation parameters -->
       <div id="simParams">
-        <p style="position: relative; color: #ffffff; font-size: 25px; margin-left: 20px; top: 10px;"><b>Simulation Parameters</b></p>
+        <p id="simParamsTitle"><b>Simulation Parameters</b></p>
         <br>
-        <table style="position: relative; font-size: min(18px, 2.8vw); margin-left: 30px; width: 95%;">
+        <table id="simParamsTable">
           <tr style="width: 100%">
             <th class="simParamCol">Start Time</th>
             <th class="simParamCol">End Time</th>
@@ -157,16 +147,16 @@
           </tr>
           <tr>
             <th>
-              <input id="startTime" placeholder="Enter a number" style="box-sizing: border-box; padding-left: 8px; font-size: 18px; width:80%; height:40px; border: 3px solid black;" value="0">
+              <input class="simParamsInput" id="startTime" placeholder="Enter a number" value="0">
             </th>
             <th>
-              <input id="endTime" placeholder="Enter a number" style="box-sizing: border-box; padding-left: 8px; font-size: 18px; width:80%; height:40px; border: 3px solid black;" value="10">
+              <input class="simParamsInput" id="endTime" placeholder="Enter a number" value="10">
             </th>
             <th>
-              <input id="dt" placeholder="Enter a number" style="box-sizing: border-box; padding-left: 8px; font-size: 18px; width:80%; height:40px; border: 3px solid black;" value="0.1">
+              <input class="simParamsInput" id="dt" placeholder="Enter a number" value="0.1">
             </th>
             <th>
-              <select id="integrationMethod" style="box-sizing: border-box; padding-left: 8px; font-size: 18px; width:80%; height:40px; border: 3px solid black;">
+              <select class="simParamsInput" id="integrationMethod">
                 <option value="rk4">Runge-Kutta 4</option>
                 <option value="euler">Euler</option>
               </select>
@@ -180,7 +170,7 @@
               <input type="checkbox" id="simParamHighStepCount">
             </th>
             <th>
-              <p id="simParamHighStepCountDesc" style="color: yellow;">Enable High Step-Count Simulations (Not Recommended)</p>
+              <p id="simParamHighStepCountDesc">Enable High Step-Count Simulations (Not Recommended)</p>
             </th>
           </tr>
         </table>
