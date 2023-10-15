@@ -223,7 +223,7 @@ canvas {
 #tabManager {
   border: 1px solid black;
   background-color: white;
-  width: min(140px, 10%);
+  width: min(116px, 8.6%);
   height: 95.8%;
   position: relative;
   left: 20px;
@@ -232,7 +232,6 @@ canvas {
   margin-right: 5px;
   z-index: 3;
   overflow: scroll;
-  overflow-x: hidden;
 }
 
 #addTab {
@@ -294,7 +293,10 @@ canvas {
   font-size: max(50px, 3vw);
 }
 
-
+#datatable {
+  height: 100% - 2px;
+  width: 100%;
+}
 
 
 

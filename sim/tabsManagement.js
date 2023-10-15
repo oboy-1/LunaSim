@@ -389,7 +389,7 @@ function configTabs(){
           }
         
           var table = new Tabulator("#datatable", {
-            height:640, // set height of table (in CSS or here), this enables the Virtual DOM and improves render speed dramatically (can be any valid css height value)
+            // (THIS IS NOW SET IN CSS) height:640, // set height of table (in CSS or here), this enables the Virtual DOM and improves render speed dramatically (can be any valid css height value)
             data:tableData, //assign data to table
             layout:"fitColumns", //fit columns to width of table (optional)
             columns: tableColumns,
