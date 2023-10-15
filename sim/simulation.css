@@ -1,9 +1,16 @@
 body {
   font-family: sans-serif;
+  margin: 0px;
 }
 
 #header {
-  height: 30px; width: 99.8%; border: none; background-color: inherit; margin: 10px;
+  position: fixed;
+
+  height: 100px; width: 100%;
+  border: 2px solid black;
+  background-color: white;
+
+  z-index: 1000;
 }
 
 #logoContainer {
@@ -11,8 +18,8 @@ body {
   font-weight: bold;
   text-align: left;
   position: relative;
-  bottom: 20px;
   font-family: sans-serif;
+  margin-left: 20px;
 }
 
 #logoImage {
@@ -23,20 +30,117 @@ body {
   box-sizing: border-box;
   padding: 8px;
   position: relative;
-  right: 15px;
-  top: 10px;
-  width: 20%;
-  height: 30px;
   font-size: min(24px, 2.8vw);
   border-radius: 5px;
   border: 1px solid black;
   float: right;
+
+  width: 20%;
+  height: 30px;
+  right: 25px;
+  bottom: 20px;
 }
 
-#nav {
-  width: 100%;
-  height: 15px;
+.action {
+  position: absolute;
+  right: 25px;
+  bottom: 15px;
 }
+
+.action button {
+  padding: 5px;
+  background-color: white;
+  border: 1px solid black;
+  border-radius: 5px;
+  font-size: min(16px, 2.2vw);
+  transition: background-color 0.6s;
+}
+
+.action label {
+  padding: 5px;
+  background-color: white;
+  border: 1px solid black;
+  border-radius: 5px;
+  font-size: min(16px, 2.2vw);
+  transition: background-color 0.6s;
+}
+
+.action label:hover {
+  background-color: #ddd;
+}
+
+.action button:hover {
+  background-color: #ddd;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#nav {
+  width: 100% - 50px;
+  height: 15px;
+
+  padding-left: 25px;
+  padding-right: 25px;
+  padding-top: 120px;
+}
+
+
+.webTabs {
+  display: inline-block;
+  border: none;
+  height: 42px;
+  background-color: #35829fff;
+}
+
+.webTabs button {
+  background-color: #176481ff;
+  height: 100%;
+  border: none;
+  padding: 10px 14px;
+  font-weight: bold;
+  color: white;
+  font-size: min(20px, 2.8vw);
+  margin: 0px;
+  transition: background-color 0.3s;
+}
+
+.webTabs button:hover {
+  background-color: #307090ff;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.webTabs button.active {
+  background-color: #35829fff;
+  transition: background-color 0.3s;
+}
+
+.tabContent {
+  background-color: #35829fff;
+  position: relative;
+
+  width: 100% - 50px;
+  height: 600px;
+  
+  top: 25px;
+  padding-bottom: 20px;
+  margin-left: 25px;
+  margin-right: 25px;
+}
+
 
 #myDiagram {
   width: 90%;
@@ -154,11 +258,14 @@ canvas {
 
 #eqEditor {
   background-color: #2ea2ccff;
-  width: 100%;
+  width: 100% - 50px;
   position: relative;
   
   top: 30px;
   font-size: min(18px, 2.8vw);
+
+  margin-left: 25px;
+  margin-right: 25px;
 }
 
 #eqTableDiv {
@@ -192,12 +299,15 @@ canvas {
 
 #simParams {
   background-color: #35829fff;
-  width: 100%;
+  width: 100% - 50px;
   height: 220px;
   position: relative;
 
   top: 30px;
   font-size: min(18px, 2.8vw);
+
+  margin-left: 25px;
+  margin-right: 25px;
 }
 
 .simParamCol {
@@ -246,45 +356,6 @@ canvas {
 
 
 
-.webTabs {
-  display: inline-block;
-  border: none;
-  height: 42px;
-  background-color: #35829fff;
-}
-
-.webTabs button {
-  background-color: #176481ff;
-  height: 100%;
-  border: none;
-  padding: 10px 14px;
-  font-weight: bold;
-  color: white;
-  font-size: min(20px, 2.8vw);
-  margin: 0px;
-  transition: background-color 0.3s;
-}
-
-.webTabs button:hover {
-  background-color: #307090ff;
-  font-weight: bold;
-  transition: background-color 0.3s;
-}
-
-.webTabs button.active {
-  background-color: #35829fff;
-  transition: background-color 0.3s;
-}
-
-.tabContent {
-  background-color: #35829fff;
-  width: 100%;
-  height: 660px;
-  position: relative;
-  top: 26px;
-  padding-bottom: 20px;
-}
-
 
 
 .tools {
@@ -317,37 +388,6 @@ canvas {
   background-color: #ccc;
 }
 
-.action {
-  position: absolute;
-  right: 10px;
-  top: 80px;
-}
-
-.action button {
-  padding: 5px;
-  background-color: white;
-  border: 1px solid black;
-  border-radius: 5px;
-  font-size: min(16px, 2.2vw);
-  transition: background-color 0.6s;
-}
-
-.action label {
-  padding: 5px;
-  background-color: white;
-  border: 1px solid black;
-  border-radius: 5px;
-  font-size: min(16px, 2.2vw);
-  transition: background-color 0.6s;
-}
-
-.action label:hover {
-  background-color: #ddd;
-}
-
-.action button:hover {
-  background-color: #ddd;
-}
 
 a:link { text-decoration: none;  color: black;}
 
