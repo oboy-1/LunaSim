@@ -241,6 +241,7 @@ canvas {
   margin-right: 5px;
   z-index: 3;
   overflow: scroll;
+  overflow-x: hidden;
 }
 
 #addTab {
