@@ -126,6 +126,7 @@ body {
 }
 
 #switchThemeButton {
+  display: none;
   background-color: #9933ff;
   color: white;
   width: 150px;
