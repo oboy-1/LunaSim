@@ -40,6 +40,8 @@ body {
   height: 30px;
   right: 25px;
   bottom: 15px;
+
+  background-color: #eeeeee;
 }
 
 .action {
@@ -221,7 +223,7 @@ canvas {
 #tabManager {
   border: 1px solid black;
   background-color: white;
-  width: min(116px, 8.6%);
+  width: min(140px, 10%);
   height: 95.8%;
   position: relative;
   left: 20px;
@@ -230,6 +232,7 @@ canvas {
   margin-right: 5px;
   z-index: 3;
   overflow: scroll;
+  overflow-x: hidden;
 }
 
 #addTab {
