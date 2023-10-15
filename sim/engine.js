@@ -2,6 +2,19 @@
  * This file contains the main engine for the simulation.  It runs both euler's method and the RK4 method, given input in the form of a json.
  */
 
+// SIMULATION ERROR POPUP (Author: William J. Park)
+// Displays the Simulation Error Popup
+function showSimErrorPopup() {
+    document.getElementById("simErrorPopup").style.display = "block";
+    document.getElementById("grayEffectDiv").style.display = "block";
+}
+document.getElementById("simErrorPopupDismiss").addEventListener("click", closeSimErrorPopup);
+// Closes the Simulation Error Popup
+function closeSimErrorPopup() {
+    document.getElementById("simErrorPopup").style.display = "none";
+    document.getElementById("grayEffectDiv").style.display = "none";
+}
+
 export class Simulation {
     constructor() {
         this.data;
@@ -71,7 +84,8 @@ export class Simulation {
         var res = this.safeEval(parsedEquation);
 
         if (isNaN(res)) {
-            alert("Error: Invalid equation:\n" + equation + "\n\nParsed equation:\n" + parsedEquation + "\n\nPlease check your equations and try again.")
+            document.getElementById("simErrorPopupDesc").innerHTML = "Error: Invalid equation:<br>" + equation + "<br><br>Parsed equation:<br>" + parsedEquation + "<br><br>Please check your equations and try again.";
+            showSimErrorPopup();
             throw new Error("Invalid equation");
         } else {
             return res;
@@ -116,19 +130,22 @@ export class Simulation {
             let stock = this.data.stocks[stockName];
 
             if (stock["values"][0] == null) {
-                alert("Error: Invalid equation (maybe circular definition):\n" + stock["equation"] + "\n\nPlease check your equations and try again.")
+                document.getElementById("simErrorPopupDesc").innerHTML = "Error: Invalid equation (maybe circular definition):<br>" + stock["equation"] + "<br><br>Please check your equations and try again.";
+                showSimErrorPopup();
                 throw new Error("Invalid equation");
             }
 
             for (var flowName in stock["inflows"]) {
                 if (stock["inflows"][flowName]["values"][0] == null) {
-                    alert("Error: Invalid equation (maybe circular definition):\n" + stock["inflows"][flowName]["equation"] + "\n\nPlease check your equations and try again.")
+                    document.getElementById("simErrorPopupDesc").innerHTML = "Error: Invalid equation (maybe circular definition):<br>" + stock["inflows"][flowName]["equation"] + "<br><br>Please check your equations and try again.";
+                    showSimErrorPopup()
                     throw new Error("Invalid equation");
                 }
             }
             for (var flowName in stock["outflows"]) {
                 if (stock["outflows"][flowName]["values"][0] == null) {
-                    alert("Error: Invalid equation (maybe circular definition):\n" + stock["outflows"][flowName]["equation"] + "\n\nPlease check your equations and try again.")
+                    document.getElementById("simErrorPopupDesc").innerHTML = "Error: Invalid equation (maybe circular definition):<br>" + stock["outflows"][flowName]["equation"] + "<br><br>Please check your equations and try again.";
+                    showSimErrorPopup();
                     throw new Error("Invalid equation");
                 }
             }
@@ -136,7 +153,8 @@ export class Simulation {
 
         for (var converterName in this.data.converters) {
             if (this.data.converters[converterName]["values"][0] == null) {
-                alert("Error: Invalid equation (maybe circular definition):\n" + this.data.converters[converterName]["equation"] + "\n\nPlease check your equations and try again.")
+                document.getElementById("simErrorPopupDesc").innerHTML = "Error: Invalid equation (maybe circular definition):<br>" + this.data.converters[converterName]["equation"] + "<br><br>Please check your equations and try again.";
+                showSimErrorPopup();
                 throw new Error("Invalid equation");
             }
         }

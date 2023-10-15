@@ -3,6 +3,15 @@ body {
   margin: 0px;
 }
 
+#grayEffectDiv {
+  position: fixed;
+  height: 100%; width: 100%;
+  border: none;
+  z-index: 1001;
+  display: none;
+  background-color: #00000077;
+}
+
 #header {
   position: fixed;
 
@@ -404,8 +413,52 @@ canvas {
   color: yellow;
 }
 
+#simErrorPopup {
+  position: fixed;
+  width: 40%;
+  height: 60%;
+  border: 2px solid black;
+  border-radius: 15px;
+  background-color: white;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -70%);
+  z-index: 2000;
 
+  display: none;
+}
 
+#simErrorPopupTitle {
+  color: red;
+  font-size: 30px;
+  padding-left: 20px;
+}
+
+#simErrorPopupDesc {
+  font-size: 20px;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+#simErrorPopupDismiss {
+  position: absolute;
+  left: 20px;
+  right: 20px;
+  bottom: 20px;
+  width: 100%-40px;
+  height: 50px;
+  background-color: #aa0000;
+  color: white;
+  font-size: 25px;
+  border: none;
+  border-radius: 15px;
+  transition: 0.2s;
+}
+
+#simErrorPopupDismiss:hover {
+  background-color: #dd0000;
+  transition: 0.2s;
+}
 
 
 

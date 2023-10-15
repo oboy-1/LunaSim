@@ -546,6 +546,24 @@ function labelValidator(textblock, oldstr, newstr) {
     return unique;
 }
 
+// Displays the Simulation Error Popup
+function showSimErrorPopup() {
+    document.getElementById("simErrorPopup").style.display = "block";
+    document.getElementById("grayEffectDiv").style.display = "block";
+}
+document.getElementById("simErrorPopupDismiss").addEventListener("click", closeSimErrorPopup);
+// Closes the Simulation Error Popup
+function closeSimErrorPopup() {
+    document.getElementById("simErrorPopup").style.display = "none";
+    document.getElementById("grayEffectDiv").style.display = "none";
+}
+/* Resets the Simulation Error Popup (Unused)
+function resetSimErrorPopup() {
+    document.getElementById("simErrorPopupTitle").innerHTML = "<b>Oops, Simulation Error! :(<b>"
+    document.getElementById("simErrorPopupDesc").innerHTML = "Placeholder Message"
+    document.getElementById("simErrorPopupDismiss").innerHTML = "Dismiss"
+}*/
+
 function run() {
   
     loadTableToDiagram();
@@ -562,19 +580,20 @@ function run() {
     document.getElementById("startTime").classList = "simParamsInput";
     document.getElementById("endTime").classList = "simParamsInput";
     document.getElementById("dt").classList = "simParamsInput";
-    
+    //resetSimErrorPopup();
+
     // Error Checking part 1: All fields must be numbers
     var errors = [];
     if (isNaN(Number(startTime))) {
-        errors.push("The start time must be a number");
+        errors.push("- The start time must be a number");
         document.getElementById("startTime").classList = "simParamsInput simParamsInputError";
     }
     if (isNaN(Number(endTime))) {
-        errors.push("The end time must be a number");
+        errors.push("- The end time must be a number");
         document.getElementById("endTime").classList = "simParamsInput simParamsInputError";
     }
     if (isNaN(Number(dt))) {
-        errors.push("The dt must be a number");
+        errors.push("- The dt must be a number");
         document.getElementById("dt").classList = "simParamsInput simParamsInputError";
     }
 
@@ -583,23 +602,24 @@ function run() {
             top: document.body.scrollHeight,
             behavior: "smooth",
         });
-        alert("There are errors with the simulation parameters:\n\n" + errors.join("\n"));
+        document.getElementById("simErrorPopupDesc").innerHTML = "There are errors with the simulation parameters:<br><br>" + errors.join("<br>");
+        showSimErrorPopup();
         return;
     }
 
     // Error Checking part 2: Other issues
     if(Number(startTime) >= Number(endTime)){ // terminates if the end time is not greater than the start
-      errors.push("The end time must be greater than the start time");
+      errors.push("- The end time must be greater than the start time");
       document.getElementById("endTime").classList = "simParamsInput simParamsInputError";
     }
 
     if(Number(dt) > Number(endTime)-Number(startTime)){ // terminates if the dt is greater than duration
-      errors.push("The dt must be less than or equal to the duration.");
+      errors.push("- The dt must be less than or equal to the duration.");
       document.getElementById("dt").classList = "simParamsInput simParamsInputError";
     }
 
     if(Number(dt) <= 0){ // terminates if the dt is not greater than zero
-      errors.push("The dt must be positive");
+      errors.push("- The dt must be positive");
       document.getElementById("dt").classList = "simParamsInput simParamsInputError";
     }
 
@@ -608,7 +628,8 @@ function run() {
             top: document.body.scrollHeight,
             behavior: "smooth",
         });
-        alert("There are errors with the simulation parameters:\n\n" + errors.join("\n"));
+        document.getElementById("simErrorPopupDesc").innerHTML = "There are errors with the simulation parameters:<br><br>" + errors.join("<br>");
+        showSimErrorPopup();
         return;
     }
 
@@ -621,7 +642,8 @@ function run() {
                 top: document.body.scrollHeight,
                 behavior: "smooth",
             });
-            alert("This simulation contains 1000+ steps; as such, running it may lead to lag or the website freezing. Please adjust dt or enable high step-count simulations.\n\nIf you proceed with the simulation, it may be wise to export your LunaSim project in case the website crashes.");
+            document.getElementById("simErrorPopupDesc").innerHTML = "This simulation contains 1000+ steps; as such, running it may lead to lag or the website freezing. Please adjust dt or enable high step-count simulations.<br><br>If you proceed with the simulation, it may be wise to export your LunaSim project in case the website crashes.";
+            showSimErrorPopup();
             return;
         }       
     }
