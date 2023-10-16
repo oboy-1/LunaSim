@@ -777,31 +777,15 @@ function loadModel(evt) {
 }
 
 // Themes
-function load_css(filename) {
-    var fileref=document.createElement("link")
-    fileref.setAttribute("rel", "stylesheet")
-    fileref.setAttribute("type", "text/css")
-    fileref.setAttribute("href", filename)
-}
-
-function remove_css(filename){
-    var allsuspects=document.getElementsByTagName("link");
-    for (var i=allsuspects.length; i>=0; i--){ //search backwards within nodelist for matching elements to remove
-    if (allsuspects[i] && allsuspects[i].getAttribute("href")!=null && allsuspects[i].getAttribute("href").indexOf(filename)!=-1)
-        allsuspects[i].parentNode.removeChild(allsuspects[i]) //remove element by calling parentNode.removeChild()
-    }
-}
-
-var THEME = 0;
 function switch_theme() {
-    if (THEME == 0) {
-        THEME = 1;
-        remove_css("simulation");
-        load_css("simulation_dark");
+    var light = document.getElementById("lightThemeCSS");
+    var dark = document.getElementById("darkThemeCSS");
+    if (light.disabled) {
+        light.disabled = false;
+        dark.disabled = true;  
     } else {
-        THEME = 0;
-        remove_css("simulation_dark");
-        load_css("simulation");
+        dark.disabled = false;
+        light.disabled = true;
     }
 }
 document.getElementById("switchThemeButton").addEventListener("click", switch_theme);
