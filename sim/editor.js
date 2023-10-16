@@ -785,14 +785,26 @@ function load_css(filename) {
 }
 
 function remove_css(filename){
-    var targetelement=(filetype=="js")? "script" : (filetype=="css")? "link" : "none" //determine element type to create nodelist from
-    var targetattr=(filetype=="js")? "src" : (filetype=="css")? "href" : "none" //determine corresponding attribute to test for
     var allsuspects=document.getElementsByTagName("link");
     for (var i=allsuspects.length; i>=0; i--){ //search backwards within nodelist for matching elements to remove
     if (allsuspects[i] && allsuspects[i].getAttribute("href")!=null && allsuspects[i].getAttribute("href").indexOf(filename)!=-1)
         allsuspects[i].parentNode.removeChild(allsuspects[i]) //remove element by calling parentNode.removeChild()
     }
 }
+
+var THEME = 0;
+function switch_theme() {
+    if (THEME == 0) {
+        THEME = 1;
+        remove_css("simulation");
+        load_css("simulation_dark");
+    } else {
+        THEME = 0;
+        remove_css("simulation_dark");
+        load_css("simulation");
+    }
+}
+document.getElementById("switchThemeButton").addEventListener("click", switch_theme);
 
 // Retrieves session storage data when loaded
 window.onload = function(){
