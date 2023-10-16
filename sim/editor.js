@@ -778,14 +778,11 @@ function loadModel(evt) {
 
 // Themes
 function switch_theme() {
-    var light = document.getElementById("lightThemeCSS");
     var dark = document.getElementById("darkThemeCSS");
-    if (light.disabled) {
-        light.disabled = false;
-        dark.disabled = true;  
-    } else {
+    if (dark.disabled) {
         dark.disabled = false;
-        light.disabled = true;
+    } else {
+        dark.disabled = true;
     }
 }
 document.getElementById("switchThemeButton").addEventListener("click", switch_theme);
