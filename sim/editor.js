@@ -23,8 +23,7 @@ var myDiagram;   // Declared as global
 var sim = new Simulation();
 var data;
 
-function init() {
-
+function init() {    
     // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
     // For details, see https://gojs.net/latest/intro/buildingObjects.html
     const $ = go.GraphObject.make;
@@ -181,6 +180,13 @@ function init() {
 }
 
 function buildTemplates() {
+    // COLORS (Switches depending on theme)
+    var fillColor = "#f0f0f0";
+    var textColor = "black";
+    if (sessionStorage.getItem("darkMode") == "true") {
+        fillColor = "#888888";
+        textColor = "white";
+    }
 
     // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
     // For details, see https://gojs.net/latest/intro/buildingObjects.html
@@ -204,7 +210,7 @@ function buildTemplates() {
         return {
             name: "SHAPE",
             stroke: "black",
-            fill: "#f0f0f0",
+            fill: fillColor,
             portId: "", // So a link can be dragged from the Node: see /GraphObject.html#portId
             fromLinkable: true,
             toLinkable: true
@@ -214,6 +220,7 @@ function buildTemplates() {
     function textStyle() {
         return [
             {
+                stroke: textColor,
                 font: "bold 11pt helvetica, bold arial, sans-serif",
                 margin: 2,
                 editable: true
@@ -226,7 +233,7 @@ function buildTemplates() {
     myDiagram.nodeTemplateMap.add("stock",
         $(go.Node, nodeStyle(),
             $(go.Shape, shapeStyle(),
-                new go.Binding("fill", "label", function (label) { return isGhost(label) ? "#ffffff" : "#f0f0f0";}), // change color if ghost ($ in front of label)
+                new go.Binding("fill", "label", function (label) { return isGhost(label) ? "#ffffff" : fillColor;}), // change color if ghost ($ in front of label)
                 { desiredSize: new go.Size(50, 30),
                     fill: "#ffcc99"
                 }),
@@ -277,7 +284,7 @@ function buildTemplates() {
     myDiagram.nodeTemplateMap.add("variable",
         $(go.Node, nodeStyle(),
             $(go.Shape, shapeStyle(),
-            new go.Binding("fill", "label", function (label) {return isGhost(label) ? "#ffffff" : "#f0f0f0";}), // change color if ghost ($ in front of label)
+            new go.Binding("fill", "label", function (label) {return isGhost(label) ? "#ffffff" : fillColor;}), // change color if ghost ($ in front of label)
                 {
                     figure: "Ellipse",
                     desiredSize: new go.Size(25, 25)
@@ -787,6 +794,7 @@ function switch_theme() {
         sessionStorage.setItem("darkMode", false);
     }
 }
+
 document.getElementById("switchThemeButton").addEventListener("click", switch_theme);
 
 // Retrieves session storage data when loaded

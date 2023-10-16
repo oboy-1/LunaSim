@@ -351,11 +351,45 @@ canvas {
 }
 
 
+#nnUniHeader {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted black; /* If you want dots under the hoverable text */
+}
 
+#nnUniTooltip {
+  visibility: hidden;
+  width: 200px;
+  background-color: #bbbbbb;
+  color: black;
+  text-align: center;
+  padding: 5px 0;
+  border-radius: 10px;
+ 
+  /* Position the tooltip text - see examples below! */
+  position: absolute;
+  z-index: 1;
 
+  top: -5px;
+  right: 105%;
+}
 
+/* Show the tooltip text when you mouse over the tooltip container */
+#nnUniHeader:hover #nnUniTooltip {
+  visibility: visible;
+}
 
+.eqStockBox {
+  background-color: #ffcc99;
+}
 
+.eqFlowBox {
+  background-color: #99ccff;
+}
+
+.eqVariableBox {
+  background-color: #99ff99;
+}
 
 
 #simParamsTitle {
