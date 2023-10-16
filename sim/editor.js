@@ -425,14 +425,14 @@ function updateTable(load = false) {
 
             var $tr = $('<tr>').append(
                 $('<td>').append(
-                    $('<input>').attr('type', 'text').attr('name', 'type').attr('value', category).attr('readonly', true) // add the type of the object to the row (uneditable by user)
+                    $('<input class="eqTableInputBox">').attr('type', 'text').attr('name', 'type').attr('value', category).attr('readonly', true) // add the type of the object to the row (uneditable by user)
                 ),
                 $('<td>').append(
-                    $('<input>').attr('type', 'text').attr('name', 'name').attr('value', item.label).attr('readonly', true) // add the name of the object to the row (uneditable by user)
+                    $('<input class="eqTableInputBox">').attr('type', 'text').attr('name', 'name').attr('value', item.label).attr('readonly', true) // add the name of the object to the row (uneditable by user)
                 ),
                 $('<td>').append(
                     // make width 100% so that the equation takes up the entire column
-                    $("<input style='width: inherit;'>").attr('type', 'text').attr('name', 'equation').css('width', '99%')
+                    $("<input  class=\"eqTableInputBox\" style='width: inherit;'>").attr('type', 'text').attr('name', 'equation').css('width', '99%')
                 ),
             ).appendTo($tbody);
 
@@ -453,11 +453,11 @@ function updateTable(load = false) {
             // depending on the category, change the color of the row (only first 2 columns)
             if (category === "stock") {
                 // get the first 2 columns of the row
-                $tr.find('td').slice(0, 3).css('background-color', '#ffcc99');
+                $tr.find('td').slice(0, 3).addClass("eqStockBox");
             } else if (category === "flow") {
-                $tr.find('td').slice(0, 3).css('background-color', '#99ccff');
+                $tr.find('td').slice(0, 3).addClass("eqFlowBox");
             } else if (category === "variable") {
-                $tr.find('td').slice(0, 3).css('background-color', '#99ff99');
+                $tr.find('td').slice(0, 3).addClass("eqVariableBox");
             }
 
             if (load) {
