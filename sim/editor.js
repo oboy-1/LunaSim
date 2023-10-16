@@ -781,8 +781,10 @@ function switch_theme() {
     var dark = document.getElementById("darkThemeCSS");
     if (dark.disabled) {
         dark.disabled = false;
+        sessionStorage.setItem("darkMode", true);
     } else {
         dark.disabled = true;
+        sessionStorage.setItem("darkMode", false);
     }
 }
 document.getElementById("switchThemeButton").addEventListener("click", switch_theme);
@@ -793,6 +795,9 @@ window.onload = function(){
     myDiagram.model = go.Model.fromJson(sessionStorage.modelData);
     updateTable(true);
     loadTableToDiagram();
+  }
+  if (sessionStorage.getItem("darkMode") == "true") {
+    switch_theme();
   }
 }
 
