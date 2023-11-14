@@ -176,7 +176,7 @@ body {
 
 .webTabs button {
   background-color: #222222;
-  border: 2px solid darkblue;
+  border: 2px solid #3333cc;
   height: 100%;
   font-weight: bold;
   color: white;
@@ -208,14 +208,14 @@ body {
   margin-left: 25px;
   margin-right: 25px;
   
-  border: 2px solid darkblue;
+  border: 2px solid #3333cc;
 }
 
 
 #myDiagram {
   width: 90%;
   height: 94%;
-  border: 2px solid darkblue;
+  border: 2px solid #3333cc;
   background-color: #222222;
   position: absolute;
   right: 20px;
@@ -238,8 +238,8 @@ canvas {
 }
 
 #tabManager {
-  border: 1px solid black;
-  background-color: white;
+  border: 2px solid #555555;
+  background-color: #444444;
   width: min(116px, 8.6%);
   height: 95.8%;
   position: relative;
@@ -276,8 +276,8 @@ canvas {
 #display {
   width: 85%;
   height: 94.5%;
-  border: 1px solid black;
-  background-color: white;
+  border: 2px solid #555555;
+  background-color: #444444;
   position: absolute;
   right: 20px;
   top: 15px;
@@ -393,7 +393,7 @@ canvas {
 }
 
 .eqFlowBox .eqTableInputBox {
-  border: 2px solid darkblue;
+  border: 2px solid #3333cc;
 }
 
 .eqVariableBox {
@@ -578,7 +578,7 @@ input[type=checkbox] {
 
 .tools button {
   background-color: #222222;
-  border: 2px solid darkblue;
+  border: 2px solid #3333cc;
   color: white;
   width: 100%;
   height: 16.55%;
