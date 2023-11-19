@@ -8,6 +8,14 @@ import { PERFORMANCE_MODE } from "./editor.js";
 
 var TESTING_MODE = false;
 
+
+function showPopup(msg) {
+  var popupNotif = document.getElementById("popupNotif");
+  var popupNotifText = document.getElementById("popupNotifText");
+  popupNotifText.innerHTML = msg;
+  popupNotif.style.visibility = "visible";
+}
+
 // Object class to create charts and tables
 class Graphic {
   constructor(type, xAxis, yAxis){
@@ -110,11 +118,11 @@ function addOptions(){
 // Opens and initializes the form popup
 function openForm(){
   if (data == null){ // ensures that the simulation has been run first
-    alert("The simulation must be run first.");
+    showPopup("Run the simulation first.");
     return;
   }
   if (seriesKeys(false).length == 1){
-    alert("Must create a model first.");
+    showPopup("Create a model first.");
     return;
   }
   addOptions(); // dynamically adds in the options
@@ -133,7 +141,7 @@ function submit(){
       }
     }
   }
-  alert("At least one box must be checked."); // no alert if at least one is checked
+  showPopup("Check at least one box."); // no alert if at least one is checked
 }
 
 // Resets the options so that it updates the options
@@ -167,7 +175,7 @@ function initializeTab() {
   var x; // gets the correct x-axis value
   if(form["model_type"].value == "table" && form["xAxis"].value != "time"){ // alerts if x-axis was anything but time for tables
     x = "time" // auto-corrects the answer
-    alert("The x-axis must always be time for tables. (corrected)");
+    showPopup("The x-axis must always be time for tables. (corrected)");
   }
   else
     x = form["xAxis"].value;
@@ -236,7 +244,7 @@ function configTabs(){
 
     tab.addEventListener("click", function render() {
       if (data == null){ // ensures that the simulation has been run first
-        alert("The simulation must be run first.");
+        showPopup("Run the simulation first.");
         return;
       }
       var i = this.lastChild.nodeValue.charAt(4); // Reads the text node
@@ -317,7 +325,7 @@ function configTabs(){
 
         var xValues = getAllValues(tabInfo.xAxis, data);
         if(xValues == null){ // deletes tab and sends alert when data is deleted
-          alert("There is missing data in this tab. (corrected)");
+          showPopup("There is missing data in this tab. (corrected)");
           this.firstChild.click(); // Auto-clicks delete button
           return;
         }
@@ -325,7 +333,7 @@ function configTabs(){
         for (var yName of tabInfo.yAxis) {
           var yValues = getAllValues(yName, data);
           if(yValues == null){ // deletes tab and sends alert when data is deleted
-            alert("There is missing data in this tab. (corrected)");
+            showPopup("There is missing data in this tab. (corrected)");
             this.firstChild.click(); // Auto-clicks delete button
             return;
           }
@@ -353,7 +361,7 @@ function configTabs(){
         
           var xValues = getAllValues(tabInfo.xAxis, data);
           if(xValues == null){ // deletes tab and sends alert when data is deleted
-            alert("There is missing data in this tab. (corrected)");
+            showPopup("There is missing data in this tab. (corrected)");
             this.firstChild.click(); // Auto-clicks delete button
             return;
           }
@@ -375,7 +383,7 @@ function configTabs(){
           for (var yName of tabInfo.yAxis) {
             var yValues = getAllValues(yName, data);
             if(yValues == null){ // deletes tab and sends alert when data is deleted
-              alert("There is missing data in this tab. (corrected)");
+              showPopup("There is missing data in this tab. (corrected)");
               this.firstChild.click();
               return;
             }
