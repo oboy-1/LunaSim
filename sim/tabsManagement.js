@@ -224,7 +224,7 @@ function configTabs(){
     const tab = document.createElement("div"); // Tabs are divs to allow button children
     var node;
     if(j == 0) 
-      node = document.createTextNode(" Default");  // name of default tab
+      node = document.createTextNode("Default");  // name of default tab
     else
       node = document.createTextNode("Tab_" + j);  // Tab name based on index
     

@@ -706,6 +706,7 @@ a:active { text-decoration: none;  color: white;}
   color: white;
   margin: 5px;
   padding: 2px;
+  padding-left: 4px;
   height: 30px;
 
   display: flex;
@@ -725,9 +726,5 @@ a:active { text-decoration: none;  color: white;}
 .graphTabsDelButton {
   color: white;
   font-size: 15px;
-  margin-right: 10px;
-}
-
-.graphTabsDefaultText {
-  margin-left: 10px;
+  margin-right: 5px;
 }

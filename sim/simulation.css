@@ -619,10 +619,5 @@ a:active { text-decoration: none;  color: black;}
 .graphTabsDelButton {
   color: black;
   font-size: 15px;
-  margin-right: 10px;
-}
-
-
-.graphTabsDefaultText {
-  margin-left: 10px;
+  margin-right: 5px;
 }
