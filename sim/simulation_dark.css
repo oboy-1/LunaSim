@@ -314,13 +314,28 @@ canvas {
 #datatable {
   height: 100% - 2px;
   width: 100%;
+  background: #202020;
 }
 
+.tabulator-header-contents {
+  background: #333333;
+  color: white;
+}
 
+.tabulator-col-content {
+  background: #333333;
+  color: white;
+}
 
+.tabulator-cell {
+  background-color: #444444;
+  color: white;
+}
 
-
-
+.tabulator-row-odd {
+  background: #555555;
+  color: white;
+}
 
 
 
