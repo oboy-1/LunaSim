@@ -545,3 +545,53 @@ a:visited { text-decoration: none;  color: black;}
 a:hover { text-decoration: none; color: darkblue;}
 
 a:active { text-decoration: none;  color: black;}
+
+
+
+#popupNotif {
+  position: fixed;
+  top: 120px;
+  right: 20px;
+  z-index: 69; /* gray effect div & sim error popup takes priority */
+
+  height: 50px;
+  font-size: 20px;
+  background-color: #ddddddaa;
+  border-radius: 5px;
+
+  /* Does this work? Yes. */
+  /* Do I know how? No. */
+  /* But all three of these need to present, apparently. */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  visibility: hidden;
+}
+
+#popupNotif p {
+  margin-left: 10px;
+}
+
+#popupNotifClose {
+  width: 35px;
+  height: 35px;
+  margin-left: 10px;
+  margin-right: 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #ff0000;
+  color: white;
+  font-size: 20px;
+  transition: background-color 0.3s;
+}
+
+#popupNotifClose:hover {
+  background-color: #dd0000;
+  transition: background-color 0.3s;
+}
+
+#popupNotifClose:active {
+  background-color: #bb0000;
+  transition: background-color 0.3s;
+}

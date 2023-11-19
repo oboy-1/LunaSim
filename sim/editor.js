@@ -784,7 +784,7 @@ function loadModel(evt) {
 }
 
 // Themes
-function switch_theme() {
+function switch_theme(orig) {
     var dark = document.getElementById("darkThemeCSS");
     if (dark.disabled) {
         dark.disabled = false;
@@ -793,9 +793,19 @@ function switch_theme() {
         dark.disabled = true;
         sessionStorage.setItem("darkMode", false);
     }
+
+    if (!orig) {
+        var popupNotif = document.getElementById("popupNotif");
+        var popupNotifText = document.getElementById("popupNotifText");
+        popupNotifText.innerHTML = "Refresh to apply all theme changes";
+        popupNotif.style.visibility = "visible";
+    }
 }
 
-document.getElementById("switchThemeButton").addEventListener("click", switch_theme);
+document.getElementById("switchThemeButton").addEventListener("click", function() { switch_theme(false) });
+document.getElementById("popupNotifClose").addEventListener("click", function() {
+    popupNotif.style.visibility = "hidden";
+});
 
 // Retrieves session storage data when loaded
 window.onload = function(){
@@ -805,7 +815,7 @@ window.onload = function(){
     loadTableToDiagram();
   }
   if (sessionStorage.getItem("darkMode") == "true") {
-    switch_theme();
+    switch_theme(true);
   }
 }
 
