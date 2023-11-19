@@ -695,3 +695,39 @@ a:active { text-decoration: none;  color: white;}
   background-color: #bb0000;
   transition: background-color 0.3s;
 }
+
+
+
+
+.graphTabs {
+  border: 2px solid #555555;
+  background-color: #333333;
+  font-size: 20px;
+  color: white;
+  margin: 5px;
+  padding: 2px;
+  height: 30px;
+
+  display: flex;
+  align-items: center;
+}
+
+.graphTabsInactive {
+  background-color: #444444;
+  color: white;
+}
+
+.graphTabsActive {
+  background-color: #666666;
+  color: white;
+}
+
+.graphTabsDelButton {
+  color: white;
+  font-size: 15px;
+  margin-right: 10px;
+}
+
+.graphTabsDefaultText {
+  margin-left: 10px;
+}

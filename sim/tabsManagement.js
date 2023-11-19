@@ -215,22 +215,21 @@ function configTabs(){
   
   for(let j = 0; j < tabs.length; j++){
     const delButton = document.createElement("button"); 
-    delButton.innerHTML = '<i style="font-size: 2vw;" class="fa fa-close"></i>'; // Font Awesome 4 icon button
+    //delButton.innerHTML = '<i style="font-size: 2vw;" class="fa fa-close"></i>'; // Font Awesome 4 icon button
+    delButton.innerHTML = "<b>X</b>"; // looks cleaner and easier to customise imo
+    delButton.classList = "graphTabsDelButton";
     delButton.style.backgroundColor = "inherit";
     delButton.style.border = "none";
     
     const tab = document.createElement("div"); // Tabs are divs to allow button children
     var node;
     if(j == 0) 
-      node = document.createTextNode("Default");  // name of default tab
+      node = document.createTextNode(" Default");  // name of default tab
     else
       node = document.createTextNode("Tab_" + j);  // Tab name based on index
-    tab.class = "graphTabs";
-    tab.style.border = "1px solid black";
-    tab.style.borderRadius = "5px";
-    tab.style.fontSize = "min(28px, 2vw)";
-    tab.style.margin = "5px";
-    tab.style.padding = "2px";
+    
+    tab.classList = "graphTabs";
+
     if(j != 0)  // default tab is not deletable
       tab.appendChild(delButton);
     tab.appendChild(node);
@@ -416,16 +415,16 @@ function configTabs(){
       var dark = document.getElementById("darkThemeCSS");
       if (dark.disabled) {
         for (var t = 0; t < list.childNodes.length; t++){
-          list.childNodes[t].style.backgroundColor = "white";
+          list.childNodes[t].classList = "graphTabs graphTabsInactive";
         }
         
-        this.style.backgroundColor = "#ddd";
+        this.classList = "graphTabs graphTabsActive";
       } else {
         for (var t = 0; t < list.childNodes.length; t++){
-          list.childNodes[t].style.backgroundColor = "#777777";
+          list.childNodes[t].classList = "graphTabs graphTabsInactive";
         }
         
-        this.style.backgroundColor = "#555555";
+        this.classList = "graphTabs graphTabsActive";
       }
   })
 }
