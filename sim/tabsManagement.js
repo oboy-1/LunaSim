@@ -31,14 +31,17 @@ if(sessionStorage.tabsData)
   tabs = JSON.parse(sessionStorage.tabsData);
 
 let list = document.getElementById("tabsList"); // list of tab elements
+
 var chart = new ApexCharts(document.querySelector("#chart"), {
   chart: {
-    type: 'scatter'
+    type: 'scatter',
+    foreColor: (sessionStorage.getItem("darkMode") == "true" ? '#ffffff' : '#373d3f')
   },
   series: [{
   }],
   xaxis: {
-  }
+    
+  },
 })
 chart.render()
 
