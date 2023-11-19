@@ -232,7 +232,7 @@ canvas {
 #tabManager {
   border: 1px solid black;
   background-color: white;
-  width: min(116px, 8.6%);
+  width: min(140px, 10%);
   height: 95.8%;
   position: relative;
   left: 20px;
