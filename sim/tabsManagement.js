@@ -403,12 +403,22 @@ function configTabs(){
             console.timeEnd('Table Render Time');
           }
       }
-      // indicates the active tab
-      for (var t = 0; t < list.childNodes.length; t++){
-        list.childNodes[t].style.backgroundColor = "white";
-      }
       
-      this.style.backgroundColor = "#ddd";
+      // indicates the active tab
+      var dark = document.getElementById("darkThemeCSS");
+      if (dark.disabled) {
+        for (var t = 0; t < list.childNodes.length; t++){
+          list.childNodes[t].style.backgroundColor = "white";
+        }
+        
+        this.style.backgroundColor = "#ddd";
+      } else {
+        for (var t = 0; t < list.childNodes.length; t++){
+          list.childNodes[t].style.backgroundColor = "#777777";
+        }
+        
+        this.style.backgroundColor = "#555555";
+      }
   })
 }
 }
