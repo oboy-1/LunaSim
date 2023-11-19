@@ -129,7 +129,9 @@ function openForm(){
     return;
   }
   addOptions(); // dynamically adds in the options
+
   let form = document.getElementById("popForm");
+  document.getElementById("grayEffectDiv").style.display = "block";
   form.style.display = "block"; // display form
 }
 
@@ -186,6 +188,7 @@ function initializeTab() {
   var tab = new Graphic(form["model_type"].value, x, y); // initializes the Graphic object
   tabs.push(tab); // add to end of array
   document.getElementById("popForm").style.display = "none"; // hide form
+  document.getElementById("grayEffectDiv").style.display = "none";
   form.reset(); // reset input
   resetOptions(); // reset options
 }
@@ -479,5 +482,11 @@ document.getElementById("runButton").addEventListener("click", function() {
   if(TESTING_MODE) console.log(tabs);  
 });
 
-document.getElementById("addTab").addEventListener("click", function() { openForm(); });
-document.getElementById("submitModel").addEventListener("click", function() { submit(); });
+document.getElementById("addTab").addEventListener("click", openForm);
+document.getElementById("submitModel").addEventListener("click", submit);
+document.getElementById("closeNewTabPopup").addEventListener("click", function() {
+  document.getElementById("popForm").style.display = "none"; // hide form
+  document.getElementById("grayEffectDiv").style.display = "none";
+  form.reset(); // reset input
+  resetOptions(); // reset options
+});
