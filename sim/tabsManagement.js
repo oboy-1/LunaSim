@@ -232,7 +232,7 @@ function configTabs(){
     if(j == 0) 
       node = document.createTextNode("Default");  // name of default tab
     else
-      node = document.createTextNode("Tab_" + j);  // Tab name based on index
+      node = document.createTextNode("Tab " + j);  // Tab name based on index
     
     tab.classList = "graphTabs";
 
