@@ -8,6 +8,14 @@ import { PERFORMANCE_MODE } from "./editor.js";
 
 var TESTING_MODE = false;
 
+
+function showPopup(msg) {
+  var popupNotif = document.getElementById("popupNotif");
+  var popupNotifText = document.getElementById("popupNotifText");
+  popupNotifText.innerHTML = msg;
+  popupNotif.style.visibility = "visible";
+}
+
 // Object class to create charts and tables
 class Graphic {
   constructor(type, xAxis, yAxis){
@@ -23,14 +31,17 @@ if(sessionStorage.tabsData)
   tabs = JSON.parse(sessionStorage.tabsData);
 
 let list = document.getElementById("tabsList"); // list of tab elements
+
 var chart = new ApexCharts(document.querySelector("#chart"), {
   chart: {
-    type: 'scatter'
+    type: 'scatter',
+    foreColor: (sessionStorage.getItem("darkMode") == "true" ? '#ffffff' : '#373d3f')
   },
   series: [{
   }],
   xaxis: {
-  }
+    
+  },
 })
 chart.render()
 
@@ -110,15 +121,17 @@ function addOptions(){
 // Opens and initializes the form popup
 function openForm(){
   if (data == null){ // ensures that the simulation has been run first
-    alert("The simulation must be run first.");
+    showPopup("Run the simulation first.");
     return;
   }
   if (seriesKeys(false).length == 1){
-    alert("Must create a model first.");
+    showPopup("Create a model first.");
     return;
   }
   addOptions(); // dynamically adds in the options
+
   let form = document.getElementById("popForm");
+  document.getElementById("grayEffectDiv").style.display = "block";
   form.style.display = "block"; // display form
 }
 
@@ -133,7 +146,7 @@ function submit(){
       }
     }
   }
-  alert("At least one box must be checked."); // no alert if at least one is checked
+  showPopup("Check at least one box."); // no alert if at least one is checked
 }
 
 // Resets the options so that it updates the options
@@ -167,7 +180,7 @@ function initializeTab() {
   var x; // gets the correct x-axis value
   if(form["model_type"].value == "table" && form["xAxis"].value != "time"){ // alerts if x-axis was anything but time for tables
     x = "time" // auto-corrects the answer
-    alert("The x-axis must always be time for tables. (corrected)");
+    showPopup("The x-axis must always be time for tables. (corrected)");
   }
   else
     x = form["xAxis"].value;
@@ -175,6 +188,7 @@ function initializeTab() {
   var tab = new Graphic(form["model_type"].value, x, y); // initializes the Graphic object
   tabs.push(tab); // add to end of array
   document.getElementById("popForm").style.display = "none"; // hide form
+  document.getElementById("grayEffectDiv").style.display = "none";
   form.reset(); // reset input
   resetOptions(); // reset options
 }
@@ -207,7 +221,9 @@ function configTabs(){
   
   for(let j = 0; j < tabs.length; j++){
     const delButton = document.createElement("button"); 
-    delButton.innerHTML = '<i style="font-size: 2vw;" class="fa fa-close"></i>'; // Font Awesome 4 icon button
+    //delButton.innerHTML = '<i style="font-size: 2vw;" class="fa fa-close"></i>'; // Font Awesome 4 icon button
+    delButton.innerHTML = "<b>X</b>"; // looks cleaner and easier to customise imo
+    delButton.classList = "graphTabsDelButton";
     delButton.style.backgroundColor = "inherit";
     delButton.style.border = "none";
     
@@ -216,13 +232,10 @@ function configTabs(){
     if(j == 0) 
       node = document.createTextNode("Default");  // name of default tab
     else
-      node = document.createTextNode("Tab_" + j);  // Tab name based on index
-    tab.class = "graphTabs";
-    tab.style.border = "1px solid black";
-    tab.style.borderRadius = "5px";
-    tab.style.fontSize = "min(28px, 2vw)";
-    tab.style.margin = "5px";
-    tab.style.padding = "2px";
+      node = document.createTextNode("Tab " + j);  // Tab name based on index
+    
+    tab.classList = "graphTabs";
+
     if(j != 0)  // default tab is not deletable
       tab.appendChild(delButton);
     tab.appendChild(node);
@@ -236,7 +249,7 @@ function configTabs(){
 
     tab.addEventListener("click", function render() {
       if (data == null){ // ensures that the simulation has been run first
-        alert("The simulation must be run first.");
+        showPopup("Run the simulation first.");
         return;
       }
       var i = this.lastChild.nodeValue.charAt(4); // Reads the text node
@@ -317,7 +330,7 @@ function configTabs(){
 
         var xValues = getAllValues(tabInfo.xAxis, data);
         if(xValues == null){ // deletes tab and sends alert when data is deleted
-          alert("There is missing data in this tab. (corrected)");
+          showPopup("There is missing data in this tab. (corrected)");
           this.firstChild.click(); // Auto-clicks delete button
           return;
         }
@@ -325,7 +338,7 @@ function configTabs(){
         for (var yName of tabInfo.yAxis) {
           var yValues = getAllValues(yName, data);
           if(yValues == null){ // deletes tab and sends alert when data is deleted
-            alert("There is missing data in this tab. (corrected)");
+            showPopup("There is missing data in this tab. (corrected)");
             this.firstChild.click(); // Auto-clicks delete button
             return;
           }
@@ -353,7 +366,7 @@ function configTabs(){
         
           var xValues = getAllValues(tabInfo.xAxis, data);
           if(xValues == null){ // deletes tab and sends alert when data is deleted
-            alert("There is missing data in this tab. (corrected)");
+            showPopup("There is missing data in this tab. (corrected)");
             this.firstChild.click(); // Auto-clicks delete button
             return;
           }
@@ -375,7 +388,7 @@ function configTabs(){
           for (var yName of tabInfo.yAxis) {
             var yValues = getAllValues(yName, data);
             if(yValues == null){ // deletes tab and sends alert when data is deleted
-              alert("There is missing data in this tab. (corrected)");
+              showPopup("There is missing data in this tab. (corrected)");
               this.firstChild.click();
               return;
             }
@@ -389,7 +402,7 @@ function configTabs(){
           }
         
           var table = new Tabulator("#datatable", {
-            height:640, // set height of table (in CSS or here), this enables the Virtual DOM and improves render speed dramatically (can be any valid css height value)
+            // (THIS IS NOW SET IN CSS) height:640, // set height of table (in CSS or here), this enables the Virtual DOM and improves render speed dramatically (can be any valid css height value)
             data:tableData, //assign data to table
             layout:"fitColumns", //fit columns to width of table (optional)
             columns: tableColumns,
@@ -403,12 +416,22 @@ function configTabs(){
             console.timeEnd('Table Render Time');
           }
       }
-      // indicates the active tab
-      for (var t = 0; t < list.childNodes.length; t++){
-        list.childNodes[t].style.backgroundColor = "white";
-      }
       
-      this.style.backgroundColor = "#ddd";
+      // indicates the active tab
+      var dark = document.getElementById("darkThemeCSS");
+      if (dark.disabled) {
+        for (var t = 0; t < list.childNodes.length; t++){
+          list.childNodes[t].classList = "graphTabs graphTabsInactive";
+        }
+        
+        this.classList = "graphTabs graphTabsActive";
+      } else {
+        for (var t = 0; t < list.childNodes.length; t++){
+          list.childNodes[t].classList = "graphTabs graphTabsInactive";
+        }
+        
+        this.classList = "graphTabs graphTabsActive";
+      }
   })
 }
 }
@@ -459,5 +482,11 @@ document.getElementById("runButton").addEventListener("click", function() {
   if(TESTING_MODE) console.log(tabs);  
 });
 
-document.getElementById("addTab").addEventListener("click", function() { openForm(); });
-document.getElementById("submitModel").addEventListener("click", function() { submit(); });
+document.getElementById("addTab").addEventListener("click", openForm);
+document.getElementById("submitModel").addEventListener("click", submit);
+document.getElementById("closeNewTabPopup").addEventListener("click", function() {
+  document.getElementById("popForm").style.display = "none"; // hide form
+  document.getElementById("grayEffectDiv").style.display = "none";
+  form.reset(); // reset input
+  resetOptions(); // reset options
+});

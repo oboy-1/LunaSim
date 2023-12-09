@@ -23,8 +23,7 @@ var myDiagram;   // Declared as global
 var sim = new Simulation();
 var data;
 
-function init() {
-
+function init() {    
     // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
     // For details, see https://gojs.net/latest/intro/buildingObjects.html
     const $ = go.GraphObject.make;
@@ -181,6 +180,13 @@ function init() {
 }
 
 function buildTemplates() {
+    // COLORS (Switches depending on theme)
+    var fillColor = "#f0f0f0";
+    var textColor = "black";
+    if (sessionStorage.getItem("darkMode") == "true") {
+        fillColor = "#888888";
+        textColor = "white";
+    }
 
     // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
     // For details, see https://gojs.net/latest/intro/buildingObjects.html
@@ -204,7 +210,7 @@ function buildTemplates() {
         return {
             name: "SHAPE",
             stroke: "black",
-            fill: "#f0f0f0",
+            fill: fillColor,
             portId: "", // So a link can be dragged from the Node: see /GraphObject.html#portId
             fromLinkable: true,
             toLinkable: true
@@ -214,6 +220,7 @@ function buildTemplates() {
     function textStyle() {
         return [
             {
+                stroke: textColor,
                 font: "bold 11pt helvetica, bold arial, sans-serif",
                 margin: 2,
                 editable: true
@@ -226,7 +233,7 @@ function buildTemplates() {
     myDiagram.nodeTemplateMap.add("stock",
         $(go.Node, nodeStyle(),
             $(go.Shape, shapeStyle(),
-                new go.Binding("fill", "label", function (label) { return isGhost(label) ? "#ffffff" : "#f0f0f0";}), // change color if ghost ($ in front of label)
+                new go.Binding("fill", "label", function (label) { return isGhost(label) ? "#ffffff" : fillColor;}), // change color if ghost ($ in front of label)
                 { desiredSize: new go.Size(50, 30),
                     fill: "#ffcc99"
                 }),
@@ -277,7 +284,7 @@ function buildTemplates() {
     myDiagram.nodeTemplateMap.add("variable",
         $(go.Node, nodeStyle(),
             $(go.Shape, shapeStyle(),
-            new go.Binding("fill", "label", function (label) {return isGhost(label) ? "#ffffff" : "#f0f0f0";}), // change color if ghost ($ in front of label)
+            new go.Binding("fill", "label", function (label) {return isGhost(label) ? "#ffffff" : fillColor;}), // change color if ghost ($ in front of label)
                 {
                     figure: "Ellipse",
                     desiredSize: new go.Size(25, 25)
@@ -425,14 +432,14 @@ function updateTable(load = false) {
 
             var $tr = $('<tr>').append(
                 $('<td>').append(
-                    $('<input>').attr('type', 'text').attr('name', 'type').attr('value', category).attr('readonly', true) // add the type of the object to the row (uneditable by user)
+                    $('<input class="eqTableInputBox">').attr('type', 'text').attr('name', 'type').attr('value', category).attr('readonly', true) // add the type of the object to the row (uneditable by user)
                 ),
                 $('<td>').append(
-                    $('<input>').attr('type', 'text').attr('name', 'name').attr('value', item.label).attr('readonly', true) // add the name of the object to the row (uneditable by user)
+                    $('<input class="eqTableInputBox">').attr('type', 'text').attr('name', 'name').attr('value', item.label).attr('readonly', true) // add the name of the object to the row (uneditable by user)
                 ),
                 $('<td>').append(
                     // make width 100% so that the equation takes up the entire column
-                    $("<input style='width: inherit;'>").attr('type', 'text').attr('name', 'equation').css('width', '99%')
+                    $("<input  class=\"eqTableInputBox\" style='width: inherit;'>").attr('type', 'text').attr('name', 'equation').css('width', '99%')
                 ),
             ).appendTo($tbody);
 
@@ -453,11 +460,11 @@ function updateTable(load = false) {
             // depending on the category, change the color of the row (only first 2 columns)
             if (category === "stock") {
                 // get the first 2 columns of the row
-                $tr.find('td').slice(0, 3).css('background-color', '#ffcc99');
+                $tr.find('td').slice(0, 3).addClass("eqStockBox");
             } else if (category === "flow") {
-                $tr.find('td').slice(0, 3).css('background-color', '#99ccff');
+                $tr.find('td').slice(0, 3).addClass("eqFlowBox");
             } else if (category === "variable") {
-                $tr.find('td').slice(0, 3).css('background-color', '#99ff99');
+                $tr.find('td').slice(0, 3).addClass("eqVariableBox");
             }
 
             if (load) {
@@ -546,6 +553,24 @@ function labelValidator(textblock, oldstr, newstr) {
     return unique;
 }
 
+// Displays the Simulation Error Popup
+function showSimErrorPopup() {
+    document.getElementById("simErrorPopup").style.display = "block";
+    document.getElementById("grayEffectDiv").style.display = "block";
+}
+document.getElementById("simErrorPopupDismiss").addEventListener("click", closeSimErrorPopup);
+// Closes the Simulation Error Popup
+function closeSimErrorPopup() {
+    document.getElementById("simErrorPopup").style.display = "none";
+    document.getElementById("grayEffectDiv").style.display = "none";
+}
+/* Resets the Simulation Error Popup (Unused)
+function resetSimErrorPopup() {
+    document.getElementById("simErrorPopupTitle").innerHTML = "<b>Oops, Simulation Error! :(<b>"
+    document.getElementById("simErrorPopupDesc").innerHTML = "Placeholder Message"
+    document.getElementById("simErrorPopupDismiss").innerHTML = "Dismiss"
+}*/
+
 function run() {
   
     loadTableToDiagram();
@@ -559,19 +584,78 @@ function run() {
     var dt = document.getElementById("dt").value;
     var integrationMethod = document.getElementById("integrationMethod").value == "euler" ? "euler" : "rk4";
 
-    if(Number(startTime) >= Number(endTime)){ // terminates the end time is not greater than the start
-      alert("The end time must be greater than the start time.");
-      return;
+    document.getElementById("startTime").classList = "simParamsInput";
+    document.getElementById("endTime").classList = "simParamsInput";
+    document.getElementById("dt").classList = "simParamsInput";
+    //resetSimErrorPopup();
+
+    // Error Checking part 1: All fields must be numbers
+    var errors = [];
+    if (isNaN(Number(startTime))) {
+        errors.push("- The start time must be a number");
+        document.getElementById("startTime").classList = "simParamsInput simParamsInputError";
     }
-    if(Number(dt) > Number(endTime)-Number(startTime)){ // terminates the dt is greater than duration
-      alert("The dt must be less than or equal to the duration.");
-      return;
+    if (isNaN(Number(endTime))) {
+        errors.push("- The end time must be a number");
+        document.getElementById("endTime").classList = "simParamsInput simParamsInputError";
     }
-    if(Number(dt) <= 0){ // terminates the dt is not greater than zero
-      alert("The dt must be greater than zero.");
-      return;
+    if (isNaN(Number(dt))) {
+        errors.push("- The dt must be a number");
+        document.getElementById("dt").classList = "simParamsInput simParamsInputError";
     }
 
+    if (errors.length != 0) {
+        window.scroll({
+            top: document.body.scrollHeight,
+            behavior: "smooth",
+        });
+        document.getElementById("simErrorPopupDesc").innerHTML = "There are errors with the simulation parameters:<br><br>" + errors.join("<br>");
+        showSimErrorPopup();
+        return;
+    }
+
+    // Error Checking part 2: Other issues
+    if(Number(startTime) >= Number(endTime)){ // terminates if the end time is not greater than the start
+      errors.push("- The end time must be greater than the start time");
+      document.getElementById("endTime").classList = "simParamsInput simParamsInputError";
+    }
+
+    if(Number(dt) > Number(endTime)-Number(startTime)){ // terminates if the dt is greater than duration
+      errors.push("- The dt must be less than or equal to the duration.");
+      document.getElementById("dt").classList = "simParamsInput simParamsInputError";
+    }
+
+    if(Number(dt) <= 0){ // terminates if the dt is not greater than zero
+      errors.push("- The dt must be positive");
+      document.getElementById("dt").classList = "simParamsInput simParamsInputError";
+    }
+
+    if (errors.length != 0) {
+        window.scroll({
+            top: document.body.scrollHeight,
+            behavior: "smooth",
+        });
+        document.getElementById("simErrorPopupDesc").innerHTML = "There are errors with the simulation parameters:<br><br>" + errors.join("<br>");
+        showSimErrorPopup();
+        return;
+    }
+
+    // Error Checking part 3: High Step-Count Checker (avoids freezing)
+    if((Number(endTime) - Number(startTime)) / Number(dt) >= 1000){ // 1000+ Steps
+        if (!document.getElementById("simParamHighStepCount").checked) {
+            // The user did not enable high step-count simulations
+            document.getElementById("dt").classList = "simParamsInput simParamsInputWarning";
+            window.scroll({
+                top: document.body.scrollHeight,
+                behavior: "smooth",
+            });
+            document.getElementById("simErrorPopupDesc").innerHTML = "This simulation contains 1000+ steps; as such, running it may lead to lag or the website freezing. Please adjust dt or enable high step-count simulations.<br><br>If you proceed with the simulation, it may be wise to export your LunaSim project in case the website crashes.";
+            showSimErrorPopup();
+            return;
+        }       
+    }
+
+    // Looks all good!
     engineJson.start_time = parseFloat(startTime);
     engineJson.end_time = parseFloat(endTime);
     engineJson.dt = parseFloat(dt);
@@ -591,6 +675,14 @@ function run() {
     console.log(data);
   
     sim.reset();
+
+    // Hopefully, the simulation should have successfully completed; scroll to top of page
+    // and open the "Charts/Tables" tab
+    window.scroll({
+        top: 0,
+        behavior: "smooth",
+    });
+    document.getElementById("secondaryOpen").click();
 }
 
 // function to change color of the tool button when selected (does through changing the class)
@@ -691,12 +783,39 @@ function loadModel(evt) {
     }
 }
 
+// Themes
+function switch_theme(orig) {
+    var dark = document.getElementById("darkThemeCSS");
+    if (dark.disabled) {
+        dark.disabled = false;
+        sessionStorage.setItem("darkMode", true);
+    } else {
+        dark.disabled = true;
+        sessionStorage.setItem("darkMode", false);
+    }
+
+    if (!orig) {
+        var popupNotif = document.getElementById("popupNotif");
+        var popupNotifText = document.getElementById("popupNotifText");
+        popupNotifText.innerHTML = "Refresh to apply all theme changes";
+        popupNotif.style.visibility = "visible";
+    }
+}
+
+document.getElementById("switchThemeButton").addEventListener("click", function() { switch_theme(false) });
+document.getElementById("popupNotifClose").addEventListener("click", function() {
+    popupNotif.style.visibility = "hidden";
+});
+
 // Retrieves session storage data when loaded
 window.onload = function(){
   if(sessionStorage.modelData){
     myDiagram.model = go.Model.fromJson(sessionStorage.modelData);
     updateTable(true);
     loadTableToDiagram();
+  }
+  if (sessionStorage.getItem("darkMode") == "true") {
+    switch_theme(true);
   }
 }
 
