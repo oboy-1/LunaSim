@@ -1,6 +1,7 @@
 body {
   font-family: sans-serif;
   margin: 0px;
+  background-color: #1c1c1c;
 }
 
 #grayEffectDiv {
@@ -16,8 +17,8 @@ body {
   position: fixed;
 
   height: 100px; width: 100%;
-  border-bottom: 2px solid black;
-  background-color: white;
+  border-bottom: 2px solid #666666;
+  background-color: #282828;
 
   z-index: 1000;
 }
@@ -40,9 +41,10 @@ body {
   box-sizing: border-box;
   padding: 8px;
   position: relative;
-  font-size: min(24px, 2.8vw);
+  font-size: min(22px, 2.8vw);
+  color: #aaaaaa;
   border-radius: 5px;
-  border: 1px solid black;
+  border: 2px solid #333333;
   float: right;
 
   width: 25%;
@@ -50,7 +52,7 @@ body {
   right: 25px;
   bottom: 15px;
 
-  background-color: #eeeeee;
+  background-color: #202020;
 }
 
 .action {
@@ -161,6 +163,7 @@ body {
   padding-left: 25px;
   padding-right: 25px;
   padding-top: 120px;
+  
 }
 
 
@@ -168,14 +171,13 @@ body {
   display: inline-block;
   border: none;
   height: 42px;
-  background-color: #35829fff;
+  background-color: #00000000;
 }
 
 .webTabs button {
-  background-color: #176481ff;
+  background-color: #222222;
+  border: 2px solid #3333cc;
   height: 100%;
-  border: none;
-  padding: 10px 14px;
   font-weight: bold;
   color: white;
   font-size: min(20px, 2.8vw);
@@ -184,18 +186,18 @@ body {
 }
 
 .webTabs button:hover {
-  background-color: #307090ff;
+  background-color: #2A2A2A;
   font-weight: bold;
   transition: background-color 0.3s;
 }
 
 .webTabs button.active {
-  background-color: #35829fff;
+  background-color: #333333;
   transition: background-color 0.3s;
 }
 
 .tabContent {
-  background-color: #35829fff;
+  background-color: #333333;
   position: relative;
 
   width: 100% - 50px;
@@ -205,17 +207,23 @@ body {
   padding-bottom: 20px;
   margin-left: 25px;
   margin-right: 25px;
+  
+  border: 2px solid #3333cc;
 }
 
 
 #myDiagram {
   width: 90%;
   height: 94%;
-  border: 1px solid black;
-  background-color: white;
+  border: 2px solid #3333cc;
+  background-color: #222222;
   position: absolute;
   right: 20px;
   top: 15px;
+}
+
+#textarea {
+  color: white;
 }
 
 canvas {
@@ -230,8 +238,8 @@ canvas {
 }
 
 #tabManager {
-  border: 1px solid black;
-  background-color: white;
+  border: 2px solid #555555;
+  background-color: #444444;
   width: min(140px, 10%);
   height: 95.8%;
   position: relative;
@@ -268,8 +276,8 @@ canvas {
 #display {
   width: 85%;
   height: 94.5%;
-  border: 1px solid black;
-  background-color: white;
+  border: 2px solid #555555;
+  background-color: #444444;
   position: absolute;
   right: 20px;
   top: 15px;
@@ -277,17 +285,19 @@ canvas {
 }
 
 #popForm {
-  border: 1px solid black;
+  border: 4px solid #555555;
+  background-color: #444444;
+  border-radius: 10px;
   position: fixed;
   width: 70%;
   height: 80%;
   top: 10%;
   left: 15%;
   z-index: 1003;
-  background-color: white;
   overflow: scroll;
   overflow-x: hidden;
   display: none;
+  color: white;
 }
 
 #tabConfig {
@@ -317,6 +327,19 @@ canvas {
   transition: background-color 0.3s;
 }
 
+#xAxis{
+  box-sizing: border-box;
+  padding-left: 8px;
+  font-size: 18px;
+  width:80%;
+  height:40px;
+
+  color: #aaaaaa;
+  border-radius: 10px;
+  border: 2px solid #444444;
+
+  background-color: #202020;
+}
 
 #closeNewTabPopup {
   width: 50px;
@@ -341,17 +364,31 @@ canvas {
   transition: background-color 0.3s;
 }
 
-
 #datatable {
   height: 100% - 2px;
   width: 100%;
+  background: #202020;
 }
 
+.tabulator-header-contents {
+  background: #333333;
+  color: white;
+}
 
+.tabulator-col-content {
+  background: #333333;
+  color: white;
+}
 
+.tabulator-cell {
+  background-color: #444444;
+  color: white;
+}
 
-
-
+.tabulator-row-odd {
+  background: #555555;
+  color: white;
+}
 
 
 
@@ -361,49 +398,94 @@ canvas {
   color: #ffffff;
   font-size: 25px;
   margin-left: 20px;
-  top: 10px;
+  margin-top: 10px;
 }
 
 
 #eqEditor {
-  background-color: #2ea2ccff;
+  background-color: #333333;
   width: 100% - 50px;
   position: relative;
   
-  top: 30px;
   font-size: min(18px, 2.8vw);
 
+  margin-top: 30px;
   margin-left: 25px;
   margin-right: 25px;
+
+  border: 2px solid darkgreen;
+  border-radius: 15px;
 }
 
 #eqTableDiv {
   position: relative;
-  background-color: white;
-  border: 1px solid black;
+  border: 2px solid #444444;
+  background-color: #202020;
   margin-left: 20px;
   margin-right: 20px;
   width: 100% - 40px;
   height: 350px;
   overflow: scroll;
   overflow-x: hidden;
+
+  padding: 20px;
 }
 
+.eqTableHeader {
+  color: white;
+}
+
+.eqTableInputBox {
+  box-sizing: border-box;
+  padding-left: 8px;
+  font-size: 18px;
+  height:40px;
+
+  color: #aaaaaa;
+  border-radius: 10px;
+  border: 2px solid #444444;
+
+  background-color: #202020;
+}
+
+.eqStockBox {
+  background-color: #00000000;
+}
+
+.eqStockBox .eqTableInputBox {
+  border: 2px solid maroon;
+}
+
+.eqFlowBox {
+  background-color: #00000000;
+}
+
+.eqFlowBox .eqTableInputBox {
+  border: 2px solid #3333cc;
+}
+
+.eqVariableBox {
+  background-color: #00000000;
+}
+
+.eqVariableBox .eqTableInputBox {
+  border: 2px solid darkgreen;
+}
 
 #nnUniHeader {
   position: relative;
   display: inline-block;
-  border-bottom: 1px dotted black; /* If you want dots under the hoverable text */
+  border-bottom: 1px dotted white; /* If you want dots under the hoverable text */
 }
 
 #nnUniTooltip {
   visibility: hidden;
   width: 200px;
-  background-color: #bbbbbb;
-  color: black;
+  background-color: black;
+  color: #fff;
   text-align: center;
   padding: 5px 0;
-  border-radius: 10px;
+  border-radius: 20px;
  
   /* Position the tooltip text - see examples below! */
   position: absolute;
@@ -418,17 +500,8 @@ canvas {
   visibility: visible;
 }
 
-.eqStockBox {
-  background-color: #ffcc99;
-}
 
-.eqFlowBox {
-  background-color: #99ccff;
-}
 
-.eqVariableBox {
-  background-color: #99ff99;
-}
 
 
 #simParamsTitle {
@@ -436,21 +509,25 @@ canvas {
   color: #ffffff;
   font-size: 25px;
   margin-left: 20px;
-  top: 10px;
+  margin-top: 10px;
 }
 
 
 #simParams {
-  background-color: #35829fff;
+  background-color: #333333;
+  
   width: 100% - 50px;
   height: 220px;
   position: relative;
 
-  top: 30px;
   font-size: min(18px, 2.8vw);
 
+  margin-top: 30px;
   margin-left: 25px;
   margin-right: 25px;
+
+  border: 2px solid maroon;
+  border-radius: 15px;
 }
 
 .simParamCol {
@@ -465,7 +542,12 @@ canvas {
   font-size: 18px;
   width:80%;
   height:40px;
-  border: 3px solid black;
+
+  color: #aaaaaa;
+  border-radius: 10px;
+  border: 2px solid #444444;
+
+  background-color: #202020;
 }
 
 .simParamsInputError {
@@ -483,17 +565,22 @@ canvas {
   width: 95%;
 }
 
+input[type=checkbox] {
+  width: 20px;
+  height: 20px;
+}
+
 #simParamHighStepCountDesc {
-  color: yellow;
+  color: #dd0000;
 }
 
 #simErrorPopup {
   position: fixed;
   width: 40%;
   height: 60%;
-  border: 2px solid black;
+  border: 2px solid #333333;
   border-radius: 15px;
-  background-color: white;
+  background-color: #1c1c1c;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -70%);
@@ -512,6 +599,7 @@ canvas {
   font-size: 20px;
   padding-left: 20px;
   padding-right: 20px;
+  color: white;
 }
 
 #simErrorPopupDismiss {
@@ -557,34 +645,59 @@ canvas {
 }
 
 .tools button {
-  background-color: white;
-  border: 1px solid black;
+  background-color: #222222;
+  border: 2px solid #3333cc;
+  color: white;
   width: 100%;
   height: 16.55%;
   overflow-wrap: anywhere;
   overflow-y: hidden;
   font-size: min(18px, 2.4vw);
-  transition: background-color 0.6s;
+  transition: background-color 0.3s;
 }
 
 .tools button:hover {
-  background-color: #ddd;
-  transition: background-color 0.6s;
+  background-color: #333333;
+  transition: background-color 0.3s;
 }
 
 .tools button.active {
-  background-color: #ccc;
+  background-color: #444444;
+  transition: background-color 0.3s;
 }
 
 
-a:link { text-decoration: none;  color: black;}
+a:link { text-decoration: none;  color: white;}
 
-a:visited { text-decoration: none;  color: black;}
+a:visited { text-decoration: none;  color: white;}
 
-a:hover { text-decoration: none; color: darkblue;}
+a:hover { text-decoration: none; color: white;}
 
-a:active { text-decoration: none;  color: black;}
+a:active { text-decoration: none;  color: white;}
 
+
+
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px #555555; 
+  border-radius: 10px;
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #777777; 
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #888888; 
+}
 
 
 #popupNotif {
@@ -595,7 +708,8 @@ a:active { text-decoration: none;  color: black;}
 
   height: 50px;
   font-size: 20px;
-  background-color: #ddddddaa;
+  background-color: #444444aa;
+  color: #aaaaaa;
   border-radius: 5px;
 
   /* Does this work? Yes. */
@@ -635,12 +749,17 @@ a:active { text-decoration: none;  color: black;}
   transition: background-color 0.3s;
 }
 
+
+
+
 .graphTabs {
-  border: 1px solid black;
-  border-radius: 5px; 
+  border: 2px solid #555555;
+  background-color: #333333;
   font-size: 20px;
+  color: white;
   margin: 5px;
   padding: 2px;
+  padding-left: 4px;
   height: 30px;
 
   display: flex;
@@ -648,20 +767,17 @@ a:active { text-decoration: none;  color: black;}
 }
 
 .graphTabsInactive {
-  background-color: white;
+  background-color: #444444;
+  color: white;
 }
 
 .graphTabsActive {
-  background-color: #ddd;
+  background-color: #666666;
+  color: white;
 }
 
 .graphTabsDelButton {
-  color: black;
+  color: white;
   font-size: 15px;
   margin-right: 5px;
-}
-
-input[type=radio] {
-  height: 20px;
-  width: 20px;
 }
