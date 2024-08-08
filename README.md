@@ -8,7 +8,7 @@ and-flow diagrams](https://thesystemsthinker.com/step-by-step-stocks-and-flows-c
 LunaSim includes a graphical editor that facilitates the creation of stock and flow diagrams, incorporates JavaScript-based equations for elements in the simulation, 
 simulates using numerical methods, and facilitates the creation of web-based, user-defined charts and tables that display simulation results. 
 
-**Try a demo at: [www.karthikvedula.com/LunaSim](www.karthikvedula.com/LunaSim)**
+**Try a demo at: [www.karthikvedula.com/LunaSim](https://www.karthikvedula.com/LunaSim)**
 
 ## User Manual & Hosting
 
