@@ -43,7 +43,7 @@ export class Simulation {
     Replaces names in equation with values.
     Example: 'converter1*converter2+stock1' --> '(1)*(2)+(3)'
     */
-    parseObject(equation) {
+    parseObject(equation, history = []) {
         let objects = {} // stores all stocks, converters, and flows and their respective equation/safeval
 
         for (var stock in this.data.stocks) {
@@ -67,8 +67,8 @@ export class Simulation {
 
         // Call parseObject recursively on all objects to replace the names with their respective values
         for (var object of sortedObjects) {
-            if (equation.includes(object)) {
-                equation = equation.replaceAll("[" + object + "]", this.parseAndEval('(' + objects[object] + ')')); // RECURSIVE
+            if (equation.includes("[" + object + "]")) {
+                equation = equation.replaceAll("[" + object + "]", this.parseAndEval('(' + objects[object] + ')', history.slice())); // RECURSIVE
             }
         }
 
@@ -76,11 +76,20 @@ export class Simulation {
     }
 
     /*
-    Combines parseObject and safeEval to parse and evaluate an equation.  It alrts the user if the equation is invalid.
+    Combines parseObject and safeEval to parse and evaluate an equation. It alerts the user if the equation is invalid.
     */
-    parseAndEval(equation) {       
+    parseAndEval(equation, history = []) {
+        // Check for circular definitions
+        if (history.includes(equation)) {
+            history.push(equation);
+            document.getElementById("simErrorPopupDesc").innerHTML = "Error: Circular Definition Detected:<br>" + equation + "<br><br>Stack Trace:<br>" + history.join("<br> -> ") + "<br><br>Please check your equations and try again.";
+            showSimErrorPopup();
+            throw new Error("Invalid equation");
+        }
+        history.push(equation);
+
         var parsedEquation;
-        parsedEquation = this.parseObject(equation);
+        parsedEquation = this.parseObject(equation, history);
         var res = this.safeEval(parsedEquation);
 
         if (isNaN(res)) {
