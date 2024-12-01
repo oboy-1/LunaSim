@@ -724,7 +724,7 @@ function exportData() {
     };
 
     // download it 
-    download(filename + ".luna", JSON.stringify(json));
+    download(`${filename}.luna`, JSON.stringify(json));
 }
 
 function download(filename, text) {
@@ -743,14 +743,14 @@ function download(filename, text) {
 }
 
 function loadModel(evt) {
-    // clear the diagram
-    myDiagram.model = go.Model.fromJson("{ \"class\": \"GraphLinksModel\", \"linkLabelKeysProperty\": \"labelKeys\", \"nodeDataArray\": [],\"linkDataArray\": [] }");
-    // clear the table
-    $('#eqTableBody').empty();
-
     var reader = new FileReader();
 
     reader.onload = function (evt) {
+        // clear the diagram
+        myDiagram.model = go.Model.fromJson("{ \"class\": \"GraphLinksModel\", \"linkLabelKeysProperty\": \"labelKeys\", \"nodeDataArray\": [],\"linkDataArray\": [] }");
+        // clear the table
+        $('#eqTableBody').empty();
+
         // add simulation parameters from the json
         var json = JSON.parse(evt.target.result);
 
@@ -776,6 +776,7 @@ function loadModel(evt) {
         myDiagram.initialPosition = myDiagram.position;
     }
 
+    console.log(evt.target.files[0]);
     reader.readAsText(evt.target.files[0]);
 
     reader.onerror = function (evt) {
