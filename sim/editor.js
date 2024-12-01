@@ -23,6 +23,31 @@ var myDiagram;   // Declared as global
 var sim = new Simulation();
 var data;
 
+// Updates the "save status" text in the header
+var lastEditDate = new Date();
+var lastExportDate = new Date();
+var unsavedEdits = false;
+var hasExportedYet = false;
+function updateSaveStatus() {
+    let current = new Date();
+    document.getElementById("saveStatus").innerHTML = 
+    `${unsavedEdits ? "Unsaved Edits!" : "No Unsaved Edits"} (Last Edit: ${formatDeltaTime(current - lastEditDate)})<br>` +
+    `Last Exported: ${hasExportedYet ? formatDeltaTime(current - lastExportDate) : "-"}`;
+}
+function formatDeltaTime(ms) {
+    let seconds = ms / 1000;
+    if (seconds < 60) return `Just Now`;
+    if (seconds < 3600) return `${Math.floor(seconds/60)}m ago`;
+    
+    let minutes = Math.floor(seconds / 60);
+    let hours = Math.floor(minutes / 60);
+    minutes %= 60;
+    if (minutes > 0) return `${hours}h ${minutes}m ago`;
+    return `${hours}h`;
+}
+updateSaveStatus();
+setInterval(updateSaveStatus, 10000);
+
 function init() {    
     // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
     // For details, see https://gojs.net/latest/intro/buildingObjects.html
@@ -148,7 +173,15 @@ function init() {
         updateTable();
         // don't do this if model is empty
         if (myDiagram.model.nodeDataArray.length !== 0) {
-            sessionStorage.modelData = myDiagram.model.toJson();
+            // Update the "last edited" date
+            let oldModel = sessionStorage.modelData;
+            let newModel = myDiagram.model.toJson();
+            sessionStorage.modelData = newModel;
+            if (oldModel != newModel) {
+                lastEditDate = new Date();
+                unsavedEdits = true;
+                updateSaveStatus();
+            }
         }
     });
 
@@ -393,7 +426,15 @@ function loadTableToDiagram() {
     // update the model with the new json
     myDiagram.model = go.Model.fromJson(JSON.stringify(json));
 
-    sessionStorage.modelData = myDiagram.model.toJSON(); // updates session storage
+    let oldModel = sessionStorage.modelData;
+    let newModel = myDiagram.model.toJson();
+    sessionStorage.modelData = newModel; // updates session storage
+    if (oldModel != newModel) {
+        // Update the "last edited" date
+        lastEditDate = new Date();
+        unsavedEdits = true;
+        updateSaveStatus();
+    }
 
     // set the diagram position back to what it was
     myDiagram.initialPosition = pos;
@@ -725,6 +766,12 @@ function exportData() {
 
     // download it 
     download(`${filename}.luna`, JSON.stringify(json));
+
+    // update export date
+    lastExportDate = new Date();
+    hasExportedYet = true;
+    unsavedEdits = false; // Once exported, no more unsaved edits
+    updateSaveStatus();
 }
 
 function download(filename, text) {
@@ -820,7 +867,16 @@ window.onload = function(){
   }
 }
 
-document.getElementById("loadButton").addEventListener("click", function () { document.getElementById("load-actual-button").click(); });
+// Model Loading
+document.getElementById("loadButton").addEventListener("click", function () {
+    if (unsavedEdits) {
+        // Add a warning if the user has changed the model since their last export
+        let confirmLoad = confirm(`You've made changes to this model since the last time you exported it (if at all). If you load a new model now without exporting, your changes will be lost! Are you sure you want to proceed?\n\n(Press CANCEL to go back and export your model.)`);
+        if (!confirmLoad) return;
+    }
+
+    document.getElementById("load-actual-button").click();
+});
 
 init();
 

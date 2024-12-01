@@ -53,6 +53,21 @@ body {
   background-color: #eeeeee;
 }
 
+#saveStatus {
+  padding: 8px;
+  position: absolute;
+  font-size: 12px;
+  font-style: italic;
+  color: #777777;
+
+  text-align: right;
+  
+  float: right;
+
+  right: calc(25px + 25%);
+  top: -4px;
+}
+
 .action {
   position: absolute;
   right: 25px;
@@ -146,8 +161,6 @@ body {
   background-color: #a77aff;
   color: white;
 }
-
-
 
 
 
