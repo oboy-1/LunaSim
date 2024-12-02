@@ -193,7 +193,7 @@ function init() {
             SD.nodeCounter.valve += 1;
             var newNodeId = "flow" + SD.nodeCounter.valve;
 
-            while (myDiagram.model.findLinkDataForKey(newNodeId) !== null) { // make sure the key is unique
+            while (!labelValidator(undefined, "", newNodeId)) { // make sure the key is unique
                 SD.nodeCounter.valve += 1;
                 newNodeId = "flow" + SD.nodeCounter.valve;
             }
@@ -578,7 +578,17 @@ function labelValidator(textblock, oldstr, newstr) {
 
     if (newstr === "") return false; // don't allow empty label
 
-    if (newstr[0] === "$") return true; // there can be repeats for ghost nodes
+    if (newstr[0] === "$") {
+        // Only allow ghosting if the referenced node exists
+        // (Previous behavior would delete the node if it didn't exist, which is bad)
+        var unique = true;
+        for (var i = 0; i < myDiagram.model.nodeDataArray.length; i++) {
+            if (`$${myDiagram.model.nodeDataArray[i].label}` === newstr) {
+                unique = false;
+            }
+        }
+        return !unique; // we WANT a duplicate to exist
+    }
 
     // make sure it is not **Just** a number
     if (!isNaN(newstr)) return false;
@@ -958,6 +968,12 @@ document.getElementById("clearButton").addEventListener("click", function() {
         hasExportedYet = false;
         updateSaveStatus();
     } 
+});
+
+// reload/close warning
+// TEST-UI-001-004
+window.addEventListener('beforeunload', function (e) {
+    if (unsavedEdits) e.preventDefault();
 });
 
 // Exporting myDiagram
