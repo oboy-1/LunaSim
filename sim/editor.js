@@ -793,16 +793,30 @@ function loadModel(evt) {
     var reader = new FileReader();
 
     reader.onload = function (evt) {
-        // clear the diagram
-        myDiagram.model = go.Model.fromJson("{ \"class\": \"GraphLinksModel\", \"linkLabelKeysProperty\": \"labelKeys\", \"nodeDataArray\": [],\"linkDataArray\": [] }");
-        // clear the table
-        $('#eqTableBody').empty();
+        // Check if the file is valid JSON       
+        var json;
+        try {
+            json = JSON.parse(evt.target.result);
+        } catch (e) {
+            alert(`Something went wrong while parsing this file! Most likely, the file you uploaded isn't a valid LunaSim model.\n\nDetailed Error Log:\n${e.message}`);
+            return;
+        }
 
-        // add simulation parameters from the json
-        var json = JSON.parse(evt.target.result);
+        // Check for blank model loading
+        if (go.Model.fromJson(evt.target.result).Pc.length == 0) {
+            // .Pc is where the list of "objects" in the model is stored
+            // Checked via console.log testing
+            // This *probably* isn't good standard but it seems to be consistent across platforms & models
+            
+            let confirmBlankLoad = confirm("This model appears to be blank! Are you sure you want to load it?");
+            if (!confirmBlankLoad) return;
+        }
+
+        // If we get here, everything should be good
 
         // check if the json has simulation parameters
         if (json.simulationParameters) {
+            // add simulation parameters from the json
             document.getElementById("startTime").value = json.simulationParameters.startTime;
             document.getElementById("endTime").value = json.simulationParameters.endTime;
             document.getElementById("dt").value = json.simulationParameters.dt;
@@ -812,8 +826,14 @@ function loadModel(evt) {
             document.getElementById("endTime").value = 10;
             document.getElementById("dt").value = 0.1;
             document.getElementById("integrationMethod").value = "rk4";
-        }
+        }        
 
+        // clear the diagram
+        myDiagram.model = go.Model.fromJson("{ \"class\": \"GraphLinksModel\", \"linkLabelKeysProperty\": \"labelKeys\", \"nodeDataArray\": [],\"linkDataArray\": [] }");
+        // clear the table
+        $('#eqTableBody').empty();
+
+        // Load the new model
         myDiagram.model = go.Model.fromJson(evt.target.result);
 
         updateTable(true);
@@ -821,14 +841,24 @@ function loadModel(evt) {
 
         // set the diagram position back to what it was
         myDiagram.initialPosition = myDiagram.position;
+
+        // Reset save status after loading model
+        lastEditDate = new Date();
+        unsavedEdits = false;
+        lastExportDate = new Date();
+        hasExportedYet = false;
+        updateSaveStatus();
     }
 
-    console.log(evt.target.files[0]);
-    reader.readAsText(evt.target.files[0]);
-
-    reader.onerror = function (evt) {
+    /*
+    // This doesn't actually appear to be firing on an error, so I commented it out and wrote my own error handler.
+    // Add back in if I didn't read the documentation properly and it actually works.
+    
+    reader.addEventListener("error", function (evt) {
         alert("error reading file");
-    }
+    });*/
+
+    reader.readAsText(evt.target.files[0]);
 }
 
 // Themes
