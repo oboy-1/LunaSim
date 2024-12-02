@@ -933,5 +933,32 @@ document.getElementById("load-actual-button").addEventListener("change", loadMod
 document.getElementById("runButton").addEventListener("click", function() { run(); });
 document.getElementById("exportButton").addEventListener("click", function() { exportData(); });
 
+// clear button
+document.getElementById("clearButton").addEventListener("click", function() {
+    let confirmNewModel = confirm("Do you want to clear this model and start a new one? Your current project will be wiped!");
+    if (confirmNewModel) {
+        let doubleConfirm = confirm("Are you REALLY sure? If you want to save the project you are currently working on, press CANCEL and export it first; otherwise, the data will be cleared. You've been warned!");
+        if (!doubleConfirm) return;
+        
+        // Reset Model
+        document.getElementById("startTime").value = 0;
+        document.getElementById("endTime").value = 10;
+        document.getElementById("dt").value = 0.1;
+        document.getElementById("integrationMethod").value = "rk4";
+
+        // clear the diagram
+        myDiagram.model = go.Model.fromJson("{ \"class\": \"GraphLinksModel\", \"linkLabelKeysProperty\": \"labelKeys\", \"nodeDataArray\": [],\"linkDataArray\": [] }");
+        // clear the table
+        $('#eqTableBody').empty();
+
+        // Reset save status after clearing model
+        lastEditDate = new Date();
+        unsavedEdits = false;
+        lastExportDate = new Date();
+        hasExportedYet = false;
+        updateSaveStatus();
+    } 
+});
+
 // Exporting myDiagram
 export {data};

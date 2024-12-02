@@ -162,6 +162,18 @@ body {
   color: white;
 }
 
+#clearButton {
+  background-color: #ff5050;
+  color: white;
+  width: 90px;
+}
+
+#clearButton:hover {
+  background-color: #ff7777;
+  transition: 0.2s;
+}
+
+
 
 
 
