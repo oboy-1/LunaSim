@@ -23,6 +23,31 @@ var myDiagram;   // Declared as global
 var sim = new Simulation();
 var data;
 
+// Updates the "save status" text in the header
+var lastEditDate = new Date();
+var lastExportDate = new Date();
+var unsavedEdits = false;
+var hasExportedYet = false;
+function updateSaveStatus() {
+    let current = new Date();
+    document.getElementById("saveStatus").innerHTML = 
+    `${unsavedEdits ? "Unsaved Edits!" : "No Unsaved Edits"} (Last Edit: ${formatDeltaTime(current - lastEditDate)})<br>` +
+    `Last Exported: ${hasExportedYet ? formatDeltaTime(current - lastExportDate) : "-"}`;
+}
+function formatDeltaTime(ms) {
+    let seconds = ms / 1000;
+    if (seconds < 60) return `Just Now`;
+    if (seconds < 3600) return `${Math.floor(seconds/60)}m ago`;
+    
+    let minutes = Math.floor(seconds / 60);
+    let hours = Math.floor(minutes / 60);
+    minutes %= 60;
+    if (minutes > 0) return `${hours}h ${minutes}m ago`;
+    return `${hours}h`;
+}
+updateSaveStatus();
+setInterval(updateSaveStatus, 10000);
+
 function init() {    
     // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
     // For details, see https://gojs.net/latest/intro/buildingObjects.html
@@ -148,7 +173,15 @@ function init() {
         updateTable();
         // don't do this if model is empty
         if (myDiagram.model.nodeDataArray.length !== 0) {
-            sessionStorage.modelData = myDiagram.model.toJson();
+            // Update the "last edited" date
+            let oldModel = sessionStorage.modelData;
+            let newModel = myDiagram.model.toJson();
+            sessionStorage.modelData = newModel;
+            if (oldModel != newModel) {
+                lastEditDate = new Date();
+                unsavedEdits = true;
+                updateSaveStatus();
+            }
         }
     });
 
@@ -160,7 +193,7 @@ function init() {
             SD.nodeCounter.valve += 1;
             var newNodeId = "flow" + SD.nodeCounter.valve;
 
-            while (myDiagram.model.findLinkDataForKey(newNodeId) !== null) { // make sure the key is unique
+            while (!labelValidator(undefined, "", newNodeId)) { // make sure the key is unique
                 SD.nodeCounter.valve += 1;
                 newNodeId = "flow" + SD.nodeCounter.valve;
             }
@@ -393,7 +426,15 @@ function loadTableToDiagram() {
     // update the model with the new json
     myDiagram.model = go.Model.fromJson(JSON.stringify(json));
 
-    sessionStorage.modelData = myDiagram.model.toJSON(); // updates session storage
+    let oldModel = sessionStorage.modelData;
+    let newModel = myDiagram.model.toJson();
+    sessionStorage.modelData = newModel; // updates session storage
+    if (oldModel != newModel) {
+        // Update the "last edited" date
+        lastEditDate = new Date();
+        unsavedEdits = true;
+        updateSaveStatus();
+    }
 
     // set the diagram position back to what it was
     myDiagram.initialPosition = pos;
@@ -537,7 +578,17 @@ function labelValidator(textblock, oldstr, newstr) {
 
     if (newstr === "") return false; // don't allow empty label
 
-    if (newstr[0] === "$") return true; // there can be repeats for ghost nodes
+    if (newstr[0] === "$") {
+        // Only allow ghosting if the referenced node exists
+        // (Previous behavior would delete the node if it didn't exist, which is bad)
+        var unique = true;
+        for (var i = 0; i < myDiagram.model.nodeDataArray.length; i++) {
+            if (`$${myDiagram.model.nodeDataArray[i].label}` === newstr) {
+                unique = false;
+            }
+        }
+        return !unique; // we WANT a duplicate to exist
+    }
 
     // make sure it is not **Just** a number
     if (!isNaN(newstr)) return false;
@@ -724,7 +775,13 @@ function exportData() {
     };
 
     // download it 
-    download(filename + ".luna", JSON.stringify(json));
+    download(`${filename}.luna`, JSON.stringify(json));
+
+    // update export date
+    lastExportDate = new Date();
+    hasExportedYet = true;
+    unsavedEdits = false; // Once exported, no more unsaved edits
+    updateSaveStatus();
 }
 
 function download(filename, text) {
@@ -743,19 +800,33 @@ function download(filename, text) {
 }
 
 function loadModel(evt) {
-    // clear the diagram
-    myDiagram.model = go.Model.fromJson("{ \"class\": \"GraphLinksModel\", \"linkLabelKeysProperty\": \"labelKeys\", \"nodeDataArray\": [],\"linkDataArray\": [] }");
-    // clear the table
-    $('#eqTableBody').empty();
-
     var reader = new FileReader();
 
     reader.onload = function (evt) {
-        // add simulation parameters from the json
-        var json = JSON.parse(evt.target.result);
+        // Check if the file is valid JSON       
+        var json;
+        try {
+            json = JSON.parse(evt.target.result);
+        } catch (e) {
+            alert(`Something went wrong while parsing this file! Most likely, the file you uploaded isn't a valid LunaSim model.\n\nDetailed Error Log:\n${e.message}`);
+            return;
+        }
+
+        // Check for blank model loading
+        if (go.Model.fromJson(evt.target.result).Pc.length == 0) {
+            // .Pc is where the list of "objects" in the model is stored
+            // Checked via console.log testing
+            // This *probably* isn't good standard but it seems to be consistent across platforms & models
+            
+            let confirmBlankLoad = confirm("This model appears to be blank! Are you sure you want to load it?");
+            if (!confirmBlankLoad) return;
+        }
+
+        // If we get here, everything should be good
 
         // check if the json has simulation parameters
         if (json.simulationParameters) {
+            // add simulation parameters from the json
             document.getElementById("startTime").value = json.simulationParameters.startTime;
             document.getElementById("endTime").value = json.simulationParameters.endTime;
             document.getElementById("dt").value = json.simulationParameters.dt;
@@ -765,8 +836,14 @@ function loadModel(evt) {
             document.getElementById("endTime").value = 10;
             document.getElementById("dt").value = 0.1;
             document.getElementById("integrationMethod").value = "rk4";
-        }
+        }        
 
+        // clear the diagram
+        myDiagram.model = go.Model.fromJson("{ \"class\": \"GraphLinksModel\", \"linkLabelKeysProperty\": \"labelKeys\", \"nodeDataArray\": [],\"linkDataArray\": [] }");
+        // clear the table
+        $('#eqTableBody').empty();
+
+        // Load the new model
         myDiagram.model = go.Model.fromJson(evt.target.result);
 
         updateTable(true);
@@ -774,13 +851,24 @@ function loadModel(evt) {
 
         // set the diagram position back to what it was
         myDiagram.initialPosition = myDiagram.position;
+
+        // Reset save status after loading model
+        lastEditDate = new Date();
+        unsavedEdits = false;
+        lastExportDate = new Date();
+        hasExportedYet = false;
+        updateSaveStatus();
     }
+
+    /*
+    // This doesn't actually appear to be firing on an error, so I commented it out and wrote my own error handler.
+    // Add back in if I didn't read the documentation properly and it actually works.
+    
+    reader.addEventListener("error", function (evt) {
+        alert("error reading file");
+    });*/
 
     reader.readAsText(evt.target.files[0]);
-
-    reader.onerror = function (evt) {
-        alert("error reading file");
-    }
 }
 
 // Themes
@@ -819,7 +907,16 @@ window.onload = function(){
   }
 }
 
-document.getElementById("loadButton").addEventListener("click", function () { document.getElementById("load-actual-button").click(); });
+// Model Loading
+document.getElementById("loadButton").addEventListener("click", function () {
+    if (unsavedEdits) {
+        // Add a warning if the user has changed the model since their last export
+        let confirmLoad = confirm(`You've made changes to this model since the last time you exported it (if at all). If you load a new model now without exporting, your changes will be lost! Are you sure you want to proceed?\n\n(Press CANCEL to go back and export your model.)`);
+        if (!confirmLoad) return;
+    }
+
+    document.getElementById("load-actual-button").click();
+});
 
 init();
 
@@ -845,6 +942,39 @@ document.getElementById("defaultOpen").click();
 document.getElementById("load-actual-button").addEventListener("change", loadModel);
 document.getElementById("runButton").addEventListener("click", function() { run(); });
 document.getElementById("exportButton").addEventListener("click", function() { exportData(); });
+
+// clear button
+document.getElementById("clearButton").addEventListener("click", function() {
+    let confirmNewModel = confirm("Do you want to clear this model and start a new one? Your current project will be wiped!");
+    if (confirmNewModel) {
+        let doubleConfirm = confirm("Are you REALLY sure? If you want to save the project you are currently working on, press CANCEL and export it first; otherwise, the data will be cleared. You've been warned!");
+        if (!doubleConfirm) return;
+        
+        // Reset Model
+        document.getElementById("startTime").value = 0;
+        document.getElementById("endTime").value = 10;
+        document.getElementById("dt").value = 0.1;
+        document.getElementById("integrationMethod").value = "rk4";
+
+        // clear the diagram
+        myDiagram.model = go.Model.fromJson("{ \"class\": \"GraphLinksModel\", \"linkLabelKeysProperty\": \"labelKeys\", \"nodeDataArray\": [],\"linkDataArray\": [] }");
+        // clear the table
+        $('#eqTableBody').empty();
+
+        // Reset save status after clearing model
+        lastEditDate = new Date();
+        unsavedEdits = false;
+        lastExportDate = new Date();
+        hasExportedYet = false;
+        updateSaveStatus();
+    } 
+});
+
+// reload/close warning
+// TEST-UI-001-004
+window.addEventListener('beforeunload', function (e) {
+    if (unsavedEdits) e.preventDefault();
+});
 
 // Exporting myDiagram
 export {data};

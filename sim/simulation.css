@@ -53,6 +53,21 @@ body {
   background-color: #eeeeee;
 }
 
+#saveStatus {
+  padding: 8px;
+  position: absolute;
+  font-size: 12px;
+  font-style: italic;
+  color: #777777;
+
+  text-align: right;
+  
+  float: right;
+
+  right: calc(25px + 25%);
+  top: -4px;
+}
+
 .action {
   position: absolute;
   right: 25px;
@@ -147,6 +162,16 @@ body {
   color: white;
 }
 
+#clearButton {
+  background-color: #ff5050;
+  color: white;
+  width: 90px;
+}
+
+#clearButton:hover {
+  background-color: #ff7777;
+  transition: 0.2s;
+}
 
 
 
